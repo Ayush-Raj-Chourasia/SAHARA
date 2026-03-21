@@ -162,7 +162,11 @@ export const AuthProvider = ({ children }) => {
             
             localStorage.setItem('sahara_token', data.access_token);
             persistUser(data.user);
-            return data.user;
+            return {
+                ...data.user,
+                __isNew: data.is_new,
+                __degradedMode: !!data.degraded_mode,
+            };
         } catch (error) {
             console.error('[AUTH] Google sign-in error:', error);
             

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Shield, ArrowRight, ArrowLeft } from '../components/Icons';
 
 const RegisterPage = ({ onBack }) => {
-  const { googleSignIn, register } = useAuth();
+  const { googleSignIn, register, login } = useAuth();
   const navigate = useNavigate();
   const { role: routeRole } = useParams();
   const role = routeRole === 'family' ? 'family' : 'senior';
@@ -18,6 +18,9 @@ const RegisterPage = ({ onBack }) => {
     setLoading(true);
     try {
       const user = await googleSignIn(role);
+      if (user?.__isNew === false) {
+        alert('Account already exists. Signed you in directly.');
+      }
       navigate(user?.onboarded ? (user.role === 'senior' ? '/senior' : '/family') : '/onboarding');
     } catch (err) {
       console.error('Google sign-in error:', err);
@@ -41,7 +44,19 @@ const RegisterPage = ({ onBack }) => {
       });
       navigate(user?.onboarded ? (user.role === 'senior' ? '/senior' : '/family') : '/onboarding');
     } catch (err) {
-      alert('Registration failed. Please check details and try again.');
+      const msg = err?.message || '';
+      if (msg.includes('Email already registered')) {
+        try {
+          const existingUser = await login(email, password);
+          alert('Account already exists. Signed you in directly.');
+          navigate(existingUser?.onboarded ? (existingUser.role === 'senior' ? '/senior' : '/family') : '/onboarding');
+        } catch {
+          alert('Account already exists. Please sign in with your correct password.');
+          navigate('/login');
+        }
+      } else {
+        alert('Registration failed. Please check details and try again.');
+      }
     }
     setLoading(false);
   };
