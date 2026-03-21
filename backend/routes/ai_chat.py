@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 router = APIRouter()
 
@@ -25,7 +25,8 @@ class PatientContext(BaseModel):
 
 class AIChatRequest(BaseModel):
     message: str
-    patient_context: PatientContext
+    user_id: str = "mock_user_123"
+    patient_context: PatientContext = PatientContext()
 
 @router.post("/chat")
 async def chat_with_ai(request: AIChatRequest):
@@ -50,9 +51,10 @@ async def chat_with_ai(request: AIChatRequest):
     )
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash", system_instruction=system_prompt)
-        response = model.generate_content(request.message)
-        reply = response.text.strip()
-        return {"reply": reply}
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        full_prompt = f"{system_prompt}\n\nUSER MESSAGE:\n{request.message}"
+        res = model.generate_content(full_prompt)
+        reply = res.text.strip()
+        return {"reply": reply, "response": reply}
     except Exception as e:
-        return {"reply": f"Sorry {ctx.name} Ji, I am unable to reply right now.", "error": str(e)}
+        return {"reply": f"Sorry {ctx.name} Ji, I am unable to reply right now.", "response": f"Sorry {ctx.name} Ji, I am unable to reply right now.", "error": str(e)}
