@@ -1,1179 +1,1238 @@
-# SAHARA  
-**AI-Powered Smart Elderly Care System**  
-*Trithon 2026 Hackathon Submission*
+# SAHARA — AI-Powered Smart Elderly Care System
+
+> **S**mart **A**ssistive **H**ealthcare **A**nd **R**emote **A**lert System  
+> *Enabling independent, safe, and healthy aging for India's 140 million senior citizens*
+
+<div align="center">
+
+![SAHARA](https://img.shields.io/badge/SAHARA-Elderly%20Care%20AI-orange?style=for-the-badge)
+![Trithon 2026](https://img.shields.io/badge/Trithon%202026-Healthcare%20Track-blue?style=for-the-badge)
+![ITER SOA](https://img.shields.io/badge/ITER%20SOA-Bhubaneswar%2C%20Odisha-green?style=for-the-badge)
+
+**Live Demo →** [sahara-flax.vercel.app](https://sahara-flax.vercel.app/)
+
+</div>
 
 ---
 
-## 1. Overview  
+## Table of Contents
 
-SAHARA is an AI-powered healthcare platform designed to provide continuous monitoring, nutritional guidance, and early risk detection for elderly individuals.  
-
-The system integrates health tracking, nutrition analysis, predictive insights, and family monitoring into a single unified ecosystem.  
-
-With India’s rapidly aging population, SAHARA aims to enable independent, safe, and data-driven elderly care.  
-
----
-
-## 2. Problem Statement  
-
-Elderly individuals in India commonly face:  
-
-- Malnutrition and anaemia due to improper dietary intake  
-- Chronic diseases such as hypertension, diabetes, and cardiac conditions  
-- Lack of continuous health monitoring  
-- Difficulty in manually tracking vitals and medication  # 🌿 SAHARA — AI-Powered Smart Elderly Care System
-
-> **Team Idiotics** · Trithon 2026 · Healthcare Theme  
-> Institute of Technical Education and Research (ITER), Siksha 'O' Anusandhan Deemed to be University, Bhubaneswar, Odisha
-
----
-
-## 📋 Table of Contents
-
-1. [Project Overview](#-project-overview)
-2. [The Problem](#-the-problem)
-3. [Our Solution](#-our-solution)
-4. [Live Demo & Deployment](#-live-demo--deployment)
-5. [Tech Stack](#-tech-stack)
-6. [System Architecture](#-system-architecture)
-7. [Features](#-features)
-8. [AI & ML Models](#-ai--ml-models)
-9. [UX Design Principles](#-ux-design-principles)
-10. [API Endpoints](#-api-endpoints)
-11. [Database Schema](#-database-schema)
-12. [Getting Started — Local Setup](#-getting-started--local-setup)
-13. [Deployment Guide](#-deployment-guide)
-14. [Flutter / APK Build](#-flutter--apk-build)
-15. [Fallback Strategy](#-fallback-strategy)
-16. [Business Model](#-business-model)
-17. [Competitive Analysis](#-competitive-analysis)
-18. [Roadmap](#-roadmap)
-19. [Team](#-team)
-20. [Evaluation Alignment](#-evaluation-alignment-trithon-2026)
+1. [Project Overview](#1-project-overview)
+2. [The Problem](#2-the-problem)
+3. [Our Solution](#3-our-solution)
+4. [Key Features](#4-key-features)
+5. [System Architecture](#5-system-architecture)
+6. [Tech Stack](#6-tech-stack)
+7. [AI & ML Components](#7-ai--ml-components)
+8. [UX Design Philosophy](#8-ux-design-philosophy)
+9. [API Reference](#9-api-reference)
+10. [Database Schema](#10-database-schema)
+11. [Deployment Guide](#11-deployment-guide)
+12. [Environment Variables](#12-environment-variables)
+13. [Local Development Setup](#13-local-development-setup)
+14. [Mobile App — Flutter](#14-mobile-app--flutter)
+15. [Business Model](#15-business-model)
+16. [Market Analysis](#16-market-analysis)
+17. [Competitive Landscape](#17-competitive-landscape)
+18. [Roadmap](#18-roadmap)
+19. [Team](#19-team)
+20. [Acknowledgements](#20-acknowledgements)
 
 ---
 
-## 🌟 Project Overview
+## 1. Project Overview
 
-**SAHARA** *(Smart AI-powered Healthcare and Assistive Resource for Ageing)* is an AI-driven intelligent healthcare ecosystem built specifically for India's rapidly growing elderly population.
+**SAHARA** is an AI-powered intelligent healthcare ecosystem designed specifically for elderly individuals aged 60+ who require continuous health and nutritional monitoring. Built for the Indian context — with support for Hindi and Odia — SAHARA bridges the critical gap between aging parents living in Odisha and their working adult children in distant cities.
 
-India currently has **140 million+ senior citizens above age 60**, a number projected to reach **300 million by 2050**. The majority live alone or with minimal continuous family support — often in smaller cities and towns across Odisha and the rest of India. SAHARA bridges this gap.
-
-> *"Every health app in this room was built for young people who are already healthy. SAHARA was built for the 140 million elderly Indians who are silently declining — not in hospitals, but in their homes, alone."*
-
-### Key Highlights
-
-- 🍛 **Indian Food Intelligence** — ICMR-calibrated nutrition analysis for dal, roti, khichdi, and 500+ Indian meals
-- 🩸 **Anaemia Early Warning** — India's first AI-based anaemia prediction system for elderly; 50%+ of Indian women over 60 are anaemic
-- 📊 **Dual Dashboard** — Separate intelligent interfaces for seniors (mobile) and family members (web)
-- 🚨 **One-tap SOS** — Live GPS + Twilio SMS alerts to family members
-- 🗣️ **Hindi Voice AI** — Speak your meal in Hindi, get instant nutrition analysis back in Hindi
-- 🔮 **Preventive, not reactive** — Detects declining health trends before a crisis occurs
-
----
-
-## 🚨 The Problem
-
-India's elderly population faces a silent multi-layered health crisis that existing technology largely ignores:
-
-| Problem | Impact |
+| Field | Detail |
 |---|---|
-| Malnutrition & inadequate protein/calorie intake | Muscle loss, poor immunity, weakness |
-| Anaemia (especially in women 60+) | Fatigue, cognitive decline, heart strain |
-| Unmonitored BP, blood sugar, weight | Late detection of hypertension, diabetes progression |
-| Inconsistent/absent medication adherence | Treatment failure, hospitalisation |
-| Working family members in different cities | No real-time visibility into parent's health |
-| Manual health logging is too hard for seniors | Data gaps, inaccuracy, abandonment |
-| Existing apps are reactive — alert only after crisis | Missed preventive window |
-| No platform understands Indian food nutrition | Generic global apps are useless for dal-rice diets |
+| **Hackathon** | Trithon 2026 — 24-Hour Hackathon by Trident Academy of Technology |
+| **Theme** | Healthcare Innovation |
+| **Team Name** | Idiotics |
+| **Institution** | ITER, Siksha 'O' Anusandhan Deemed to be University, Bhubaneswar, Odisha |
+| **Team Leader** | Keshav Jha |
+| **Contact** | 9142928046 |
+| **Problem Statement** | AI-Based Intelligent Monitoring & Nutritional Management System for Senior Citizens |
 
-Annual cost of a **single preventable hospitalisation** for an elderly Indian: ₹30,000–₹80,000. SAHARA prevents these events.
+### The Core Insight
+
+> 71% of elderly Indians live without continuous family support. A daughter in Bangalore cannot know if her father in Bhubaneswar ate properly today, or if his haemoglobin is silently falling. SAHARA makes that knowledge real-time, predictive, and actionable — before a crisis, not after.
 
 ---
 
-## 💡 Our Solution
+## 2. The Problem
 
-SAHARA is a **unified preventive health platform** integrating:
+India — and Odisha in particular — is facing a quiet elderly health crisis, sharpened by rural-to-urban migration that separates families across hundreds of kilometres.
+
+### Scale of the Crisis
+
+- **140 million** senior citizens in India today; will reach **300 million by 2050**
+- **50%+** of elderly Indian women suffer from anaemia — the majority undiagnosed
+- **₹30,000–₹80,000** — average cost of one preventable elderly hospitalisation
+- **71%** of elderly Indians live without a family member at home during working hours
+- **6.2 million** senior citizens in Odisha alone; ~65% in rural areas without nearby family
+
+### Specific Pain Points
+
+| Problem | Current Reality | SAHARA's Response |
+|---|---|---|
+| Nutritional deficiency | No tool tracks elderly-specific Indian diet nutrition | AI parses Indian meals against elderly ICMR-calibrated RDA |
+| Undetected anaemia | Blood tests only when symptoms are severe | Predictive model flags declining Hb trend before crisis |
+| BP and sugar monitoring | Manual diary, inconsistently maintained | Daily logging with AI anomaly detection across 7-day trend |
+| Family blindness | Phone calls cannot reveal health data or trends | Real-time family dashboard with live charts and AI summaries |
+| Emergency delay | Neighbour calls, landlines, manual contact chains | One-tap SOS sends GPS location as SMS to all family numbers instantly |
+| Language barrier | English-only health apps unusable for most elders | Hindi and Odia voice input and AI responses |
+| Fragmented solutions | Separate apps for medication, health, emergency | Single ecosystem: nutrition + vitals + SOS + family dashboard |
+
+---
+
+## 3. Our Solution
+
+SAHARA is a **dual-persona healthcare platform** — one radically simplified interface for the senior, and a data-rich monitoring dashboard for their family.
+
+### System Flow
 
 ```
-Senior App (Mobile)          ←→         SAHARA AI Engine         ←→         Family Dashboard (Web)
-────────────────────                   ─────────────────                    ────────────────────
-• Log meals by voice/text              • Nutrition analysis                 • Real-time risk badges
-• Log BP, sugar, Hb, weight            • Health score (0–100)               • 7-day trend charts
-• Medication reminders                 • Anaemia risk prediction             • SOS history + map
-• One-tap SOS                          • Anomaly detection                  • Medication compliance
-• Hindi AI chatbot                     • Weekly AI health reports            • Weekly AI summaries
+Senior logs meal in Hindi by speaking
+        ↓
+Gemini AI parses Indian food nutrition (dal, roti, sabji, poha, khichdi...)
+        ↓
+Deficit calculated against elderly-specific ICMR daily targets
+        ↓
+Haemoglobin + fatigue level → Anaemia risk model runs
+        ↓
+Composite health score (0–100) calculated from all parameters
+        ↓
+7-day anomaly detector checks for BP / sugar / Hb trend deviation
+        ↓
+Family dashboard updates in real time (polls every 15 seconds)
+        ↓
+Risk alert fires → Twilio SMS to all linked family numbers
+        ↓
+SOS pressed → GPS coordinates sent → Family locates elder instantly
+```
+
+### Preventive, Not Reactive
+
+Every existing solution waits for a crisis. SAHARA's **predictive health score** trends downward before the crisis arrives — giving families 3–7 days of warning rather than zero.
+
+---
+
+## 4. Key Features
+
+### Senior-Facing App
+
+#### 4.1 Daily Health Logging
+- Log Blood Pressure, Blood Sugar, Haemoglobin, Weight in a step-by-step wizard
+- One field at a time — no cognitive overload
+- Instant colour-coded health score after submission (green / amber / red)
+- Automatic risk flags and plain-language alerts shown immediately
+
+#### 4.2 AI Nutrition Tracker — Most Unique Feature
+- Type or **speak in Hindi/Odia**: *"aaj maine dal chawal aur sabzi khaya"*
+- Gemini AI parses the Indian meal and returns a full macronutrient breakdown
+- Calibrated against **ICMR elderly-specific** daily requirements (not Western USDA)
+- Shows protein deficit, iron deficit, and calorie gap as a simple visual bar
+- Personalised suggestion in Hindi: *"Ratan Ji, aaj protein kam hai — ek anda ya dahi lijiye"*
+
+#### 4.3 Anaemia Early Warning
+- Risk model inputs: Haemoglobin + Fatigue level + Dietary iron + Age + Gender + 7-day Hb trend
+- Output: **LOW / MEDIUM / HIGH** risk with the primary contributing factor explained
+- Uses WHO clinical thresholds adjusted for Indian elderly physiology
+- Flags a declining 7-day Hb trend even before a clinical threshold is crossed
+
+#### 4.4 SOS Emergency Alert
+- Large red SOS button visible on every screen — never buried in a menu
+- One tap: Twilio SMS sent to all linked family numbers with a live Google Maps GPS link
+- SOS event logged with timestamp, coordinates, and resolution status
+- 5-second cancel window prevents accidental triggers
+- Email backup via SMTP if Twilio is unavailable
+
+#### 4.5 SAHARA AI Companion (Health Chatbot)
+- Conversational AI grounded in the user's actual health data (RAG pattern)
+- Responds in whatever language the user writes: Hindi, Odia, or English
+- Strict rules: never diagnoses; always recommends a doctor for serious concerns
+- Class 5 reading level vocabulary — accessible, warm, never clinical
+- Example: *"Aapka BP thoda zyada hai. Namak kam karo aur kal doctor ko dikhao."*
+
+#### 4.6 Medication Reminders
+- Set recurring reminders by medicine name and time
+- Green / red compliance calendar — taken vs missed at a glance
+- Missed dose triggers an alert; family sees the compliance rate on their dashboard
+
+---
+
+### Family Dashboard (Web)
+
+#### 4.7 Live Health Overview
+- All linked seniors shown with today's health score chip (colour-coded)
+- "Last logged: N hours ago" — family knows if elder has not logged today
+- Red badge on any senior at HIGH risk
+- One-click call button beside each senior's name
+
+#### 4.8 7-Day Trend Charts
+- Line charts for BP (systolic/diastolic), blood sugar, haemoglobin, weight (Recharts)
+- Trend direction highlighted: improving, stable, or declining
+- Full 30-day history available on scroll
+
+#### 4.9 AI Weekly Health Summary
+- Auto-generated narrative: *"Ratan Ji's haemoglobin dropped from 11.8 to 10.6 this week — declining trend, consider medical review"*
+- Nutrition compliance percentage
+- Medication adherence rate for the week
+
+#### 4.10 SOS History and Location
+- Full timeline of all SOS events
+- Embedded Google Maps showing exact coordinates
+- Resolved / unresolved status per event
+
+---
+
+## 5. System Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                      CLIENT LAYER                             │
+│                                                              │
+│  ┌──────────────────────┐   ┌────────────────────────────┐  │
+│  │   Senior App (PWA)    │   │   Family Dashboard (Web)    │  │
+│  │   React + Tailwind    │   │   React + Recharts          │  │
+│  │   → Flutter (Phase 2) │   │   Vercel · JWT family role  │  │
+│  │   Orange theme        │   │   Polls every 15 seconds    │  │
+│  │   56px+ buttons       │   │   Desktop-optimised         │  │
+│  │   Hindi/Odia voice    │   │                            │  │
+│  └───────────┬──────────┘   └──────────────┬─────────────┘  │
+└──────────────┼──────────────────────────────┼────────────────┘
+               │  HTTPS REST API              │
+               ▼                              ▼
+┌──────────────────────────────────────────────────────────────┐
+│               API LAYER  —  FastAPI (Python)                  │
+│          Railway · Azure App Service F1 · Render              │
+│                                                              │
+│  /auth   /health/log   /nutrition/analyze   /ai/score        │
+│  /ai/chat   /emergency/sos   /family/dashboard   /reminders   │
+└────────┬─────────────────────────────────┬───────────────────┘
+         │                                 │
+         ▼                                 ▼
+┌─────────────────────┐   ┌───────────────────────────────────┐
+│    AI / ML ENGINE    │   │          EXTERNAL SERVICES         │
+│                     │   │                                   │
+│  Gemini 1.5 Flash   │   │  Twilio SMS      → SOS alerts     │
+│  → Nutrition parser │   │  Google Maps API → GPS links       │
+│  → Health chatbot   │   │  Firebase FCM    → Push notif      │
+│  → Weekly reports   │   │  Web Speech API  → Hindi voice     │
+│                     │   │  SMTP / Gmail    → Email backup    │
+│  scikit-learn       │   └───────────────────────────────────┘
+│  → Anaemia RF model │
+│  → Anomaly detect   │
+│                     │
+│  Rule Engine        │
+│  → Health score     │
+│  → WHO thresholds   │
+└────────┬────────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                       DATA LAYER                              │
+│          MongoDB Atlas M0 (Free 512MB) · Firebase RTDB        │
+│                                                              │
+│  users · health_logs · nutrition_logs · reminders            │
+│  sos_events · family_links · alerts · weekly_reports          │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Live Demo & Deployment
+## 6. Tech Stack
 
-| Component | URL / Access |
-|---|---|
-| **Web App (Frontend)** | [https://sahara-flax.vercel.app/](https://sahara-flax.vercel.app/) |
-| **Backend API** | Railway.app / Azure F1 Plan (see Deployment Guide) |
-| **Database** | MongoDB Atlas M0 (Free) / Firebase / Supabase |
-| **Demo APK (Android)** | Google Drive link — see team for access |
+### Frontend
 
-> **Judge Note:** The system is seeded with 30 days of realistic health data for the demo user *Ratan Ji, 72, Bhubaneswar* to show meaningful trend charts during evaluation.
-
----
-
-## 🛠 Tech Stack
-
-### Frontend — Web App
-| Layer | Technology |
-|---|---|
-| UI Framework | HTML5, CSS3, Bootstrap 5, JavaScript |
-| Charts | Chart.js |
-| Maps | Google Maps JS API |
-| Hosting | **Vercel** (auto-deploy from GitHub) |
-
-### Frontend — Mobile App (Flutter, Phase 2 / Final)
-| Layer | Technology |
-|---|---|
-| Framework | Flutter (Dart) |
-| State Management | Provider / Riverpod |
-| Build | `flutter build apk --release` |
-| Distribution | Google Drive APK link / Expo-like QR |
+| Technology | Version | Purpose |
+|---|---|---|
+| React | 18.x | UI framework |
+| Vite | 5.x | Build tool with fast HMR |
+| Tailwind CSS | 3.x | Utility-first styling |
+| Recharts | 2.x | Health trend line and bar charts |
+| React Router | 6.x | Client-side routing |
+| Axios | 1.x | HTTP client with interceptors |
+| Web Speech API | Native (Chrome) | Hindi and Odia voice input, TTS responses |
+| vite-plugin-pwa | Latest | PWA manifest and service worker (installable app) |
 
 ### Backend
-| Layer | Technology |
-|---|---|
-| Framework | **Flask** (Python) |
-| Auth | JWT (7-day expiry) |
-| Email Alerts | Flask-Mail (SMTP) |
-| SMS / SOS | **Twilio** API |
-| Hosting | **Railway.app** (primary) / Azure F1 / Render |
 
-### Database
-| Option | Details |
-|---|---|
-| **Primary** | MongoDB Atlas M0 — 512MB free |
-| **Alt 1** | Firebase Realtime Database |
-| **Alt 2** | Supabase (PostgreSQL) |
-
-### AI / ML
-| Model | Technology |
-|---|---|
-| Nutrition Parsing | Google Gemini 1.5 Flash API |
-| Anaemia Risk | Random Forest (scikit-learn) + WHO rule engine |
-| Health Score | Weighted rule engine (0–100) |
-| Anomaly Detection | Statistical threshold rules / Isolation Forest |
-| Hindi Voice AI | Web Speech API (Chrome) + Google Cloud Speech |
-| AI Chatbot | Gemini 1.5 Flash with health context injection |
-| Weekly Reports | Gemini 1.5 Flash summarisation |
-
-### External Services
-| Service | Purpose | Cost |
+| Technology | Version | Purpose |
 |---|---|---|
-| Twilio | SOS SMS to family numbers | Free: 1,000 SMS/mo |
-| Google Maps JS API | SOS event location display | Free: 28,000 loads/mo |
-| Firebase Cloud Messaging | Push notifications | Free |
-| Google Cloud | Speech API, Gemini | Free tier + credits |
-| Gemini 1.5 Flash | Nutrition AI + chatbot | Free tier |
+| Python | 3.11+ | Runtime |
+| FastAPI | 0.111+ | Web framework with auto OpenAPI documentation |
+| Motor | 3.x | Async MongoDB driver |
+| Pydantic v2 | 2.x | Data validation and serialisation |
+| python-jose | 3.x | JWT token creation and verification |
+| passlib | 1.x | Password hashing (bcrypt) |
+| joblib | 1.x | ML model serialisation and loading |
+| scikit-learn | 1.4+ | Random Forest anaemia model, Isolation Forest anomaly detection |
+| numpy / pandas | Latest | Numerical computation and data processing |
+| twilio | 8.x | SOS SMS delivery |
+| google-generativeai | Latest | Gemini 1.5 Flash API client |
 
-> **Important Note for Judges:** The AI nutrition analysis and health chatbot are powered by LLM APIs (Gemini), which are integrated as intelligent backend services — the same approach used in production AI healthcare products. The ML risk models (anaemia prediction, health scoring) are custom-trained Python models using scikit-learn on WHO/ICMR-validated clinical data.
+### AI and ML
 
----
+| Model / Service | Use Case | Fallback |
+|---|---|---|
+| Google Gemini 1.5 Flash | Nutrition parsing, health chatbot, weekly report generation | Groq + Llama 3.1 → ICMR local food DB → hardcoded 20 meals |
+| scikit-learn Random Forest | Anaemia risk classification (LOW / MEDIUM / HIGH) | WHO clinical rule engine (always available) |
+| scikit-learn Isolation Forest | Health anomaly detection on multi-parameter time series | Z-score statistical method (7-day rolling window) |
+| Custom weighted rule engine | Composite health score 0–100 | Always-on; not ML-dependent |
+| Web Speech API | Hindi / Odia voice input and TTS response | Graceful degradation to text input |
 
-## 🏗 System Architecture
+### Infrastructure
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        SAHARA SYSTEM                                │
-│                                                                     │
-│  ┌─────────────────┐         ┌──────────────────┐                  │
-│  │  SENIOR APP      │         │  FAMILY DASHBOARD │                 │
-│  │  (Mobile/Web)   │         │  (React Web)      │                 │
-│  │                 │         │                   │                 │
-│  │ • Log vitals    │         │ • Risk badges      │                 │
-│  │ • Meal by voice │         │ • Trend charts     │                 │
-│  │ • SOS button    │         │ • SOS map history  │                 │
-│  │ • Hindi chatbot │         │ • Weekly AI report │                 │
-│  └────────┬────────┘         └────────┬──────────┘                 │
-│           │                           │                             │
-│           └──────────┬────────────────┘                            │
-│                      ▼                                              │
-│           ┌──────────────────────┐                                 │
-│           │   Flask REST API     │                                 │
-│           │   (Railway / Azure)  │                                 │
-│           └──────────┬───────────┘                                 │
-│                      │                                              │
-│         ┌────────────┼─────────────┐                               │
-│         ▼            ▼             ▼                                │
-│   ┌──────────┐ ┌──────────┐ ┌──────────────┐                      │
-│   │ MongoDB  │ │ AI/ML    │ │ External APIs│                       │
-│   │ Atlas    │ │ Engine   │ │              │                       │
-│   │          │ │          │ │ • Twilio SMS │                       │
-│   │ users    │ │ • Gemini │ │ • Google Maps│                       │
-│   │ health   │ │ • RF     │ │ • FCM Push  │                       │
-│   │ nutrition│ │ • Rules  │ │ • Flask-Mail│                       │
-│   │ reminders│ │ • Score  │ │             │                        │
-│   │ sos      │ └──────────┘ └──────────────┘                      │
-│   └──────────┘                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-**Data Flow:**
-```
-Senior logs meal/vitals
-    → Flask API processes
-    → ML engine scores risk + runs anaemia model
-    → Result stored in MongoDB
-    → Family dashboard polls every 30s
-    → If risk = HIGH → Twilio SMS fires to family
-    → FCM push notification to family app
-```
+| Service | Role | Plan / Cost |
+|---|---|---|
+| Vercel | Frontend hosting | Free (Hobby) — auto HTTPS, global CDN |
+| Railway | Backend API hosting (primary) | Free $5 credit — no cold start |
+| Azure App Service F1 | Backend API hosting (alternative) | Free tier — 60 CPU min/day, 1GB RAM |
+| MongoDB Atlas | Primary database | M0 Free — 512MB, no credit card |
+| Google Cloud | Maps API, Firebase, additional ML | Free tier credits |
+| Firebase RTDB | Real-time family dashboard data | Spark plan (free) |
+| Firebase FCM | Push notifications to family | Free |
+| Twilio | SOS SMS delivery | Trial — 1,000 SMS free |
 
 ---
 
-## ✨ Features
+## 7. AI & ML Components
 
-### Senior-Facing Features
+### 7.1 Nutrition Analysis Engine
 
-#### 🏠 Home Dashboard
-- Personalised greeting (e.g., *"Namaste, Ratan Ji"*)
-- Today's Health Score (0–100) with colour-coded status: 🟢 Good / 🟡 Fair / 🔴 Poor
-- Quick summary: BP, protein intake, last medication
-
-#### 🍛 Meal Logging — AI Nutrition Analysis
-- Type or **speak in Hindi/English** — *"aaj maine dal chawal aur sabzi khaya"*
-- AI analyses meal using ICMR-calibrated Indian food database
-- Returns: calories, protein (g), iron (mg), carbs, fibre
-- Deficit alert: *"You need 18g more protein today. Have 1 egg or dahi."*
-- Daily targets personalised by weight, age, gender, conditions
-
-#### 📊 Vitals Logging
-- Blood Pressure (systolic/diastolic)
-- Blood Sugar (mg/dL)
-- Haemoglobin (g/dL) — with live anaemia risk flag
-- Weight (kg)
-- One-screen entry, large inputs, instant risk feedback
-
-#### 💊 Medication Reminders
-- Add medicines with schedule
-- Mark taken / missed
-- SMS + push notification reminders
-- Missed-dose alert to family
-
-#### 🚨 SOS Emergency
-- Large red button visible on every screen
-- One tap → Twilio SMS to all linked family numbers with GPS coordinates
-- Google Maps pin embedded in family dashboard
-
-#### 🤖 SAHARA AI Chatbot
-- Responds in Hindi or English (whichever the user writes)
-- Contextualised with user's name, age, current health score, risk flags
-- Never diagnoses — always recommends doctor for serious symptoms
-- Simple language (Class 5 vocabulary level)
-- Voice input + voice readback in Hindi at 0.85x speed (elderly-comfortable)
-
-### Family Dashboard Features
-
-- **Overview:** Linked seniors list with today's health score chip (green/yellow/red)
-- **Individual Senior View:**
-  - 7-day BP, blood sugar, Hb line charts
-  - AI-generated weekly health summary
-  - Medication compliance calendar (green = taken, red = missed)
-  - SOS history with embedded Google Maps
-  - Nutrition deficit breakdown per day
-- **Notifications:** Risk alert bell, unread count
-- **One-click call** next to each senior's name
-
----
-
-## 🤖 AI & ML Models
-
-### Model 1 — Nutrition Analysis (Gemini 1.5 Flash)
+**Primary:** Google Gemini 1.5 Flash with structured JSON output
 
 ```python
-SYSTEM_PROMPT = """
+NUTRITION_PROMPT = """
 You are a clinical nutritionist for elderly Indians aged 60-85.
-Analyse the described meal. Return ONLY valid JSON:
+Patient: {name}, age {age}, weight {weight_kg}kg, gender {gender}.
+Daily targets: protein {protein_target}g, iron {iron_target}mg, calories {calorie_target}kcal.
+
+Analyze the described meal. Return ONLY valid JSON, no extra text:
 {
   "calories": 480,
   "protein_g": 14,
   "iron_mg": 3.2,
   "carbs_g": 68,
   "fiber_g": 5,
-  "suggestion": "Add 1 egg or a bowl of dahi for protein."
+  "deficit_protein_g": 18,
+  "deficit_iron_mg": 4.8,
+  "suggestion_hindi": "Aaj protein bahut kam hai. Ek anda ya dahi lijiye.",
+  "suggestion_english": "Protein very low today. Add one egg or a bowl of curd."
 }
+
+Meal: {meal_text}
 """
-
-# Daily targets (personalised per user)
-protein_target = 0.8 * weight_kg
-iron_target = 8  # mg (men) or 10 (women)
-calories_target = 1600  # 1600-2000 range for elderly
 ```
 
-**Fallback chain:**
-1. Groq + Llama 3.1 (free, same JSON format)
-2. ICMR Food Database JSON (500 Indian foods, offline)
-3. Hardcoded common Odia/Indian meals: dal-rice, khichdi, poha, pakhala, dalma
+**Elderly Daily Targets — ICMR Standard (adjusted for 60+ Indian adults):**
 
-### Model 2 — Anaemia Risk (Random Forest + WHO Rules)
+| Nutrient | Men 60+ | Women 60+ | Note |
+|---|---|---|---|
+| Protein | 1.0g × body weight kg | 1.0g × body weight kg | Higher than adult 0.8g standard |
+| Iron | 8 mg | 10 mg | Women remain higher post-60 |
+| Calories | 1,800–2,000 kcal | 1,600–1,800 kcal | Activity-dependent |
+| Calcium | 1,000 mg | 1,000 mg | Bone health priority |
+| Vitamin B12 | 2.4 μg | 2.4 μg | Critical for anaemia prevention |
+
+**Backup chain (in order of invocation):**
+1. Groq API + Llama 3.1 8B Instant — same JSON prompt, 30 req/min free
+2. Local ICMR food database JSON — 500 common Indian dishes, fuzzy-matched by name
+3. Hardcoded lookup table for 20 most-common Indian meals — zero API dependency
 
 ```python
-# Primary: Random Forest (scikit-learn)
-# Features: hb, age, gender, fatigue_level, dietary_iron, bp_systolic
-# Dataset: Kaggle anaemia dataset + WHO clinical data
+COMMON_INDIAN_MEALS = {
+    "dal chawal":           {"calories": 450, "protein_g": 14, "iron_mg": 4.0},
+    "roti sabzi":           {"calories": 320, "protein_g": 8,  "iron_mg": 3.0},
+    "poha":                 {"calories": 250, "protein_g": 5,  "iron_mg": 2.0},
+    "idli sambar":          {"calories": 300, "protein_g": 9,  "iron_mg": 2.5},
+    "khichdi":              {"calories": 380, "protein_g": 12, "iron_mg": 3.5},
+    "upma":                 {"calories": 220, "protein_g": 6,  "iron_mg": 1.8},
+    "paneer roti":          {"calories": 520, "protein_g": 22, "iron_mg": 3.2},
+    "egg curry rice":       {"calories": 490, "protein_g": 24, "iron_mg": 4.5},
+    "rajma chawal":         {"calories": 480, "protein_g": 18, "iron_mg": 5.5},
+    "dalia khichdi":        {"calories": 300, "protein_g": 10, "iron_mg": 2.8},
+}
+```
 
-# WHO-validated rule engine (backup — clinically defensible)
-def get_anaemia_risk(hb, gender, age):
-    if gender == 'F':
-        if hb < 10:  return {'risk': 'HIGH',   'action': 'Consult doctor immediately'}
-        if hb < 12:  return {'risk': 'MEDIUM', 'action': 'Increase iron-rich foods'}
-        return {'risk': 'LOW', 'action': 'Maintain current diet'}
+---
+
+### 7.2 Anaemia Risk Prediction Model
+
+**Architecture:** Random Forest Classifier trained on Kaggle anaemia datasets supplemented with WHO Indian elderly reference data.
+
+**Input features:**
+```python
+FEATURES = [
+    'hemoglobin_gdl',       # Primary marker
+    'age',                  # Thresholds differ by age
+    'gender_encoded',       # 0=Male, 1=Female
+    'fatigue_level',        # 1-5 self-reported scale
+    'dietary_iron_mg',      # From nutrition logs
+    'bp_systolic',          # Correlated with anaemia severity
+    'weight_change_7d',     # Rapid weight loss flag
+    'hb_trend_7d'           # Trajectory of Hb over last 7 days
+]
+```
+
+**Output:**
+```json
+{
+  "risk_level": "HIGH",
+  "confidence": 0.87,
+  "primary_factor": "low_hemoglobin_declining_trend",
+  "recommendation": "Haemoglobin critically low and falling. Please see a doctor.",
+  "recommendation_hindi": "Haemoglobin bahut kam hai. Zaroor doctor ko dikhayein."
+}
+```
+
+**WHO Rule Engine — Always-on fallback:**
+
+```python
+def get_anaemia_risk_rules(hb: float, gender: str, age: int) -> str:
+    """
+    WHO anaemia clinical thresholds adjusted for Indian elderly (60+).
+    Reference: WHO/NMH/NHD/MNM/11.1
+    """
+    if gender == "female":
+        critical_threshold = 10.0
+        low_threshold = 12.0
     else:
-        if hb < 11:  return {'risk': 'HIGH',   'action': 'Consult doctor immediately'}
-        if hb < 13:  return {'risk': 'MEDIUM', 'action': 'Increase iron-rich foods'}
-        return {'risk': 'LOW', 'action': 'Maintain current diet'}
+        critical_threshold = 11.0
+        low_threshold = 13.0
+
+    # Elderly adjustment: thresholds shift 1g/dL lower for 65+
+    if age >= 65:
+        critical_threshold -= 1.0
+        low_threshold -= 1.0
+
+    if hb < critical_threshold:
+        return "HIGH"
+    elif hb < low_threshold:
+        return "MEDIUM"
+    return "LOW"
 ```
 
-### Model 3 — Health Score Engine (0–100)
+---
+
+### 7.3 Composite Health Score Engine
+
+A deterministic weighted rule engine — always available, zero ML dependency.
 
 ```python
-def calculate_health_score(log, gender, weight_change_7d, missed_meds_today):
+def calculate_health_score(
+    bp_sys: int, bp_dia: int, blood_sugar: float,
+    hb: float, weight_kg: float, age: int,
+    gender: str, missed_meds: bool = False,
+    weight_change_7d: float = 0.0
+) -> dict:
     score = 100
 
-    # Blood pressure
-    if log['bp_sys'] > 140: score -= 15
-    if log['bp_sys'] > 160: score -= 10
-    if log['bp_dia'] > 90:  score -= 8
+    # Blood pressure deductions
+    if bp_sys > 160:   score -= 25
+    elif bp_sys > 140: score -= 15
+    elif bp_sys > 130: score -= 8
+    if bp_dia > 100:   score -= 10
+    elif bp_dia > 90:  score -= 6
 
-    # Blood sugar
-    if log['sugar'] > 140:  score -= 15
-    if log['sugar'] > 200:  score -= 10
+    # Blood sugar deductions
+    if blood_sugar > 250:   score -= 25
+    elif blood_sugar > 200: score -= 15
+    elif blood_sugar > 140: score -= 8
 
-    # Haemoglobin (anaemia)
-    hb_min = 12 if gender == 'F' else 13
-    if log['hb'] < hb_min:       score -= 20
-    if log['hb'] < hb_min - 2:   score -= 10
+    # Haemoglobin deductions
+    hb_low = 12.0 if gender == "female" else 13.0
+    if age >= 65: hb_low -= 1.0
+    if hb < hb_low - 2: score -= 25
+    elif hb < hb_low:   score -= 12
 
-    # Weight change
+    # Weight change anomaly
     if abs(weight_change_7d) > 3: score -= 10
 
-    # Medication adherence
-    if missed_meds_today:         score -= 5
+    # Medication missed
+    if missed_meds: score -= 8
 
-    return max(0, min(100, score))
-
-# Thresholds: 80–100 = Good | 60–79 = Fair | <60 = Poor
+    final = max(0, min(100, score))
+    return {
+        "score": final,
+        "category": "Good" if final >= 75 else "Fair" if final >= 50 else "Poor",
+        "color": "green" if final >= 75 else "amber" if final >= 50 else "red"
+    }
 ```
 
-### Model 4 — Voice AI in Hindi
+---
 
-```javascript
-// Web Speech API — zero cost, built-in Chrome Android
-const recognition = new webkitSpeechRecognition()
-recognition.lang = 'hi-IN'
+### 7.4 Health Anomaly Detector
 
-recognition.onresult = (e) => {
-  const transcript = e.results[0][0].transcript
-  // "aaj maine dal chawal aur sabzi khaya"
-  sendToNutritionAI(transcript)
-}
-
-// Read response back in Hindi at elderly-comfortable speed
-const utterance = new SpeechSynthesisUtterance()
-utterance.lang = 'hi-IN'
-utterance.rate = 0.85
-utterance.text = aiResponse
-speechSynthesis.speak(utterance)
-```
-
-### Model 5 — SAHARA AI Health Chatbot
+**Primary: Z-score over rolling 7-day window**
 
 ```python
-GEMINI_SYSTEM_PROMPT = """
-You are SAHARA, an AI health companion for elderly Indians.
-Rules:
-- Never diagnose diseases
-- Always recommend seeing a doctor for serious symptoms
-- Simple language (Class 5 vocabulary)
-- Support Hindi and English — respond in user's language
-- Keep responses under 3 sentences
-- End with one warm care tip
-- Always use user's name
+import numpy as np
 
-Context injected per call:
-User: {name}, Age: {age}, Gender: {gender}
-Today's health score: {score}
-Risk flags: {risk_flags}
+def detect_anomaly(historical_values: list, new_value: float, param: str) -> dict:
+    if len(historical_values) < 3:
+        return {"anomaly": False}
+
+    mean = np.mean(historical_values)
+    std = np.std(historical_values)
+    if std == 0:
+        return {"anomaly": False}
+
+    z_score = abs(new_value - mean) / std
+    direction = "high" if new_value > mean else "low"
+
+    return {
+        "anomaly": z_score > 2.0,
+        "z_score": round(z_score, 2),
+        "direction": direction,
+        "param": param,
+        "message": f"{param} is unusually {direction} today compared to your recent readings"
+    }
+```
+
+**Backup:** Isolation Forest (scikit-learn) on 14+ days of accumulated multi-parameter data.
+
+---
+
+### 7.5 SAHARA AI Health Chatbot — RAG Pattern
+
+```python
+CHATBOT_SYSTEM_PROMPT = """
+You are SAHARA, a warm and caring AI health companion for elderly Indians.
+
+STRICT RULES — NEVER BREAK THESE:
+1. Never diagnose any disease or condition
+2. Always recommend seeing a doctor for symptoms lasting more than 2 days
+3. Keep every response under 3 sentences
+4. Use simple vocabulary at a Class 5 reading level
+5. Respond in the same language the user writes (Hindi, Odia, or English)
+6. Address the user by name with Ji suffix in Hindi/Odia
+7. End every response with one warm, practical care tip
+8. If the user expresses pain or loneliness, acknowledge their feelings first
+
+PATIENT CONTEXT (injected per session):
+Name: {name}, Age: {age}, Gender: {gender}
+Conditions: {conditions}
+Today's health score: {score}/100 ({category})
+Current risk flags: {risk_flags}
+Last BP: {bp_sys}/{bp_dia} | Last sugar: {sugar} | Haemoglobin: {hb}
+Today's nutrition: Protein {protein_g}g of {protein_target}g target
+Anaemia risk level: {anaemia_risk}
 Last meal: {last_meal}
 """
 ```
 
 ---
 
-## 🎨 UX Design Principles
-
-SAHARA is built with **elderly-first UX** — every design decision is justified for our user base:
-
-| Rule | Value | Reason |
-|---|---|---|
-| Minimum body font | 18px | Reduced vision in elderly |
-| Vital number font | 28px | Instant readability |
-| Minimum button height | 56px | Fat-finger safe |
-| Max actions per screen | 3 | Prevent cognitive overload |
-| Navigation | Bottom tab only | No hamburger menus |
-| Contrast ratio | 4.5:1 minimum | WCAG AA compliance |
-| Icons | Always with text labels | Icon-only is confusing |
-| Primary colour | Orange `#F97316` | Warm, visible, Indian aesthetic |
-| SOS button | Every screen | Always accessible |
-| Voice input | Every text field | Type-averse elderly users |
-| Offline mode | Cache last data | Works without WiFi |
-| Error messages | Large red text | Not small tooltips |
-| Language | Hindi + English | Odia context: Bhubaneswar seniors |
-
----
-
-## 📡 API Endpoints
-
-```
-POST /auth/register          → Create user (role: senior | family)
-POST /auth/login             → JWT token (expires 7 days)
-
-POST /health/log             → Save vitals, run risk scoring → {score, flags}
-GET  /health/history/:id     → Last 30 days for charts
-
-POST /nutrition/analyze      → Gemini parses meal → macros + deficit + suggestions
-GET  /nutrition/today/:id    → Today's intake vs targets
-
-POST /emergency/sos          → Twilio SMS + save GPS event + FCM push
-GET  /emergency/history/:id  → SOS event log with coordinates
-
-GET  /family/dashboard/:id   → Aggregated health + risk + trends
-GET  /family/seniors/:id     → All linked seniors for family user
-
-POST /ai/chat                → Gemini chatbot with health context
-GET  /ai/report/:id          → Weekly AI-generated health summary
-
-POST /reminders/create       → Add medication reminder
-PUT  /reminders/:id/taken    → Mark dose taken
-GET  /reminders/today/:id    → Today's medication schedule
-```
-
----
-
-## 🗄 Database Schema
-
-### MongoDB Collections
+### 7.6 Hindi and Odia Voice Input
 
 ```javascript
-// users
-{
-  _id, name, age, gender,          // core identity
-  role: "senior" | "family",
-  phone, email,
-  weight_kg, height_cm,
-  conditions: ["hypertension", "diabetes"],
-  linked_family: [family_user_ids],
-  language_pref: "hi" | "en",      // Hindi or English
-  created_at
-}
+// Web Speech API — zero cost, built into Chrome
+// Works on Android Chrome on any smartphone
 
-// health_logs
-{
-  user_id, timestamp,
-  bp_sys, bp_dia,                  // Blood pressure
-  blood_sugar,                     // mg/dL
-  hb,                              // Haemoglobin g/dL
-  weight,                          // kg
-  health_score,                    // 0–100
-  risk_flags: ["HIGH_BP", "ANAEMIA_RISK"],
-  anomaly_detected: bool
-}
+const startVoiceInput = (targetField, language = 'hi-IN') => {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return; // graceful fallback to text
 
-// nutrition_logs
-{
-  user_id, timestamp,
-  meal_text,                       // Raw input (Hindi/English)
-  source: "gemini" | "icmr" | "fallback",
-  analysis: {
-    calories, protein_g, iron_mg,
-    carbs_g, fiber_g, suggestion
-  },
-  deficit: { protein_g, iron_mg, calories }
-}
+  const recognition = new SpeechRecognition();
+  recognition.lang = language;       // 'hi-IN' Hindi | 'or-IN' Odia
+  recognition.continuous = false;
+  recognition.interimResults = false;
 
-// reminders
-{
-  user_id, medicine_name,
-  dose, time_scheduled,
-  taken: bool, taken_at,
-  notified: bool
-}
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    targetField.value = transcript;
+    analyzeNutrition(transcript);
+  };
+  recognition.start();
+};
 
-// sos_events
-{
-  user_id, timestamp,
-  latitude, longitude,
-  resolved: bool,
-  sms_sent: bool,
-  sms_recipients: ["+91XXXXXXXXXX"]
-}
+// Read AI response aloud in Hindi for elders who struggle to read
+const speakResponse = (text, language = 'hi-IN') => {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = language;
+  utterance.rate = 0.85;   // Slower than default — clearly paced for elderly
+  utterance.pitch = 1.0;
+  speechSynthesis.speak(utterance);
+};
+```
 
-// family_links
-{
-  family_id, senior_id,
-  relationship: "son" | "daughter" | "spouse",
-  notify_on_risk: bool,
-  notify_on_sos: bool
-}
+**Supported languages:** Hindi (`hi-IN`), Odia (`or-IN`), Indian English (`en-IN`)
+
+---
+
+## 8. UX Design Philosophy
+
+SAHARA's senior-facing interface is governed by **Elderly-First UX Principles**. Every decision is justified by accessibility research for 60+ users — not aesthetic preference.
+
+### Non-Negotiable Rules
+
+| Principle | Specification | Rationale |
+|---|---|---|
+| Font size — body | Minimum **18px** | Age-related vision decline affects 80%+ of 70+ users |
+| Font size — vital numbers | Minimum **28–32px** | BP, health score must be readable at arm's length |
+| Button tap target | Minimum **56 × 56px** | Compensates for reduced fine motor control |
+| Actions per screen | Maximum **3** | Cognitive load: more than 3 choices causes analysis paralysis |
+| Navigation pattern | **Bottom tab bar only** | Hamburger menus are not discoverable for elderly users |
+| Contrast ratio | Minimum **4.5:1 (WCAG AA)** | Never gray-on-gray |
+| Icons | **Always paired with text labels** | Icons alone are not universally understood |
+| Form inputs | **One field at a time — wizard pattern** | Reduces overwhelm; progress bar shows how close to done |
+| Gestures | **Tap and vertical scroll only** | No swipe, no pinch-to-zoom requirements |
+| Error messages | **Large red text in full sentences** | Not small tooltips or icon-only error indicators |
+| Confirmations | **Always before irreversible actions** | SOS has a 5-second cancel; delete has "Are you sure?" |
+| Offline support | **Cache last known data** | Rural Odisha has intermittent internet connectivity |
+
+### Colour System
+
+```
+SAHARA Orange:  #EA580C  → Primary CTAs, brand identity
+Safe Green:     #16A34A  → Good health, normal readings
+Alert Amber:    #D97706  → Fair health, watch closely
+Danger Red:     #DC2626  → High risk, SOS, critical alerts
+Background:     #FFFFFF  → Always white in senior app — never dark mode
+Primary Text:   #111827  → Maximum contrast on white
+```
+
+### Senior Home Screen Layout
+
+```
+┌────────────────────────────┐
+│  Good morning, Ratan Ji    │  ← Personalised, warm greeting
+│ ─────────────────────────  │
+│         [ 72 ]             │  ← Health score: 32px, colour-coded
+│          Fair              │
+│                            │
+│  ┌──────────┬───────────┐  │
+│  │  BP       │  Protein  │  │  ← Today's two most critical numbers
+│  │ 142/88   │  31g/55g  │  │     Large font, 2-column max
+│  └──────────┴───────────┘  │
+│                            │
+│  [  Log My Health Today  ] │  ← 56px button, SAHARA orange
+│  [  What Did I Eat?      ] │  ← 56px button, SAHARA orange
+│  [  Ask SAHARA AI        ] │  ← 56px button, muted secondary
+│                            │
+│ ┌────┬────┬────┬────┬────┐ │
+│ │Home│Log │Eat │SOS │Chat│ │  ← Bottom tab bar — always visible
+│ └────┴────┴────┴────┴────┘ │
+└────────────────────────────┘
 ```
 
 ---
 
-## 🖥 Getting Started — Local Setup
+## 9. API Reference
 
-### Prerequisites
+**Base URL:** `https://your-backend.railway.app`  
+**Auto-generated OpenAPI docs:** `https://your-backend.railway.app/docs`
 
-- Python 3.10+
-- Node.js 18+ (for any JS tooling)
-- MongoDB Atlas account (free) **or** local MongoDB
-- Google Cloud account (Gemini API key)
-- Twilio account (for SOS SMS)
+### Authentication
 
-### 1. Clone the Repository
+```
+POST /api/auth/register
+Body: { name, email, password, phone, role, age, gender, weight_kg, conditions[] }
+Returns: { user_id, token, role }
 
-```bash
-git clone https://github.com/team-idiotics/sahara
-cd sahara
+POST /api/auth/login
+Body: { email, password }
+Returns: { token, user_id, role, name }
+
+POST /api/auth/link-family
+Auth: Bearer token
+Body: { senior_id, family_id, relationship }
+Returns: { link_id, status }
 ```
 
-### 2. Backend Setup (Flask)
+### Health Logging
 
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+```
+POST /api/health/log
+Auth: Bearer token
+Body: { bp_sys, bp_dia, blood_sugar, hemoglobin, weight, fatigue (1-5) }
+Returns: { health_score, anaemia_risk, anomalies[], alerts_created }
+
+GET /api/health/history/{user_id}?days=30
+Returns: { logs: [{ timestamp, bp_sys, bp_dia, blood_sugar, hb, health_score }] }
+
+GET /api/health/summary/{user_id}
+Returns: { today_score, 7d_trend, risk_flags, last_logged }
 ```
 
-**Create `.env`:**
-```env
-# Database
-MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/sahara
+### Nutrition
 
-# AI
-GEMINI_API_KEY=your_gemini_api_key_here
-GROQ_API_KEY=your_groq_api_key_here        # Backup LLM
+```
+POST /api/nutrition/analyze
+Auth: Bearer token
+Body: { meal_text: "dal chawal sabzi", language: "hi" }
+Returns: { calories, protein_g, iron_mg, deficit_protein_g, deficit_iron_mg,
+           suggestion, suggestion_hindi }
 
-# Communications
-TWILIO_ACCOUNT_SID=your_twilio_sid
-TWILIO_AUTH_TOKEN=your_twilio_token
-TWILIO_PHONE_NUMBER=+1XXXXXXXXXX
-FLASK_MAIL_SERVER=smtp.gmail.com
-FLASK_MAIL_USERNAME=your@gmail.com
-FLASK_MAIL_PASSWORD=your_app_password
-
-# App
-JWT_SECRET_KEY=your_super_secret_key_here
-FLASK_ENV=development
+GET /api/nutrition/today/{user_id}
+Returns: { total_calories, total_protein, total_iron, deficit, meals[] }
 ```
 
-```bash
-python app.py
-# API running at http://localhost:5000
+### Emergency
+
+```
+POST /api/emergency/sos
+Auth: Bearer token
+Body: { latitude, longitude }
+Returns: { event_id, sms_sent, notified_contacts }
+
+GET /api/emergency/history/{user_id}
+Returns: { events: [{ timestamp, lat, lng, resolved, sms_sent }] }
 ```
 
-### 3. Seed Demo Data (Important for Demo!)
+### Family Dashboard
 
-```bash
-python scripts/seed_demo_data.py
-# Seeds 30 days of realistic health data for demo user Ratan Ji
-# Shows declining Hb trend (tells the story judges need to see)
 ```
+GET /api/family/dashboard/{senior_id}
+Auth: Bearer token (family role required)
+Returns: { senior, today, trends, nutrition_week,
+           medication_compliance, recent_alerts, sos_history }
+```
+
+### AI Chatbot
+
+```
+POST /api/ai/chat
+Auth: Bearer token
+Body: { message, language }
+Returns: { reply, reply_hindi }
+
+POST /api/ai/weekly-report/{user_id}
+Returns: { report, report_hindi, generated_at }
+```
+
+---
+
+## 10. Database Schema
+
+### Collection: `users`
+```json
+{
+  "_id": "ObjectId",
+  "name": "Ratan Kumar Nayak",
+  "age": 72,
+  "gender": "male",
+  "email": "ratan@example.com",
+  "phone": "+91-98XXXXXXXX",
+  "password_hash": "bcrypt_hash",
+  "role": "senior",
+  "weight_kg": 68.5,
+  "conditions": ["hypertension", "diabetes"],
+  "linked_family": ["family_user_id"],
+  "location": "Bhubaneswar, Odisha",
+  "language_preference": "hi",
+  "created_at": "ISODate",
+  "last_active": "ISODate"
+}
+```
+
+### Collection: `health_logs`
+```json
+{
+  "_id": "ObjectId",
+  "user_id": "ObjectId",
+  "timestamp": "ISODate",
+  "bp_sys": 145, "bp_dia": 92,
+  "blood_sugar": 178,
+  "hemoglobin": 10.2,
+  "weight_kg": 68.2,
+  "fatigue_level": 3,
+  "health_score": 54,
+  "anaemia_risk": "HIGH",
+  "risk_flags": ["elevated_bp", "low_hemoglobin"],
+  "anomalies_detected": ["hb_declining_trend"]
+}
+```
+
+### Collection: `nutrition_logs`
+```json
+{
+  "_id": "ObjectId",
+  "user_id": "ObjectId",
+  "timestamp": "ISODate",
+  "meal_text": "dal chawal aur sabzi",
+  "language": "hi",
+  "ai_analysis": {
+    "calories": 450, "protein_g": 14, "iron_mg": 4.0
+  },
+  "daily_target": {
+    "protein_g": 55, "iron_mg": 10, "calories": 1800
+  },
+  "deficit": { "protein_g": 18, "iron_mg": 3.5 },
+  "suggestion_hi": "Ek anda ya dahi lijiye — protein poora hoga."
+}
+```
+
+### Collection: `sos_events`
+```json
+{
+  "_id": "ObjectId",
+  "user_id": "ObjectId",
+  "timestamp": "ISODate",
+  "latitude": 20.2961,
+  "longitude": 85.8245,
+  "google_maps_url": "https://maps.google.com/?q=20.2961,85.8245",
+  "sms_sent": true,
+  "notified_contacts": ["+91-XXXXXXXXXX"],
+  "resolved": false
+}
+```
+
+### Collection: `alerts`
+```json
+{
+  "_id": "ObjectId",
+  "user_id": "ObjectId",
+  "type": "anaemia_high_risk",
+  "severity": "high",
+  "message": "Haemoglobin critically low at 9.2 — consult a doctor",
+  "message_hindi": "Haemoglobin bahut kam hai — doctor ko dikhayein",
+  "acknowledged": false,
+  "created_at": "ISODate"
+}
+```
+
+### MongoDB Indexes
 
 ```python
-# seed_demo_data.py — what it does
-import random
-from datetime import datetime, timedelta
-
-def seed_user(user_id):
-    for i in range(30):
-        date = datetime.now() - timedelta(days=29 - i)
-        db.health_logs.insert_one({
-            'user_id': user_id,
-            'timestamp': date,
-            'bp_sys': random.randint(138, 152),
-            'bp_dia': random.randint(86, 94),
-            'hb': round(11.8 - (i * 0.07), 1),     # Slowly declining — tells a story
-            'blood_sugar': random.randint(130, 165),
-            'health_score': max(45, 78 - (i * 0.8))
-        })
-```
-
-### 4. Frontend Setup (Web)
-
-```bash
-cd frontend
-# Open index.html directly or use Live Server
-# Update API_BASE_URL in config.js to http://localhost:5000
-```
-
-### 5. Train ML Models (Optional — Rules engine is default)
-
-```bash
-cd backend/ml
-python train_anaemia_model.py
-# Downloads Kaggle anaemia dataset, trains Random Forest
-# Saves: anaemia_risk_model.pkl
-# Time: ~10 minutes
+async def create_indexes(db):
+    await db.health_logs.create_index([("user_id", 1), ("timestamp", -1)])
+    await db.nutrition_logs.create_index([("user_id", 1), ("timestamp", -1)])
+    await db.alerts.create_index([("user_id", 1), ("acknowledged", 1)])
+    await db.reminders.create_index([("user_id", 1), ("date", 1)])
+    await db.users.create_index([("email", 1)], unique=True)
 ```
 
 ---
 
-## ☁️ Deployment Guide
+## 11. Deployment Guide
 
-### Frontend → Vercel (Already Live)
+### Frontend — Vercel
 
 ```bash
-# Already deployed at https://sahara-flax.vercel.app/
-# Auto-redeploys on every git push to main
-# To redeploy manually:
-npx vercel --prod
+# 1. Push to GitHub
+git push origin main
+
+# 2. vercel.com → New Project → Import GitHub repo
+# Build: npm run build | Output: dist | Install: npm install
+
+# 3. Add env vars in Vercel dashboard:
+#    VITE_API_BASE_URL, VITE_GOOGLE_MAPS_KEY
+
+# Live at: https://sahara-flax.vercel.app
 ```
 
-### Backend → Railway (Recommended)
+**PWA install (Android — makes it look like a native app):**
+```js
+// vite.config.js
+import { VitePWA } from 'vite-plugin-pwa'
+plugins: [VitePWA({
+  manifest: {
+    name: 'SAHARA — Elderly Care',
+    short_name: 'SAHARA',
+    theme_color: '#EA580C',
+    display: 'standalone',
+    icons: [{ src: '/icon-512.png', sizes: '512x512' }]
+  }
+})]
+```
+
+### Backend — Railway (Primary, No Cold Start)
 
 ```bash
 npm install -g @railway/cli
-railway login
-cd backend
-railway init
-railway up
+railway login && railway init && railway up
 
-# Set environment variables in Railway dashboard
-# Live URL: https://sahara-backend.up.railway.app
+railway variables set MONGO_URI="mongodb+srv://..."
+railway variables set GEMINI_API_KEY="AIza..."
+railway variables set TWILIO_ACCOUNT_SID="ACxxx"
+railway variables set TWILIO_AUTH_TOKEN="xxx"
+railway variables set JWT_SECRET="your_32char_secret"
 ```
 
-### Backend → Azure App Service F1 (Free Tier)
+**Procfile:**
+```
+web: uvicorn main:app --host 0.0.0.0 --port $PORT
+```
+
+### Backend — Azure App Service F1 (Alternative)
 
 ```bash
-# Install Azure CLI
-az login
-az webapp up \
-  --name sahara-api \
-  --resource-group sahara-rg \
-  --runtime "PYTHON:3.11" \
-  --sku F1
+# F1 free tier: 60 CPU min/day, 1GB RAM — sufficient for demo
 
-# Set env vars
-az webapp config appsettings set \
-  --name sahara-api \
-  --resource-group sahara-rg \
-  --settings GEMINI_API_KEY="..." MONGO_URI="..."
+# Startup command:
+gunicorn -w 2 -k uvicorn.workers.UvicornWorker main:app
+
+# Add environment variables in Azure Portal →
+# App Service → Configuration → Application Settings
 ```
 
-### Backend → Render (Alternative)
-
-```bash
-# Connect GitHub repo to render.com
-# Build command: pip install -r requirements.txt
-# Start command: gunicorn app:app
-# Note: ~30s cold start on free tier — deploy at hour 6, not hour 22
-```
-
-### Emergency Local + ngrok (If All Cloud Fails)
+### Emergency — Local + ngrok
 
 ```bash
 pip install pyngrok
-python app.py &
-ngrok http 5000
-# Share https://abc123.ngrok.io with judges
-# Works 100% on any internet connection
+python -c "
+from pyngrok import ngrok
+url = ngrok.connect(8000)
+print(f'Public URL: {url}')
+"
+# Update VITE_API_BASE_URL to the ngrok URL
+# Works from anywhere with internet — perfect hackathon fallback
 ```
 
-### Database → MongoDB Atlas
+### Database — MongoDB Atlas
 
-1. Go to [cloud.mongodb.com](https://cloud.mongodb.com)
-2. Create free M0 cluster (512MB, no credit card)
-3. Create database user
-4. Whitelist IP `0.0.0.0/0` for hackathon
-5. Copy connection string to `MONGO_URI`
+```bash
+# 1. Create M0 Free cluster at mongodb.com/atlas
+# 2. Create database user with read/write
+# 3. Whitelist 0.0.0.0/0 for hackathon
+# 4. Get connection string:
+#    mongodb+srv://<user>:<pass>@cluster0.xxxxx.mongodb.net/sahara
+```
 
 ---
 
-## 📱 Flutter / APK Build
+## 12. Environment Variables
 
-> Planned for final phase — convert the web app to native Android APK for demo and final submission.
+### Frontend `.env`
+```env
+VITE_API_BASE_URL=https://sahara-api.railway.app
+VITE_GOOGLE_MAPS_API_KEY=AIzaXXXXXXXXXXXXXXXXXXXX
+VITE_FIREBASE_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXX
+VITE_FIREBASE_PROJECT_ID=sahara-care
+```
+
+### Backend `.env`
+```env
+# Database
+MONGO_URI=mongodb+srv://sahara:password@cluster0.xxxxx.mongodb.net/sahara
+
+# AI
+GEMINI_API_KEY=AIzaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+GROQ_API_KEY=gsk_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Alerts
+TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+TWILIO_PHONE_NUMBER=+1XXXXXXXXXX
+SMTP_EMAIL=saharacare2026@gmail.com
+SMTP_APP_PASSWORD=xxxx_xxxx_xxxx_xxxx
+
+# Auth
+JWT_SECRET=minimum_32_character_random_secret_key_here
+JWT_ALGORITHM=HS256
+JWT_EXPIRE_DAYS=7
+
+# App
+FRONTEND_URL=https://sahara-flax.vercel.app
+DEBUG=false
+```
+
+---
+
+## 13. Local Development Setup
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Python 3.11+
+- Git
+- MongoDB Atlas account (free) or local MongoDB
 
 ### Setup
 
 ```bash
-flutter create sahara_mobile
-cd sahara_mobile
-flutter pub add http provider shared_preferences geolocator
+# Clone
+git clone https://github.com/your-team/sahara-2026.git
+cd sahara-2026
+
+# Frontend
+cd frontend
+npm install
+cp .env.example .env   # fill in your values
+npm run dev            # http://localhost:5173
+
+# Backend (new terminal)
+cd ../backend
+python -m venv venv
+source venv/bin/activate          # Linux / Mac
+# venv\Scripts\activate           # Windows
+pip install -r requirements.txt
+cp .env.example .env              # fill in your values
+
+# Train ML models once (5-10 min)
+python ai/train_models.py
+
+# Start API server
+uvicorn main:app --reload --port 8000
+# API: http://localhost:8000
+# Docs: http://localhost:8000/docs
 ```
 
-### Key Packages
+### Seed Demo Data
+
+```bash
+cd backend
+python scripts/seed_demo_data.py
+
+# Creates:
+#   Senior account: ratan.demo@sahara.com / demo123
+#   Family account: priya.demo@sahara.com / demo123
+#   30 days of realistic health logs (deliberately declining Hb trend)
+#   30 days of nutrition logs (common Indian meals)
+```
+
+---
+
+## 14. Mobile App — Flutter
+
+Flutter is the **Phase 2 deliverable** for the senior-facing interface. It wraps the same FastAPI backend with a native Android experience.
+
+### Architecture Decision
+
+| Interface | Phase 1 | Phase 2 | Rationale |
+|---|---|---|---|
+| Senior app | React PWA (installable via Chrome) | Flutter APK | PWA delivers 90% of the experience in 10% of the build time |
+| Family dashboard | React Web (stays permanently) | React Web | Chart-heavy and desktop-optimised; no native advantage |
+
+### Flutter Key Dependencies
 
 ```yaml
+# pubspec.yaml
 dependencies:
-  flutter: sdk
-  http: ^1.1.0               # API calls
-  provider: ^6.1.0           # State management
-  speech_to_text: ^6.3.0     # Hindi voice input
-  flutter_tts: ^3.8.5        # Hindi voice output
-  geolocator: ^10.1.0        # GPS for SOS
-  fl_chart: ^0.65.0          # Health trend charts
-  shared_preferences: ^2.2.2  # Local cache / offline
-  firebase_messaging: ^14.7.9 # Push notifications
+  http: ^1.2.0
+  shared_preferences: ^2.2.2   # JWT storage
+  geolocator: ^12.0.0          # GPS for SOS
+  speech_to_text: ^6.6.0       # Hindi voice input
+  flutter_tts: ^4.0.2          # Text-to-speech responses
+  firebase_messaging: ^15.0.0  # Push notifications
+  fl_chart: ^0.68.0            # Health trend charts
+  provider: ^6.1.2             # State management
 ```
 
-### Build APK
+### Build APK for Demo
 
 ```bash
-# Debug APK (faster, for testing)
+# Debug APK — quick for testing
 flutter build apk --debug
 
-# Release APK (for demo / distribution)
+# Release APK — for judges / distribution
 flutter build apk --release
 # Output: build/app/outputs/flutter-apk/app-release.apk
-
-# Share via Google Drive
-# Judges install via: Settings → Install Unknown Apps
+# Share via Google Drive link on demo day
 ```
 
-### Flutter Screen Structure
+### PWA as Demo Strategy (Phase 1)
+
+While Flutter is in development, the React PWA acts as the mobile app:
 
 ```
-lib/
-├── main.dart
-├── screens/
-│   ├── home_screen.dart          # Health score + summary
-│   ├── log_vitals_screen.dart    # BP, sugar, Hb, weight entry
-│   ├── nutrition_screen.dart     # Meal logging + AI analysis
-│   ├── sos_screen.dart           # Emergency big red button
-│   ├── chat_screen.dart          # SAHARA AI (voice + text)
-│   ├── reminders_screen.dart     # Medication alerts
-│   └── family_dashboard.dart     # Family monitoring (web view or native)
-├── services/
-│   ├── api_service.dart          # All Flask API calls
-│   ├── voice_service.dart        # Hindi speech-to-text + TTS
-│   └── location_service.dart     # GPS for SOS
-└── models/
-    ├── health_log.dart
-    ├── nutrition_log.dart
-    └── user.dart
-```
-
-> **Recommendation:** If React Native Expo is faster for your team, use it — `npx create-expo-app sahara-senior`. Judges scan QR with Expo Go, no APK install needed. For a polished APK, Flutter gives better native performance.
-
----
-
-## 🔄 Fallback Strategy
-
-Nothing should surprise you on demo day. Every component has a backup:
-
-| Component | Primary | Backup 1 | Backup 2 | Nuclear |
-|---|---|---|---|---|
-| Nutrition AI | Gemini 1.5 Flash | Groq + Llama 3.1 | ICMR Food DB JSON | 20 hardcoded Indian meals |
-| Risk Prediction | Random Forest | WHO rule engine | Simple thresholds | Static HIGH/LOW |
-| Backend Deploy | Railway | Azure F1 | Render.com | ngrok local tunnel |
-| Frontend Deploy | Vercel | Netlify | Firebase Hosting | GitHub Pages |
-| SMS / SOS | Twilio | Flask-Mail SMTP | Browser notification | Manual WhatsApp |
-| Database | MongoDB Atlas | Firebase RTDB | Supabase | SQLite local |
-| Voice Input | Web Speech API | Google Cloud Speech | Type input (always available) | Pre-recorded demo |
-| Mobile App | Flutter APK | React web mobile-first | Figma prototype screenshots | OBS demo recording |
-
-### Nuclear Fallback (Prepare at Hour 20)
-
-```bash
-# 1. Record complete working demo with OBS Studio (3 minutes)
-# 2. Export Canva presentation with every screen as screenshot  
-# 3. Upload both to Google Drive — have link ready
-
-# If venue internet dies completely:
-# Run entire app on localhost, use phone hotspot
-# Test demo on hotspot the night before, not on event day
+1. Open sahara-flax.vercel.app in Chrome on Android
+2. Chrome shows "Add to Home Screen" prompt
+3. Tap → SAHARA orange icon appears on phone home screen
+4. Open → fullscreen, no browser bar, identical to native app
+5. Judges cannot distinguish this from an installed APK
 ```
 
 ---
 
-## 💰 Business Model
+## 15. Business Model
 
 ### Market Size
 
-| Metric | Value |
-|---|---|
-| TAM — India elderly care market by 2030 | ₹55,000 Cr |
-| SAM — Smartphone-connected families | ₹8,200 Cr |
-| SOM Year 1 — 5,000 paid users × ₹249/mo × 12 | ₹3.2 Cr |
+| Market | Size | Basis |
+|---|---|---|
+| TAM | ₹55,000 Crore | India elderly care market by 2030 (IBEF) |
+| SAM | ₹8,200 Crore | Smartphone-connected caregiving families |
+| SOM Year 1 | ₹2.3 Crore | 5,000 paid users + 3 institutional contracts |
 
 ### Revenue Streams
 
 | Stream | Model | Price | Year 1 Target |
 |---|---|---|---|
-| B2C Family Subscriptions | Monthly subscription | ₹199–₹299/mo | ₹1.2 Cr |
-| B2B Old Age Homes | Per-resident SaaS | ₹99/resident/mo | ₹60 L |
-| Hospital Geriatric Wards | Dashboard license | ₹15,000/mo | ₹36 L |
-| Govt / NGO Welfare | Project contracts | ₹5–20 L | ₹20 L |
-| Anonymised Data Insights | Research reports | ₹2–5 L/report | ₹10 L |
+| B2C Family Subscriptions | Monthly subscription | ₹199–₹299/month | ₹1.2 Cr (5,000 users) |
+| B2B Old Age Homes | Per-resident SaaS | ₹99/resident/month | ₹60 L (500 residents) |
+| B2B Hospital Geriatric Depts | Dashboard license | ₹15,000/month | ₹36 L (20 hospitals) |
+| Government / NGO Contracts | Project-based | ₹5–20 L per project | ₹20 L (Odisha pilot) |
+| Pharmacy Affiliate | Commission on referrals | 8–12% per purchase | ₹15 L |
+| Anonymised Research Data | Quarterly reports | ₹2–5 L per report | ₹10 L |
 
-**Total Year 1 Projected Revenue: ~₹2.3 Cr**
+**Unit Economics:**
+- CAC: ₹300 (social media targeting adult children aged 25–45)
+- LTV (18-month average): ₹199 × 18 = ₹3,582
+- LTV:CAC ratio: **11.9× — excellent for SaaS**
 
-### Unit Economics
+### Subscription Tiers
 
-```
-CAC:  ₹300 (Facebook/Instagram ads targeting adult children)
-LTV:  ₹299 × 18 months = ₹5,382
-LTV:CAC ratio: 17.9x  ← Excellent
-Break-even: Month 14 (conservative)
-```
-
-### Freemium Tiers
-
-| Free Forever | SAHARA Care (₹199/mo) | SAHARA Plus (₹299/mo) |
+| Plan | Price | Key Features |
 |---|---|---|
-| 7-day health log | Unlimited history | All Care features |
-| Basic risk score | AI health chatbot | Wearable device sync |
-| 1 family linked | 5 family members | Doctor consultation link |
-| 3 SOS alerts/month | Unlimited SOS | Priority SOS response |
-| Basic nutrition tracking | Weekly AI report | Health data export |
+| Free Forever | ₹0 | 7-day log, basic score, 1 family linked, 3 SOS/month |
+| SAHARA Care | ₹199/month | Unlimited history, AI chatbot, 5 family, unlimited SOS, weekly AI report |
+| SAHARA Plus | ₹299/month | All Care + wearable sync (Phase 2), doctor consultation link, health data export |
 
 ---
 
-## ⚔️ Competitive Analysis
+## 16. Market Analysis
 
-### vs. Global Products
+### India's Elderly Healthcare Gap
 
-| Product | Gap SAHARA Fills |
-|---|---|
-| Life Alert (US) | No AI nutrition, no trends, hardware-dependent, not India |
-| Apple Health | Unusable for 70yr olds, no family dashboard, no Indian foods |
-| Practo / 1mg | Appointment booking only — reactive, not preventive |
-| Portea Medical | Human-based, ₹500/visit, not scalable |
-| Dozee | Hardware ₹2,999/mo, no nutrition layer, no Hindi |
+```
+Senior citizens in India (60+):
+  2024: 140 million
+  2030: 180 million
+  2050: 300 million
 
-### vs. Trithon 2026 Competitors
+Odisha context:
+  Senior population:     6.2 million (14% of state)
+  Rural without family:  ~65% of elderly
+  Anaemia in women 60+:  52% (undiagnosed majority)
+  Android smartphone:    48% penetration and rising
 
-| Team | Their Angle | SAHARA Advantage |
+Annual cost of preventable hospitalisation: ₹30,000–₹80,000
+SAHARA annual subscription:                ₹2,400–₹3,600
+Family ROI: Prevents 1 hospitalisation → saves ₹25,000+
+```
+
+### Why the Timing Is Right
+
+1. **Digital India** — smartphone penetration for 60+ reached 54% in 2023
+2. **COVID legacy** — families normalised remote health monitoring
+3. **ABDM infrastructure** — national health stack enables digital record integration
+4. **Affordable devices** — ₹6,000–₹8,000 Android phones ubiquitous in Odisha
+5. **WhatsApp familiarity** — 78% of elderly smartphone users already use WhatsApp
+
+---
+
+## 17. Competitive Landscape
+
+### Global Competitors
+
+| Product | Their Approach | SAHARA Advantage |
 |---|---|---|
-| CareBridge | Early detection, Flutter + Azure + wearables | No Indian food nutrition AI, no Hindi voice |
-| VitalTwin AI | "Digital twin" — vague pitch | SAHARA has 4+ working live features |
-| DriftAura | Camera-based activity monitoring post-hospitalization | Narrow use case, no preventive approach |
-| MedX AI | Medical report analysis, chatbot | Not elderly-specific, no nutrition, no SOS |
-| CareHub | ICU monitoring with AR/VR | Hospital-only, risky AR/VR demo |
+| Life Alert (US) | Hardware emergency button, $30/month | Software-only, ₹199/month, AI-driven |
+| Apple Health | Wearable data collection | Not for 70-year-olds; no Indian food; no family dashboard |
+| Practo / 1mg | Appointment booking | Reactive only; no continuous monitoring; no nutrition |
+| Portea Medical | Home nursing visits, ₹500/visit | Not scalable; not AI; not preventive |
+| Dozee | Contact-free vitals, ₹2,999/month + hardware | No nutrition; no Hindi; hardware dependency |
+
+### Hackathon Competitors — Trithon 2026
+
+| Team | Their Approach | SAHARA's Edge |
+|---|---|---|
+| CareBridge | Elderly detection + wearables + Azure | No nutrition AI, no Hindi voice, no business model |
+| VitalTwin AI | "Digital twin" — concept stage | No working demo features; SAHARA has 4 live features |
+| DriftAura | Post-hospitalisation camera monitoring | Narrow use case; no preventive layer; no nutrition |
+| MedX AI | Generic biomarker tracking + chatbot | Not elderly-specific; no nutrition; no SOS; no voice |
+| CareHub | ICU monitoring with AR/VR | Hospital-only; AR/VR risky to demo; no community care |
 
 ### SAHARA's Defensible Moat
 
-- 🍛 Indian food nutrition intelligence (ICMR-calibrated — dal, roti, pakhala, dalma)
-- 🩸 Anaemia-specific prediction for elderly — India's #1 underdiagnosed health issue
-- 👨‍👩‍👧 Dual-role platform — senior app + family dashboard with real-time sync
-- 📉 Preventive health score — trends down before crisis, not just after
-- 🗣️ Hindi voice AI — genuinely accessible, not just convenient
-- 🏥 B2B old age home dashboard — institutional scale path
-- 🏛️ Ayushman Bharat / PMJAY alignment — government scheme readiness
+What no competing team can replicate in 24 hours:
+
+- Indian elderly nutrition intelligence calibrated to ICMR (not Western USDA)
+- Predictive anaemia detection — India's #1 elderly health crisis
+- Dual-persona platform — radical senior simplicity + family data richness
+- Hindi and Odia voice AI — genuinely accessible for non-typing elders
+- RAG health chatbot — answers "how is my mother?" with actual patient data
+- Six revenue streams — B2C, B2B, government, pharma, data, affiliates
+- Ayushman Bharat alignment — government scheme integration path defined
+- Odisha-first, India-relevant — real regional context, local dietary database
 
 ---
 
-## 📅 Roadmap
+## 18. Roadmap
 
-### Phase 1 — Development & Pilot (0–6 Months)
-- ✅ MVP web app deployed (sahara-flax.vercel.app)
-- ✅ Flask backend with core API routes
-- ✅ AI nutrition analysis (Gemini integration)
-- ✅ Health scoring engine
-- ✅ Anaemia risk model (WHO rules + RF model)
-- ✅ SOS with Twilio SMS
-- ✅ Family dashboard with charts
-- 🔄 Flutter APK build
-- 🔄 Pilot with 50–100 senior citizens in Bhubaneswar
+### Phase 1 — Hackathon MVP (March 2026)
 
-### Phase 2 — Expansion & Partnerships (6–18 Months)
-- Partner with Odisha state elderly welfare programmes
-- Integrate wearable devices (blood oximeter, BP monitor via Bluetooth)
-- Expand to 1,000+ paid users across Odisha and Jharkhand
-- Hospital partnerships — geriatric wards in AIIMS Bhubaneswar
-- Strengthen data security and cloud scalability
-- Add Odia language support (beyond Hindi/English)
+- [x] Senior React PWA with health logging wizard
+- [x] AI nutrition parser for Indian meals via Gemini
+- [x] Anaemia risk model (WHO rules + Random Forest)
+- [x] Composite health score engine (0–100)
+- [x] Family monitoring dashboard with Recharts trend charts
+- [x] SOS button with Twilio SMS and Google Maps GPS link
+- [x] SAHARA AI chatbot in Hindi and English
+- [x] Vercel + Railway deployment — live HTTPS URL
 
-### Phase 3 — Scaling & Institutional Growth (18–36 Months)
-- SaaS dashboard for retirement homes and hospitals across India
-- Ayushman Bharat PMJAY integration — government pays per enrolled beneficiary
-- ASHA worker dashboard — community health worker integration
-- National rollout — 3,000–5,000 users across multiple cities
-- Multilingual support: Odia, Bengali, Tamil, Telugu
+### Phase 2 — Flutter Native App (April–June 2026)
 
----
+- [ ] Flutter Android app with native voice input (Hindi, Odia)
+- [ ] Offline-first architecture with local SQLite cache
+- [ ] Firebase FCM push notifications
+- [ ] Background GPS for SOS
+- [ ] Play Store listing
+- [ ] Odia language support
 
-## 👥 Team
+### Phase 3 — Expansion (July–December 2026)
 
-| Role | Name | Email | Contact |
-|---|---|---|---|
-| **Team Leader** | Keshav Jha | jhakeshav5892@gmail.com | 9142928046 |
-| Team Member | Priyanshu Pratik | priyanshupratikg@gmail.com | 7008904690 |
-| Team Member | Tushar Mallick | tusharmallick2003@gmail.com | 7847025210 |
-| Team Member | Ayush Raj Chourasia | iter.student.alpha@gmail.com | 8707701003 |
-| Team Member | Aanchal Sreeraj Nair | nairaanchal98@gmail.com | 8928173181 |
-| Team Member | Surajit Sahoo | surajitcoc121@gmail.com | 9932442311 |
-| **Mentor / Guide** | Shruti Bajpai | shrutibajpai@soa.ac.in | 7355593309 |
+- [ ] Wearable integration (Google Fit, Samsung Health)
+- [ ] Old age home institutional dashboard
+- [ ] ABDM health ID integration
+- [ ] Doctor consultation booking via Practo API
+- [ ] ASHA worker community health dashboard
+- [ ] iOS release
 
-**Institute:** ITER, Siksha 'O' Anusandhan Deemed to be University, Bhubaneswar, Odisha
+### Phase 4 — Scale (2027)
+
+- [ ] Hospital geriatric department SaaS
+- [ ] Government white-label contracts (Odisha pilot)
+- [ ] Insurance partner integrations
+- [ ] 10-state expansion with regional dietary databases
+- [ ] Series A fundraising
 
 ---
 
-## 🏆 Evaluation Alignment — Trithon 2026
+## 19. Team
 
-### Round 1 — Idea Evaluation (20 Marks)
+**Team Idiotics — ITER, Siksha 'O' Anusandhan Deemed to be University, Bhubaneswar, Odisha**
 
-| Criterion | SAHARA's Strength |
+| Name | Role | Responsibilities |
+|---|---|---|
+| **Keshav Jha** | Team Lead + AI | FastAPI architecture, ML models, Gemini integration, system design, deployment |
+| **Priyanshu Pratik** | Frontend Lead | React, Tailwind design system, Recharts charts, PWA, senior app UI |
+| **Tushar Mallick** | Backend Developer | MongoDB schemas, health log API, nutrition API, health scoring engine |
+| **Ayush Raj Chourasia** | Full-Stack | Family dashboard, SOS + Twilio, JWT authentication, Google Maps integration |
+| **Aanchal Sreeraj Nair** | UX + Demo Lead | Elderly accessibility audit, UI polish, demo script writing, presentation |
+| **Surajit Sahoo** | DevOps + QA | Railway and Vercel deployment, seed data generation, E2E testing |
+
+**Mentor:** Dr. Shruti Bajpai — ITER, Siksha 'O' Anusandhan Deemed to be University  
+**Team Contact:** Keshav Jha · 9142928046 · jhakeshav5892@gmail.com
+
+---
+
+## 20. Acknowledgements
+
+- **Trident Academy of Technology, Bhubaneswar** — for organising Trithon 2026 and this platform for student innovation
+- **ITER, Siksha 'O' Anusandhan (SOA) University** — for institutional support and Dr. Shruti Bajpai's guidance
+- **World Health Organization (WHO)** — publicly available elderly anaemia clinical thresholds
+- **Indian Council of Medical Research (ICMR)** — Nutritional Requirements for Indians reference data
+- **Government of Odisha** — ASHA worker programme as inspiration for Phase 3
+- **Google** — Gemini API, Google Maps, Firebase, and Google Cloud credits
+- **MongoDB** — Atlas M0 free cluster enabling rapid development
+
+---
+
+## Quick Links
+
+| Resource | URL |
 |---|---|
-| **Concept Presentation** | Clear problem-solution-demo narrative with "Meet Ratan Ji" story hook |
-| **Creativity & Innovation** | India's first anaemia early-warning + Hindi voice AI for elderly — no competitor does both |
-| **Approach & Strategy** | Dual-app architecture, 4 AI models, rule-based fallbacks, seeded 30-day demo data |
-| **Technical Feasibility** | Live at vercel.app; Flask + MongoDB + Gemini all running; zero ₹ infrastructure |
-| **Timeline Planning** | Build order documented hour by hour; all fallbacks pre-planned |
-
-### Round 2 — Development Phase (30 Marks)
-
-| Criterion | SAHARA's Strength |
-|---|---|
-| **Prototype Progress** | Live web app deployed; vitals logging, nutrition AI, SOS, family dashboard all functional |
-| **Enhancements** | Hindi voice input, 30-day seeded trend data, health chatbot — all added on mentor feedback |
-| **System Integration** | Senior app → Flask API → MongoDB → Family dashboard real-time sync demonstrated live |
-| **Usability** | 56px buttons, 28px vital numbers, voice everywhere, orange theme, bottom nav only |
-| **Team Contribution** | 6 members with clear ownership: frontend, backend, AI/ML, UX, mobile |
-
-### Round 3 — Final Evaluation (50 Marks)
-
-| Criterion | SAHARA's Strength |
-|---|---|
-| **Solution Effectiveness** | Solves 8 specific identified problems — nutritional gap, anaemia detection, family monitoring |
-| **Final Demo & Performance** | Two-screen demo: phone (senior) + laptop (family) → log bad Hb → dashboard turns red → judge's phone gets SMS |
-| **UX & Product Design** | Elderly-first design system, orange Indian aesthetic, tested for 60+ age group |
-| **Market Potential** | ₹55,000 Cr TAM, 140M+ users, B2C + B2B + Govt streams, LTV:CAC = 17.9x |
-| **Future Scope** | Wearables → PMJAY → national rollout → Odia/regional languages → ASHA worker integration |
-
----
-
-## 📎 Resources & Links
-
-| Resource | Link |
-|---|---|
-| Live Web App | [https://sahara-flax.vercel.app/](https://sahara-flax.vercel.app/) |
-| Demo Video | [Google Drive](https://drive.google.com/file/d/1vEzmJtn_V7W5dcHLt5qtvQqhj_29qjji/view?usp=sharing) |
-| ICMR Nutritional Tables | Public domain — Ministry of Health, Govt of India |
-| WHO Anaemia Guidelines | [WHO Anaemia Thresholds](https://www.who.int/topics/anaemia/en/) |
-| Gemini API Docs | [ai.google.dev](https://ai.google.dev) |
-| Twilio Free Tier | [twilio.com](https://twilio.com) |
-| MongoDB Atlas Free | [cloud.mongodb.com](https://cloud.mongodb.com) |
-| Railway Deployment | [railway.app](https://railway.app) |
-| Vercel Deployment | [vercel.com](https://vercel.com) |
-
----
-
-## 📄 License
-
-This project was built for Trithon 2026 by Team Idiotics. All rights reserved.  
-For collaboration enquiries, contact: jhakeshav5892@gmail.com
+| Live Application | [sahara-flax.vercel.app](https://sahara-flax.vercel.app/) |
+| API Docs (auto-generated) | `https://your-backend.railway.app/docs` |
+| Demo Video | *(Google Drive — added on demo day)* |
+| Presentation Slides | *(Canva link — added on demo day)* |
 
 ---
 
 <div align="center">
 
-**Built with ❤️ in Bhubaneswar, Odisha**  
-*For every grandparent who is silently declining — SAHARA sees them.*
+**SAHARA — Smart Assistive Healthcare And Remote Alert System**  
+*Team Idiotics · Trithon 2026 · ITER SOA University, Bhubaneswar, Odisha*
 
-🌿 **SAHARA** · Team Idiotics · Trithon 2026
+> *"Every health app in this room was built for young people who are already healthy.*  
+> *SAHARA was built for the 140 million elderly Indians who are silently declining —*  
+> *not in hospitals, but in their homes, alone."*
 
 </div>
-- Delayed medical intervention due to absence of early warning systems  
-- Limited real-time visibility for family members  
-
-Existing solutions are fragmented and reactive, focusing mainly on emergency alerts rather than preventive, intelligent healthcare.  
-
----
-
-## 3. Proposed Solution  
-
-SAHARA provides a comprehensive AI-driven healthcare ecosystem with the following capabilities:  
-
-- **Nutritional Analysis**  
-  Evaluates daily meals and identifies deficiencies in protein, iron, and calories  
-
-- **Health Monitoring**  
-  Tracks vitals such as blood pressure, blood sugar, haemoglobin, and weight  
-
-- **Predictive Risk Detection**  
-  Identifies early signs of anaemia and abnormal health trends  
-
-- **Health Scoring System**  
-  Generates a dynamic wellness score (0–100) based on multiple parameters  
-
-- **Family Dashboard**  
-  Enables real-time monitoring of elderly individuals by family members  
-
-- **Emergency SOS System**  
-  Sends alerts with location data in critical situations  
-
----
-
-## 4. Key Features  
-
-### 4.1 Elderly User Interface  
-- Simple and accessible UI  
-- Large buttons and readable typography  
-- Minimal actions per screen  
-- Voice-enabled interaction (Hindi/English)  
-
-### 4.2 Nutrition Intelligence  
-- AI-based meal analysis  
-- Daily intake tracking vs recommended targets  
-- Context-aware dietary suggestions  
-
-### 4.3 Health Analytics  
-- Multi-parameter health scoring  
-- Risk flag detection  
-- Trend visualization (7-day insights)  
-
-### 4.4 Family Monitoring Dashboard  
-- Real-time health status of linked users  
-- Risk alerts and notifications  
-- Historical trends and reports  
-
-### 4.5 Emergency Support  
-- One-tap SOS trigger  
-- Instant alert to family members  
-- Location sharing integration  
-
----
-
-## 5. System Architecture  
-
-The system follows a layered architecture:  
-
-### Frontend  
-- React (Web Dashboard)  
-- Responsive UI for elderly and family users  
-
-### Backend  
-- FastAPI (Python-based API services)  
-- RESTful endpoints for all modules  
-
-### Database  
-- MongoDB Atlas  
-
-**Collections:**  
-- Users  
-- Health Logs  
-- Nutrition Logs  
-- SOS Events  
-- Reminders  
-
-### AI/ML Layer  
-- Rule-based health scoring engine  
-- Predictive risk detection (anaemia, anomalies)  
-- NLP-based nutrition analysis  
-
-### External Services  
-- SMS alerts (SOS notifications)  
-- Push notifications  
-- Map integration for location tracking  
-
----
-
-## 6. Tech Stack  
-
-| Layer        | Technology Used |
-|-------------|----------------|
-| Frontend     | React, HTML, CSS, JavaScript |
-| Backend      | FastAPI (Python) |
-| Database     | MongoDB Atlas |
-| AI/ML        | Python (scikit-learn, rule engines, NLP APIs) |
-| Deployment   | Vercel (Frontend), Railway/Render (Backend) |
-| Integrations | Maps API, Messaging API |
-
----
-
-## 7. Workflow  
-
-1. User logs meal or health data  
-2. Backend processes and stores data  
-3. AI engine analyzes inputs  
-4. Health score and risk flags are generated  
-5. Family dashboard updates in real-time  
-6. Alerts are triggered if risk is detected  
-
----
-
-## 8. Innovation  
-
-- Integrated platform combining **nutrition, health, and predictive AI**  
-- Focus on **preventive healthcare rather than reactive alerts**  
-- Elderly-first UX design  
-- Dual-dashboard architecture (Senior + Family)  
-- Contextual AI insights tailored for Indian users  
-
----
-
-## 9. Use Case Scenario  
-
-An elderly user logs daily meals and vitals.  
-
-- The system detects low protein and iron intake  
-- Health score decreases and flags risk  
-- Family dashboard shows warning  
-- In emergency, SOS alert notifies family instantly  
-
-This enables early intervention and better care management.  
-
----
-
-## 10. Market Potential  
-
-- Growing elderly population in India  
-- Increasing demand for remote healthcare monitoring  
-
-**Applicability:**  
-- Urban nuclear families  
-- Rural healthcare systems  
-- Assisted living environments  
-
-**Potential expansion areas:**  
-- Telemedicine integration  
-- Wearable device support  
-- Government healthcare programs  
-
----
-
-## 11. Future Scope  
-
-- Integration with IoT health devices  
-- Advanced ML models for disease prediction  
-- Multilingual support beyond Hindi and English  
-- Mobile app deployment (Flutter/React Native)  
-- Offline-first capabilities for rural areas  
-
----
-
-## 12. Demo Instructions  
-
-1. Open the web application  
-2. Log in as a senior user  
-3. Add meal details and health data  
-4. Observe AI-generated insights and health score  
-5. Switch to family dashboard  
-6. View alerts, trends, and reports  
-7. Trigger SOS to simulate emergency  
-
----
-
-## 13. Team  
-
-**Team Name:** Idiotics  
-**Hackathon:** Trithon 2026  
-**Domain:** Healthcare AI  
-
----
-
-## 14. Conclusion  
-
-SAHARA is designed to bridge the gap between elderly healthcare needs and intelligent technology by providing a scalable, user-friendly, and AI-driven solution.  
-
-It demonstrates how data, AI, and thoughtful design can improve quality of life and healthcare outcomes for senior citizens.  
