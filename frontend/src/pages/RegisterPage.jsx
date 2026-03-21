@@ -103,7 +103,7 @@ const RegisterPage = ({ onBack }) => {
           </div>
           <div className="space-y-2">
             <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-6 py-4 bg-[#F5F4F0] border-2 border-transparent focus:border-[#EA580C] focus:bg-white rounded-[20px] outline-none transition-all font-bold" placeholder="••••••••" required />
+            <input type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-6 py-4 bg-[#F5F4F0] border-2 border-transparent focus:border-[#EA580C] focus:bg-white rounded-[20px] outline-none transition-all font-bold" placeholder="••••••••" required />
           </div>
           <button type="submit" disabled={loading} className="w-full py-5 bg-[#111827] text-white rounded-[24px] text-lg font-black shadow-xl hover:-translate-y-1 transition-all disabled:opacity-60">
             {loading ? 'Creating Account...' : 'Continue with Email'}
