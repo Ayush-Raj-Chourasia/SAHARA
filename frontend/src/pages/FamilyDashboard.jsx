@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shield, Pulse, Drop, Heart, Fork, Pill, Moon, Steps, Bell, Send, Family, Activity } from '../components/Icons';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Card = ({ children, th, full, d, show }) => (
   <div style={{
@@ -38,6 +39,16 @@ const StatusPill = ({ eaten, dark, G }) => (
 const FamilyDashboard = (props) => {
     const { th, dark, vitals, medTaken, kcal, prot, sleep, steps, score, logs, setLogs, sent, pushAlert, foodLog, now, show, G, MEALS_CFG, countdown } = props;
     const col = score >= 80 ? G.green : score >= 60 ? G.amber : G.red;
+
+    const mockData = [
+        { name: 'Mon', bp: 120, sugar: 95 },
+        { name: 'Tue', bp: 125, sugar: 98 },
+        { name: 'Wed', bp: 118, sugar: 92 },
+        { name: 'Thu', bp: 130, sugar: 105 },
+        { name: 'Fri', bp: 122, sugar: 96 },
+        { name: 'Sat', bp: 115, sugar: 90 },
+        { name: 'Sun', bp: 121, sugar: 94 },
+    ];
     
     return (
         <main style={{ maxWidth: 1120, margin: "0 auto", padding: "24px 18px 60px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,480px),1fr))", gap: 18 }}>
@@ -99,14 +110,22 @@ const FamilyDashboard = (props) => {
             </Card>
 
             <Card th={th} d={3} show={show}>
-                <CH th={th} icon={<Activity color={G.green} />} title="Weekly Stats" />
-                <div style={{ height: 140, display: 'flex', alignItems: 'flex-end', gap: 6, padding: '10px 0' }}>
-                    {[65, 78, 82, 75, 88, 92, 82].map((h, i) => (
-                        <div key={i} style={{ flex: 1, background: i === 6 ? G.green : th.s3, height: `${h}%`, borderRadius: '4px 4px 0 0' }} />
-                    ))}
+                <CH th={th} icon={<Activity color={G.green} />} title="Health Trends (Last 7 Days)" />
+                <div style={{ height: 200, width: '100%', marginTop: 20 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={mockData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke={th.border} />
+                            <XAxis dataKey="name" stroke={th.muted} fontSize={12} />
+                            <YAxis stroke={th.muted} fontSize={12} />
+                            <Tooltip contentStyle={{ background: th.surface, border: `1px solid ${th.border}`, borderRadius: 12 }} />
+                            <Line type="monotone" dataKey="bp" stroke={G.blue} strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                            <Line type="monotone" dataKey="sugar" stroke={G.amber} strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                        </LineChart>
+                    </ResponsiveContainer>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(d => <span key={d} style={{ fontSize: 11, color: th.muted, fontWeight: 800 }}>{d}</span>)}
+                <div style={{ display: 'flex', gap: 15, justifyContent: 'center', marginTop: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: '50%', background: G.blue }} /><span style={{ fontSize: 11, color: th.muted }}>BP (Sys)</span></div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: '50%', background: G.amber }} /><span style={{ fontSize: 11, color: th.muted }}>Sugar</span></div>
                 </div>
             </Card>
 
