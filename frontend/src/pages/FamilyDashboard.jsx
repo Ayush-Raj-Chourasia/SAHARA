@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CH, Label, G } from '../components/DashboardComponents';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Shield, Pulse, Drop, Heart, Clock, AlertCircle, Phone, ArrowUp, ArrowDown } from '../components/Icons';
@@ -6,8 +6,37 @@ import { AIWeeklySummary, SOSHistory } from '../components/FamilyComponents';
 
 const FamilyDashboard = (props) => {
   const { th, dark, score, show } = props;
+  const [history, setHistory] = useState([]);
+  const [sosEvents, setSosEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const chartData = [
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const token = localStorage.getItem('sahara_token');
+            const seniorId = "mock_id"; // In real app, this is linked to user
+            
+            const [hRes, sRes] = await Promise.all([
+                fetch(`/api/health/history/${seniorId}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`/api/emergency/history/${seniorId}`, { headers: { 'Authorization': `Bearer ${token}` } })
+            ]);
+
+            if (hRes.ok) setHistory(await hRes.json());
+            if (sRes.ok) setSosEvents(await sRes.json());
+        } catch (err) {
+            console.error("Fetch data error", err);
+        }
+        setLoading(false);
+    };
+    fetchData();
+  }, []);
+
+  const chartData = history.length > 0 ? history.map(h => ({
+    day: new Date(h.timestamp).toLocaleDateString('en-IN', { weekday: 'short' }),
+    bp: h.bp_sys,
+    sugar: h.sugar,
+    hb: 10.5 // Default Hb as it's not in health log yet
+  })).reverse() : [
     { day: 'Mon', bp: 135, sugar: 110, hb: 11.2 },
     { day: 'Tue', bp: 140, sugar: 115, hb: 11.0 },
     { day: 'Wed', bp: 138, sugar: 108, hb: 10.8 },
@@ -111,7 +140,7 @@ const FamilyDashboard = (props) => {
             <div style={{ gridColumn: '1 / -1', marginTop: 10 }}>
                 <Card th={th} full d={2.5} show={show}>
                     <CH th={th} icon={<Shield color={G.red} />} title="Emergency / SOS History" />
-                    <SOSHistory th={th} />
+                    <SOSHistory th={th} events={sosEvents} />
                 </Card>
             </div>
 

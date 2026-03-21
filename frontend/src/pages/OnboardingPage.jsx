@@ -11,8 +11,19 @@ const OnboardingPage = () => {
         emergencyContact: '', relation: ''
     });
 
-    const handleComplete = () => {
-        completeOnboarding({ ...profile, role });
+    const handleComplete = async () => {
+        try {
+            const token = localStorage.getItem('sahara_token');
+            const userObj = JSON.parse(localStorage.getItem('sahara_user') || '{}');
+            
+            // In a full implementation, this calls /api/profiles/update
+            // For now, we ensure the AuthContext is triggered to update local state
+            // and we simulate the backend persistence.
+            await completeOnboarding({ ...profile, role });
+            window.location.href = role === 'senior' ? '/senior' : '/family';
+        } catch (err) {
+            console.error("Onboarding failed", err);
+        }
     };
 
     if (step === 1) {

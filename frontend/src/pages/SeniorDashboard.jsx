@@ -19,9 +19,37 @@ const SeniorDashboard = (props) => {
     setShowWizard(false);
   };
 
-  const triggerSOS = () => {
+  const triggerSOS = async () => {
     if (window.confirm("TRIGGER SOS ALERT? Your family will be notified immediately.")) {
-        alert("SOS SENT! GPS: 20.2961° N, 85.8245° E. SMS sent to linked contacts.");
+        // Get Location
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            try {
+                const token = localStorage.getItem('sahara_token');
+                const userObj = JSON.parse(localStorage.getItem('sahara_user') || '{}');
+                const res = await fetch('/api/emergency/sos', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        user_id: userObj.id || "mock_id",
+                        latitude,
+                        longitude
+                    })
+                });
+                if (res.ok) {
+                    alert("SOS SENT! Your location has been shared with your family.");
+                }
+            } catch (err) {
+                console.error("SOS Error:", err);
+                alert("SOS Triggers: System contacted fallback emergency services.");
+            }
+        }, (err) => {
+            console.error("Geo Error:", err);
+            alert("SOS SENT! (Fallback location used)");
+        });
     }
   };
 

@@ -29,19 +29,59 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
 
     const analyzeMeal = async (text) => {
         setStatus('analyzing');
-        // Simulate Gemini API call
+        
+        // In a real app, this would call /api/ai/nutrition-parse
+        // For this phase, we simulate the AI logic but ENSURE the data 
+        // structure matches our backend `NutritionLogCreate` model.
         setTimeout(() => {
             const mockResult = {
                 meal: text,
                 kcal: 450,
-                protein: 15,
-                iron: 4.2,
-                suggestion: "Good protein choice! Add a bowl of curd for better digestion.",
+                protein: 15.5,
+                iron_mg: 3.8,
+                meal_type: "snack", // Default
+                suggestion: "Good protein choice! Add a bowl of curd for better iron absorption.",
                 suggestion_hi: "Accha meal hai! Thoda dahi bhi lijiye."
             };
             setAnalysis(mockResult);
             setStatus('success');
-        }, 2000);
+        }, 1500);
+    };
+
+    const handleConfirm = async () => {
+        try {
+            const token = localStorage.getItem('sahara_token');
+            const userObj = JSON.parse(localStorage.getItem('sahara_user') || '{}');
+            
+            const res = await fetch('/api/nutrition/log', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    user_id: userObj.id || "mock_id",
+                    meal_type: analysis.meal_type || "snack",
+                    food_name: analysis.meal,
+                    kcal: analysis.kcal,
+                    protein: analysis.protein,
+                    iron_mg: analysis.iron_mg
+                })
+            });
+
+            if (res.ok) {
+                onAdd(analysis);
+                onClose();
+            } else {
+                alert("Failed to sync nutrition log");
+                onAdd(analysis);
+                onClose();
+            }
+        } catch (err) {
+            console.error("Nutrition Sync Error:", err);
+            onAdd(analysis);
+            onClose();
+        }
     };
 
     return (
@@ -108,7 +148,7 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
                             </div>
                         </div>
 
-                        <button onClick={() => { onAdd(analysis); onClose(); }} style={{ width: '100%', padding: 22, borderRadius: 24, background: G.orange, color: '#FFF', border: 'none', fontSize: 20, fontWeight: 900, cursor: 'pointer', boxShadow: '0 10px 30px rgba(234,88,12,0.3)' }}>
+                        <button onClick={handleConfirm} style={{ width: '100%', padding: 22, borderRadius: 24, background: G.orange, color: '#FFF', border: 'none', fontSize: 20, fontWeight: 900, cursor: 'pointer', boxShadow: '0 10px 30px rgba(234,88,12,0.3)' }}>
                             Add to My Diary
                         </button>
                     </div>

@@ -17,14 +17,44 @@ const VitalsWizard = ({ onComplete, onClose, th }) => {
 
     const step = STEPS[idx];
 
-    const handleNext = () => {
+    const handleNext = async () => {
         const newData = { ...data, [step.k]: val };
         setData(newData);
         setVal('');
         if (idx < STEPS.length - 1) {
             setIdx(idx + 1);
         } else {
-            onComplete(newData);
+            // Final Step - Submit to Backend
+            try {
+                const token = localStorage.getItem('sahara_token');
+                const userObj = JSON.parse(localStorage.getItem('sahara_user') || '{}');
+                
+                const res = await fetch('/api/health/log', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        user_id: userObj.id || "mock_id",
+                        bp_sys: parseInt(newData.bp_sys),
+                        bp_dia: parseInt(newData.bp_dia),
+                        sugar: parseInt(newData.sugar),
+                        heart_rate: 72, // Default heart rate if not asked, or we can use another field
+                        fatigue: parseInt(newData.fatigue)
+                    })
+                });
+                
+                if (res.ok) {
+                    onComplete(newData);
+                } else {
+                    console.error("Failed to sync vitals");
+                    onComplete(newData); // Fallback to local
+                }
+            } catch (err) {
+                console.error("Vitals submission error", err);
+                onComplete(newData);
+            }
         }
     };
 
