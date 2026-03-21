@@ -41,6 +41,7 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
                 body: JSON.stringify({
                     prompt: text,
                     image: null,
+                    meal_type: mealType,
                     user_id: user?.id || 'default_user'
                 })
             });
@@ -48,8 +49,22 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
             const data = await response.json();
             const meals = data?.results || [];
 
-            if (!response.ok || meals.length === 0) {
+            if (!response.ok) {
                 throw new Error(data?.detail || 'No nutrition analysis received');
+            }
+
+            if (meals.length === 0) {
+                setAnalysis({
+                    meal: text,
+                    kcal: '—',
+                    protein: '—',
+                    iron_mg: '—',
+                    meal_type: mealType,
+                    suggestion: data?.note || 'No edible item detected in speech.',
+                    suggestion_hi: data?.note || 'Koi khaane ki item detect nahi hui.',
+                });
+                setStatus('success');
+                return;
             }
 
             const totalKcal = meals.reduce((sum, m) => sum + (Number(m.kcal) || 0), 0);
@@ -89,6 +104,10 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
     };
 
     const handleConfirm = async () => {
+        if (!analysis || analysis.kcal === '—' || analysis.protein === '—') {
+            alert('No valid food item detected. Please try speaking a food name.');
+            return;
+        }
         try {
             const token = localStorage.getItem('sahara_token');
             const userObj = JSON.parse(localStorage.getItem('sahara_user') || '{}');
@@ -113,14 +132,23 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
                 onAdd(analysis);
                 onClose();
             } else {
-                alert("Failed to sync nutrition log");
-                onAdd(analysis);
-                onClose();
+                const errorText = await res.text();
+                if (res.status === 503) {
+                    alert('Database unavailable on backend (503). Nutrition log was not saved.');
+                    return;
+                }
+                alert(errorText || 'Failed to sync nutrition log');
+                return;
             }
         } catch (err) {
             console.error("Nutrition Sync Error:", err);
-            onAdd(analysis);
-            onClose();
+            const message = String(err?.message || '');
+            if (message.includes('Failed to fetch')) {
+                alert('Network/CORS error while saving nutrition. Please refresh and retry.');
+            } else {
+                alert('Nutrition sync failed. Please retry.');
+            }
+            return;
         }
     };
 

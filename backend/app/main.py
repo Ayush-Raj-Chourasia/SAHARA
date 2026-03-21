@@ -3,6 +3,7 @@ import traceback
 from fastapi import FastAPI
 from fastapi import Request
 from fastapi import HTTPException
+from fastapi import Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.routes import auth, health, nutrition, emergency, ai_chat
@@ -15,18 +16,49 @@ raw_origins = os.getenv(
     "CORS_ORIGINS",
     "https://sahara-flax.vercel.app,https://frontend-nine-mu-mtbg6zpr7c.vercel.app,http://localhost:5173,http://localhost:3000",
 )
-allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+allowed_origins = [origin.strip().rstrip("/") for origin in raw_origins.split(",") if origin.strip()]
+allowed_origin_regex = os.getenv(
+    "CORS_ORIGIN_REGEX",
+    r"https://.*\.vercel\.app|http://localhost(:\d+)?",
+)
 
 # Enable CORS - must be added before routers
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=allowed_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
     max_age=3600,
 )
+
+
+@app.middleware("http")
+async def add_cors_fallback_headers(request: Request, call_next):
+    origin = (request.headers.get("origin") or "").rstrip("/")
+    response = await call_next(request)
+    if origin and origin in allowed_origins:
+        response.headers.setdefault("Access-Control-Allow-Origin", origin)
+        response.headers.setdefault("Access-Control-Allow-Credentials", "true")
+        response.headers.setdefault("Vary", "Origin")
+    return response
+
+
+@app.options("/{full_path:path}")
+async def cors_preflight_handler(full_path: str, request: Request):
+    origin = (request.headers.get("origin") or "").rstrip("/")
+    requested_headers = request.headers.get("access-control-request-headers", "Authorization,Content-Type")
+    response = Response(status_code=204)
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Vary"] = "Origin"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = requested_headers
+    response.headers["Access-Control-Max-Age"] = "3600"
+    return response
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):

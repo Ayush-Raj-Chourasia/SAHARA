@@ -56,11 +56,21 @@ const VitalsWizard = ({ onComplete, onClose, th }) => {
                 if (res.ok) {
                     onComplete(newData);
                 } else {
-                    alert('Failed to sync vitals. Please retry.');
+                    const errorText = await res.text();
+                    if (res.status === 503) {
+                        alert('Database unavailable on backend (503). Please check Mongo/Railway and retry.');
+                    } else {
+                        alert(errorText || 'Failed to sync vitals. Please retry.');
+                    }
                 }
             } catch (err) {
                 console.error("Vitals submission error", err);
-                alert('Vitals submission failed. Please retry.');
+                const message = String(err?.message || '');
+                if (message.includes('Failed to fetch')) {
+                    alert('Network/CORS error while syncing vitals. Please refresh and retry.');
+                } else {
+                    alert('Vitals submission failed. Please retry.');
+                }
             } finally {
                 setBusy(false);
             }
