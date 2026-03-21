@@ -203,3 +203,5 @@ documents\SAHARA_Complete_Blueprint.html
 !backend/requirements.txt
 !backend/Procfile
 !backend/railway.json
+.vercel
+.env*.local
