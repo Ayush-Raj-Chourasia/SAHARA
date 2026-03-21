@@ -91,9 +91,187 @@ function countdown(hour, sent, key, now) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// DUMMY USERS DATABASE
+// ─────────────────────────────────────────────────────────────────────────────
+const USERS = [
+    { id: 1, name: "Raj Kumar",    email: "raj@sahara.health",   pass: "senior123", role: "senior", age: 68, city: "Mumbai",    avatar: "👴", color: "#2563eb" },
+    { id: 2, name: "Priya Kumar",  email: "priya@sahara.health", pass: "family123", role: "family",  age: 38, city: "Pune",      avatar: "👩", color: "#16a34a" },
+    { id: 3, name: "Arjun Kumar",  email: "arjun@sahara.health", pass: "family456", role: "family",  age: 34, city: "Bengaluru", avatar: "👨", color: "#b45309" },
+    { id: 4, name: "Sunita Devi",  email: "sunita@sahara.health",pass: "senior456", role: "senior",  age: 72, city: "Delhi",     avatar: "👵", color: "#dc2626" },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOGIN PAGE
+// ─────────────────────────────────────────────────────────────────────────────
+function LoginPage({ onLogin }) {
+    const [email, setEmail] = useState("");
+    const [pass, setPass] = useState("");
+    const [showPass, setShowPass] = useState(false);
+    const [err, setErr] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const [fillUser, setFillUser] = useState(null);
+
+    useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
+
+    function handleLogin(e) {
+        e.preventDefault();
+        setErr("");
+        setLoading(true);
+        setTimeout(() => {
+            const user = USERS.find(u => u.email === email.trim().toLowerCase() && u.pass === pass);
+            if (user) {
+                onLogin(user);
+            } else {
+                setErr("Invalid email or password. Please try again.");
+                setLoading(false);
+            }
+        }, 900);
+    }
+
+    function quickFill(u) {
+        setFillUser(u.id);
+        setEmail(u.email);
+        setPass(u.pass);
+        setErr("");
+    }
+
+    const inp = {
+        width: "100%", padding: "14px 16px", borderRadius: 14,
+        border: `2px solid #E4E2DB`, background: "#F2F1ED",
+        fontSize: 16, fontFamily: "'Outfit', sans-serif",
+        color: "#131313", outline: "none", transition: "border-color .2s",
+    };
+
+    return (
+        <div style={{ minHeight: "100vh", background: "linear-gradient(135deg,#0f0f0e 0%,#1a1a18 50%,#0f1a0e 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", fontFamily: "'Outfit', sans-serif", position: "relative", overflow: "hidden" }}>
+            {/* Animated background orbs */}
+            <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+                <div style={{ position: "absolute", top: "-10%", left: "15%", width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle,rgba(37,99,235,.18) 0%,transparent 70%)", animation: "float1 8s ease-in-out infinite" }} />
+                <div style={{ position: "absolute", bottom: "-5%", right: "10%", width: 360, height: 360, borderRadius: "50%", background: "radial-gradient(circle,rgba(22,163,74,.14) 0%,transparent 70%)", animation: "float2 10s ease-in-out infinite" }} />
+                <div style={{ position: "absolute", top: "40%", right: "30%", width: 220, height: 220, borderRadius: "50%", background: "radial-gradient(circle,rgba(220,38,38,.1) 0%,transparent 70%)", animation: "float3 7s ease-in-out infinite" }} />
+            </div>
+            <style>{`
+                @keyframes float1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.05)}}
+                @keyframes float2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-20px,30px) scale(1.08)}}
+                @keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(15px,-25px)}}
+                @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+                @keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}70%{box-shadow:0 0 0 14px rgba(37,99,235,0)}100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}}
+                .lgn-inp:focus{border-color:#2563eb !important;background:#fff !important}
+                .lgn-btn:hover{opacity:.92;transform:translateY(-1px)}
+                .lgn-btn:active{transform:scale(.98)}
+                .uc:hover{border-color:#2563eb !important;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.25)}
+            `}</style>
+
+            <div style={{ display: "flex", gap: 0, width: "100%", maxWidth: 980, borderRadius: 28, overflow: "hidden", boxShadow: "0 32px 100px rgba(0,0,0,.55)", opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(20px)", transition: "opacity .5s ease, transform .5s ease" }}>
+
+                {/* LEFT PANEL — Branding */}
+                <div style={{ flex: "0 0 42%", background: "linear-gradient(160deg,#131313 0%,#1e2a1c 100%)", padding: "48px 40px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 40 }}>
+                            <div style={{ width: 50, height: 50, borderRadius: 15, background: "linear-gradient(140deg,#2563eb,#1d4ed8)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 16px rgba(37,99,235,.4)", animation: "pulse-ring 2.5s infinite" }}>
+                                <Ic.Shield w={24} style={{ color: "#fff" }} />
+                            </div>
+                            <div>
+                                <p style={{ fontSize: 30, fontWeight: 800, color: "#fff", letterSpacing: "-.01em", lineHeight: 1 }}>SAHARA</p>
+                                <p style={{ fontSize: 11, color: "rgba(255,255,255,.4)", letterSpacing: ".08em", marginTop: 2 }}>ELDERLY HEALTH COMPANION</p>
+                            </div>
+                        </div>
+                        <h2 style={{ fontSize: 28, fontWeight: 700, color: "#fff", lineHeight: 1.3, marginBottom: 14 }}>Your health,<br /><span style={{ color: "#60a5fa" }}>always with you.</span></h2>
+                        <p style={{ fontSize: 15, color: "rgba(255,255,255,.5)", lineHeight: 1.7, marginBottom: 32 }}>Real-time health monitoring for seniors with smart AI-powered nutrition analysis and family alerts.</p>
+
+                        {/* Feature pills */}
+                        {[
+                            { icon: "🩺", label: "Clinical Health Score" },
+                            { icon: "🎙️", label: "Hindi & English Voice Logging" },
+                            { icon: "🚨", label: "Emergency SOS + GPS" },
+                            { icon: "👨‍👩‍👧", label: "Family Dashboard & Alerts" },
+                        ].map(f => (
+                            <div key={f.label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                                <span style={{ fontSize: 18 }}>{f.icon}</span>
+                                <span style={{ fontSize: 14, color: "rgba(255,255,255,.65)", fontWeight: 500 }}>{f.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <p style={{ fontSize: 12, color: "rgba(255,255,255,.2)", marginTop: 24 }}>© 2025 SAHARA Health · Powered by Gemini AI</p>
+                </div>
+
+                {/* RIGHT PANEL — Login Form */}
+                <div style={{ flex: 1, background: "#fff", padding: "48px 44px", display: "flex", flexDirection: "column", justifyContent: "center", overflowY: "auto", maxHeight: "90vh" }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", color: "#9B9890", textTransform: "uppercase", marginBottom: 6 }}>Welcome back</p>
+                    <h1 style={{ fontSize: 30, fontWeight: 800, color: "#131313", marginBottom: 6 }}>Sign in to SAHARA</h1>
+                    <p style={{ color: "#9B9890", fontSize: 14, marginBottom: 28 }}>Use a demo account below or enter your credentials.</p>
+
+                    {/* Demo accounts */}
+                    <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#9B9890", textTransform: "uppercase", marginBottom: 10 }}>🚀 Demo Accounts — click to fill</p>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginBottom: 24 }}>
+                        {USERS.map(u => (
+                            <button key={u.id} className="uc" onClick={() => quickFill(u)}
+                                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 13px", borderRadius: 13, border: `2px solid ${fillUser === u.id ? "#2563eb" : "#E4E2DB"}`, background: fillUser === u.id ? "#eff6ff" : "#F9F8F5", cursor: "pointer", textAlign: "left", fontFamily: "'Outfit', sans-serif", transition: "all .2s" }}>
+                                <span style={{ fontSize: 24, flexShrink: 0 }}>{u.avatar}</span>
+                                <div style={{ overflow: "hidden" }}>
+                                    <p style={{ fontSize: 13, fontWeight: 700, color: "#131313", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{u.name}</p>
+                                    <p style={{ fontSize: 11, color: u.color, fontWeight: 700 }}>{u.role === "senior" ? "👤 Senior" : "👨‍👩‍👧 Family"} · {u.city}</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+                        <div style={{ flex: 1, height: 1, background: "#E4E2DB" }} />
+                        <span style={{ fontSize: 12, color: "#9B9890", fontWeight: 600 }}>OR ENTER MANUALLY</span>
+                        <div style={{ flex: 1, height: 1, background: "#E4E2DB" }} />
+                    </div>
+
+                    <form onSubmit={handleLogin}>
+                        <div style={{ marginBottom: 14 }}>
+                            <label style={{ fontSize: 13, fontWeight: 700, color: "#5A5A53", display: "block", marginBottom: 6 }}>Email Address</label>
+                            <input id="login-email" className="lgn-inp" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@sahara.health" style={inp} required />
+                        </div>
+                        <div style={{ marginBottom: 8, position: "relative" }}>
+                            <label style={{ fontSize: 13, fontWeight: 700, color: "#5A5A53", display: "block", marginBottom: 6 }}>Password</label>
+                            <input id="login-pass" className="lgn-inp" type={showPass ? "text" : "password"} value={pass} onChange={e => setPass(e.target.value)} placeholder="••••••••" style={{ ...inp, paddingRight: 50 }} required />
+                            <button type="button" onClick={() => setShowPass(s => !s)} style={{ position: "absolute", right: 14, bottom: 14, background: "none", border: "none", cursor: "pointer", color: "#9B9890", fontSize: 13, fontWeight: 700 }}>{showPass ? "Hide" : "Show"}</button>
+                        </div>
+                        {err && <div style={{ background: "#fef2f2", border: "1.5px solid #fecaca", color: "#dc2626", borderRadius: 11, padding: "10px 14px", fontSize: 14, fontWeight: 600, marginBottom: 14 }}>⚠️ {err}</div>}
+                        <button id="login-submit" className="lgn-btn" type="submit" disabled={loading}
+                            style={{ width: "100%", padding: "16px", borderRadius: 14, background: loading ? "#9B9890" : "linear-gradient(135deg,#1d4ed8,#2563eb)", color: "#fff", border: "none", fontSize: 17, fontWeight: 800, fontFamily: "'Outfit', sans-serif", cursor: loading ? "not-allowed" : "pointer", transition: "all .2s", marginTop: 4, letterSpacing: ".01em", boxShadow: loading ? "none" : "0 6px 20px rgba(37,99,235,.35)" }}>
+                            {loading ? "✨ Signing in..." : "Sign In →"}
+                        </button>
+                    </form>
+
+                    {/* Credentials cheatsheet */}
+                    <div style={{ marginTop: 22, background: "#F2F1ED", borderRadius: 14, padding: "14px 16px", border: "1.5px solid #E4E2DB" }}>
+                        <p style={{ fontSize: 11, fontWeight: 800, color: "#9B9890", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 9 }}>📋 Test Credentials</p>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                            {USERS.map(u => (
+                                <div key={u.id} style={{ background: "#fff", borderRadius: 10, padding: "8px 11px", border: "1.5px solid #E4E2DB" }}>
+                                    <p style={{ fontSize: 12, fontWeight: 700, color: "#131313" }}>{u.avatar} {u.name}</p>
+                                    <p style={{ fontSize: 11, color: "#9B9890", marginTop: 2 }}>📧 {u.email}</p>
+                                    <p style={{ fontSize: 11, color: "#9B9890" }}>🔑 {u.pass}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// APP ROOT (with Login Gate)
+// ─────────────────────────────────────────────────────────────────────────────
+function AppRoot() {
+    const [user, setUser] = useState(null);
+    if (!user) return <LoginPage onLogin={setUser} />;
+    return <SAHARA currentUser={user} onLogout={() => setUser(null)} />;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // ROOT
 // ─────────────────────────────────────────────────────────────────────────────
-function SAHARA() {
+function SAHARA({ currentUser, onLogout }) {
     const [dark, setDark] = useState(false);
     const [view, setView] = useState("senior");
     const [vitals, setVitals] = useState({ bp: "120/80", sugar: "95", heart: "72", hb: "12.5" });
@@ -340,9 +518,18 @@ _Via SAHARA Health Companion · ${timeStr}_`);
                                     style={{ width: 44, height: 44, borderRadius: 13, background: th.s2, border: `1.5px solid ${th.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: th.sub, transition: "all .2s" }}>
                                     {dark ? <Ic.Sun w={20} /> : <Ic.Moon w={20} />}
                                 </button>
-                                <button style={{ width: 44, height: 44, borderRadius: 13, background: `linear-gradient(140deg,${th.accent},${dark ? "#555" : "#333"})`, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: th.atext, boxShadow: "0 2px 10px rgba(0,0,0,.15)" }}>
-                                    <Ic.User w={20} />
-                                </button>
+                                <div style={{ display: "flex", alignItems: "center", gap: 9, background: th.s2, border: `1.5px solid ${th.border}`, borderRadius: 13, padding: "5px 12px 5px 6px" }}>
+                                        <span style={{ fontSize: 26 }}>{currentUser?.avatar || "👤"}</span>
+                                        <div style={{ lineHeight: 1.2 }}>
+                                            <p style={{ fontSize: 13, fontWeight: 700, color: th.text }}>{currentUser?.name || "Guest"}</p>
+                                            <p style={{ fontSize: 11, color: th.muted, textTransform: "capitalize" }}>{currentUser?.role || "user"}</p>
+                                        </div>
+                                    </div>
+                                    <button className="b" onClick={onLogout} title="Sign Out"
+                                        style={{ width: 44, height: 44, borderRadius: 13, background: dark ? "#2c0808" : "#fef2f2", border: `1.5px solid ${G.red}44`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: G.red }}
+                                        >
+                                        <Svg w={18}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></Svg>
+                                    </button>
                                 {isCloud && (
                                     <div className="nd" style={{ position: "fixed", bottom: 100, right: 24, background: th.surface, padding: "8px 16px", borderRadius: 12, border: `1.5px solid ${th.border}`, boxShadow: th.shadow, display: "flex", alignItems: "center", gap: 8, zIndex: 1000 }}>
                                         <span className="br" style={{ width: 8, height: 8, borderRadius: "50%", background: G.green }} />

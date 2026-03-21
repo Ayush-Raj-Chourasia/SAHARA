@@ -42,7 +42,7 @@ def build_standalone():
   <!-- Render -->
   <script type="text/babel">
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<SAHARA />);
+    root.render(<AppRoot />);
   </script>
 </body>
 </html>"""
