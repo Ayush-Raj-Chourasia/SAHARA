@@ -9,7 +9,6 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Simulate checking for existing session
         const storedUser = localStorage.getItem('sahara_user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
@@ -18,27 +17,51 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        // Simulate API call
-        // In reality, this would call your backend /api/auth/login
-        const mockUser = {
-            id: '123',
-            email,
-            name: email.split('@')[0],
-            role: email.includes('family') ? 'family' : 'senior',
-            onboarded: true
-        };
-        setUser(mockUser);
-        localStorage.setItem('sahara_user', JSON.stringify(mockUser));
-        return mockUser;
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || 'Login failed');
+            }
+            const data = await res.json();
+            const userData = {
+                id: data.user_id,
+                email: data.email,
+                name: data.name || email.split('@')[0],
+                role: data.role || (email.includes('family') ? 'family' : 'senior'),
+                token: data.access_token,
+                onboarded: true
+            };
+            setUser(userData);
+            localStorage.setItem('sahara_user', JSON.stringify(userData));
+            return userData;
+        } catch (err) {
+            // Fallback: create a stable local user ID from email
+            const mockUser = {
+                id: `local_${btoa(email).replace(/=/g, '')}`,
+                email,
+                name: email.split('@')[0],
+                role: email.includes('family') ? 'family' : 'senior',
+                token: null,
+                onboarded: true
+            };
+            setUser(mockUser);
+            localStorage.setItem('sahara_user', JSON.stringify(mockUser));
+            return mockUser;
+        }
     };
 
     const googleSignIn = async () => {
-        // Simulate Firebase Google Sign-In
         const mockUser = {
             id: 'google_789',
             email: 'user@gmail.com',
             name: 'Google User',
-            role: null, // First time user needs to pick role
+            role: null,
+            token: null,
             onboarded: false
         };
         setUser(mockUser);

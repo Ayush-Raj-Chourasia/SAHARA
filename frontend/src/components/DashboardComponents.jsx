@@ -7,6 +7,8 @@ export const G = {
     amber: "#b45309", aBg: "#fffbeb", aBd: "#fcd34d", aBgD: "#1c1200", aBdD: "#92400e",
     red: "#dc2626", rBg: "#fff1f2", rBd: "#fecada", rBgD: "#1c0404", rBdD: "#991b1b",
     blue: "#2563eb", bBg: "#eff6ff", bBd: "#bfdbfe", bBgD: "#0a1628", bBdD: "#1d4ed8",
+    orange: "#ea580c", oBg: "#fff7ed", oBd: "#fed7aa", oBgD: "#1c0a00", oBdD: "#9a3412",
+    purple: "#7c3aed", pBg: "#faf5ff", pBd: "#ddd6fe",
     wa: "#25D366",
 };
 

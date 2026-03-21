@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { G } from './DashboardComponents';
 import { Mic, X, Send, Sparkles, Volume2 } from './Icons';
+import { useAuth } from '../context/AuthContext';
 
 const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
+    const { user } = useAuth();
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState('');
     const [status, setStatus] = useState('tap_to_speak'); // tap_to_speak, listening, analyzing, success
@@ -29,19 +31,43 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
 
     const analyzeMeal = async (text) => {
         setStatus('analyzing');
-        // Simulate Gemini API call
-        setTimeout(() => {
-            const mockResult = {
+        try {
+            const response = await fetch('/api/nutrition/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    meal_text: text,
+                    user_name: 'User',
+                    age: 65,
+                    gender: 'unknown',
+                    weight_kg: 65.0
+                })
+            });
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            const nutrition = data.nutrition || {};
+            const result = {
                 meal: text,
-                kcal: 450,
-                protein: 15,
-                iron: 4.2,
-                suggestion: "Good protein choice! Add a bowl of curd for better digestion.",
-                suggestion_hi: "Accha meal hai! Thoda dahi bhi lijiye."
+                kcal: nutrition.calories ?? '—',
+                protein: nutrition.protein ?? '—',
+                iron: nutrition.iron_mg ?? '—',
+                suggestion: data.suggestion_english || '',
+                suggestion_hi: data.suggestion_hindi || data.suggestion_english || 'Accha khana khaya!'
             };
-            setAnalysis(mockResult);
+            setAnalysis(result);
             setStatus('success');
-        }, 2000);
+        } catch (err) {
+            console.error('Nutrition analysis failed:', err);
+            setAnalysis({
+                meal: text,
+                kcal: '—',
+                protein: '—',
+                iron: '—',
+                suggestion: 'Could not analyze meal. Please try again.',
+                suggestion_hi: 'Vishleshan nahi ho saka. Dobara try karein.'
+            });
+            setStatus('success');
+        }
     };
 
     return (
@@ -108,7 +134,26 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
                             </div>
                         </div>
 
-                        <button onClick={() => { onAdd(analysis); onClose(); }} style={{ width: '100%', padding: 22, borderRadius: 24, background: G.orange, color: '#FFF', border: 'none', fontSize: 20, fontWeight: 900, cursor: 'pointer', boxShadow: '0 10px 30px rgba(234,88,12,0.3)' }}>
+                        <button onClick={async () => {
+                            // Save to MongoDB before adding to UI
+                            try {
+                                await fetch('/api/nutrition/log', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        user_id: user?.id || 'default',
+                                        meal: analysis.meal,
+                                        kcal: Number(analysis.kcal) || 0,
+                                        protein: Number(analysis.protein) || 0,
+                                        iron: Number(analysis.iron) || 0,
+                                        suggestion_hi: analysis.suggestion_hi || '',
+                                        suggestion_en: analysis.suggestion || ''
+                                    })
+                                });
+                            } catch (e) { console.error('Nutrition log save failed', e); }
+                            onAdd(analysis);
+                            onClose();
+                        }} style={{ width: '100%', padding: 22, borderRadius: 24, background: G.orange, color: '#FFF', border: 'none', fontSize: 20, fontWeight: 900, cursor: 'pointer', boxShadow: '0 10px 30px rgba(234,88,12,0.3)' }}>
                             Add to My Diary
                         </button>
                     </div>

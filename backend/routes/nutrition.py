@@ -1,3 +1,5 @@
+from motor.motor_asyncio import AsyncIOMotorClient
+from datetime import datetime, timedelta
 import os
 import joblib
 import pandas as pd
@@ -12,6 +14,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 router = APIRouter()
+
+# MongoDB
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+_mongo_client = AsyncIOMotorClient(MONGO_URI)
+_db = _mongo_client.sahara
+nutrition_logs_col = _db.nutrition_logs
+
 
 # Configure Gemini
 GENAI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -213,3 +222,41 @@ async def analyze_meal(request: NutritionAnalyzeRequest):
             "tip": "Describe meal in English and retry",
             "details": str(e)
         }
+
+
+class NutritionLogEntry(BaseModel):
+    user_id: str
+    meal: str
+    kcal: float
+    protein: float
+    iron: float = 0.0
+    suggestion_hi: str = ""
+    suggestion_en: str = ""
+
+
+@router.post("/log")
+async def log_nutrition(entry: NutritionLogEntry):
+    try:
+        doc = entry.dict()
+        doc["timestamp"] = datetime.utcnow().isoformat()
+        await nutrition_logs_col.insert_one(doc)
+        return {"status": "saved"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/today/{user_id}")
+async def get_today_nutrition(user_id: str):
+    try:
+        since = (datetime.utcnow() - timedelta(hours=24)).isoformat()
+        cursor = nutrition_logs_col.find({
+            "user_id": user_id,
+            "timestamp": {"$gte": since}
+        }).sort("timestamp", -1)
+        logs = await cursor.to_list(length=100)
+        for l in logs:
+            l["_id"] = str(l["_id"])
+        return {"logs": logs}
+    except Exception as e:
+        return {"logs": [], "error": str(e)}
+

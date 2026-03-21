@@ -55,7 +55,7 @@ function AppContent() {
     const [dark, setDark] = useState(false);
     
     // Vitals and other states
-    const [vitals, setVitals] = useState({ bp: "120/80", sugar: "95", heart: "72" });
+    const [vitals, setVitals] = useState({ bp: "—/—", sugar: "—", heart: "—" });
     const [medTaken, setMedTaken] = useState(false);
     const [sleep, setSleep] = useState(7);
     const [steps, setSteps] = useState(3200);
@@ -65,12 +65,57 @@ function AppContent() {
     const [logs, setLogs] = useState([]);
     const [now, setNow] = useState(new Date());
     const [show, setShow] = useState(true);
+    const [score, setScore] = useState(null); // null = no data yet
 
     const th = dark ? DARK : LIGHT;
 
-    const kcal = foodLog.reduce((s, f) => s + f.kcal, 0);
-    const prot = foodLog.reduce((s, f) => s + f.protein, 0);
-    const score = 85; // Placeholder
+    const kcal = foodLog.reduce((s, f) => s + (Number(f.kcal) || 0), 0);
+    const prot = foodLog.reduce((s, f) => s + (Number(f.protein) || 0), 0);
+
+    // Fetch persisted data when user logs in
+    useEffect(() => {
+        if (!user?.id) return;
+        const uid = user.id;
+
+        // Fetch latest health summary
+        fetch(`/api/health/summary/${uid}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.latest_score) setScore(data.latest_score);
+            })
+            .catch(() => {});
+
+        // Fetch today's nutrition logs
+        fetch(`/api/nutrition/today/${uid}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.logs && data.logs.length > 0) {
+                    const mapped = data.logs.map(l => ({
+                        meal: l.meal,
+                        kcal: l.kcal,
+                        protein: l.protein,
+                        suggestion_hi: l.suggestion_hi
+                    }));
+                    setFoodLog(mapped);
+                }
+            })
+            .catch(() => {});
+
+        // Fetch latest vitals from health log
+        fetch(`/api/health/history/${uid}?days=1`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.logs && data.logs.length > 0) {
+                    const latest = data.logs[0];
+                    setVitals({
+                        bp: `${latest.bp_sys}/${latest.bp_dia}`,
+                        sugar: String(latest.blood_sugar),
+                        heart: String(latest.hemoglobin)
+                    });
+                }
+            })
+            .catch(() => {});
+    }, [user?.id]);
 
     const pushAlert = (key, msg) => {
         setSent(s => ({ ...s, [key]: true }));
