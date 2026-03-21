@@ -153,11 +153,11 @@ function LoginPage({ onLogin }) {
             `}</style>
 
             {/* Logo */}
-            <div className="lu" style={{ animationDelay: "0s", marginBottom: 44, display: "flex", alignItems: "center", gap: 11 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 11, background: "#131313", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Ic.Shield w={20} style={{ color: "#fff" }} />
+            <div className="lu" style={{ animationDelay: "0s", marginBottom: 44, display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 13, background: "#131313", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Ic.Shield w={24} style={{ color: "#fff" }} />
                 </div>
-                <span style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-.02em", color: "#131313" }}>SAHARA</span>
+                <span style={{ fontSize: 34, fontWeight: 800, letterSpacing: "-.02em", color: "#131313" }}>SAHARA</span>
             </div>
 
             <div className="lu" style={{ animationDelay: ".05s", width: "100%", maxWidth: 420 }}>
