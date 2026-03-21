@@ -117,7 +117,8 @@ async def log_health(request: HealthLogRequest):
             ]], columns=features_list)
             
             health_pred = int(health_model.predict(input_df)[0])
-            health_conf = float(max(health_model.predict_proba(input_df)[0]))
+            # XGBRegressor has no predict_proba, use 1.0 as placeholder
+            health_conf = 1.0
         else:
             health_pred = -1
             health_conf = 0.0
