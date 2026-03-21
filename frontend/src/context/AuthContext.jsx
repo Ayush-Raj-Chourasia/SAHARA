@@ -97,30 +97,48 @@ export const AuthProvider = ({ children }) => {
     };
 
     const googleSignIn = async (role = 'senior') => {
-        const credential = await signInWithPopup(auth, googleProvider);
-        const token = await credential.user.getIdToken();
-        const res = await apiFetch('/api/auth/google', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id_token: token,
-                google_uid: credential.user.uid,
-                name: credential.user.displayName || '',
-                email: credential.user.email || '',
-                photo_url: credential.user.photoURL,
-                role,
-            }),
-        });
+        try {
+            console.log('Starting Firebase Google sign-in...');
+            const credential = await signInWithPopup(auth, googleProvider);
+            console.log('Firebase sign-in successful:', credential.user.email);
+            
+            const token = await credential.user.getIdToken();
+            console.log('ID token obtained');
+            
+            const res = await apiFetch('/api/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_token: token,
+                    google_uid: credential.user.uid,
+                    name: credential.user.displayName || '',
+                    email: credential.user.email || '',
+                    photo_url: credential.user.photoURL,
+                    role,
+                }),
+            });
 
-        if (!res.ok) {
-            const message = await res.text();
-            throw new Error(message || 'Google sign-in failed');
+            if (!res.ok) {
+                const message = await res.text();
+                console.error('Backend error:', message);
+                throw new Error(message || 'Backend authentication failed');
+            }
+
+            const data = await res.json();
+            localStorage.setItem('sahara_token', data.access_token);
+            persistUser(data.user);
+            return data.user;
+        } catch (error) {
+            console.error('Google sign-in error:', error);
+            if (error.code === 'auth/popup-blocked') {
+                throw new Error('Popup blocked! Please enable popups for this site.');
+            } else if (error.code === 'auth/popup-closed-by-user') {
+                throw new Error('Google sign-in cancelled.');
+            } else if (error.code === 'auth/operation-not-supported-in-this-environment') {
+                throw new Error('Google sign-in not available in this environment.');
+            }
+            throw error;
         }
-
-        const data = await res.json();
-        localStorage.setItem('sahara_token', data.access_token);
-        persistUser(data.user);
-        return data.user;
     };
 
     const logout = () => {

@@ -20,7 +20,9 @@ const RegisterPage = ({ onBack }) => {
       const user = await googleSignIn(role);
       navigate(user?.onboarded ? (user.role === 'senior' ? '/senior' : '/family') : '/onboarding');
     } catch (err) {
-      alert("Google Sign-In failed");
+      console.error('Google sign-in error:', err);
+      const errorMsg = err.message || 'Google Sign-In failed. Please check browser console for details.';
+      alert(errorMsg);
     }
     setLoading(false);
   };
