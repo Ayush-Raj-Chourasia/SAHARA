@@ -57,7 +57,7 @@ async def get_nutrition(req: NutritionRequest):
         
         # Extract JSON from response text
         start = text.find('[')
-        end = text.lastIndexOf(']') + 1
+        end = text.rfind(']') + 1
         if start != -1 and end > 0:
             json_str = text[start:end]
             results = json.loads(json_str)
@@ -65,7 +65,7 @@ async def get_nutrition(req: NutritionRequest):
         else:
             # Try to parse as single object if array not found
             start = text.find('{')
-            end = text.lastIndexOf('}') + 1
+            end = text.rfind('}') + 1
             if start != -1 and end > 0:
                 json_str = text[start:end]
                 results = json.loads(json_str)
