@@ -8,7 +8,7 @@ app = FastAPI(title="SAHARA API", version="1.0.0")
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "https://sahara-flax.vercel.app"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
