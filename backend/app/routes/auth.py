@@ -232,11 +232,14 @@ async def login(user_login: dict):
 
 @router.post("/google")
 async def google_login(payload: GoogleAuthRequest):
+    print(f"[AUTH] Google login starting for email: {payload.email}")
     email = payload.email.strip().lower()
     role = payload.role if payload.role in ["senior", "family"] else "senior"
+    print(f"[AUTH] Email normalized: {email}, Role: {role}")
 
     user = await users_collection.find_one({"email": email})
     is_new = False
+    print(f"[AUTH] User lookup complete. Is new: {not user}")
 
     if not user:
         is_new = True
@@ -261,6 +264,7 @@ async def google_login(payload: GoogleAuthRequest):
             user_doc["invite_code"] = create_invite_code()
         insert_result = await users_collection.insert_one(user_doc)
         user = await users_collection.find_one({"_id": insert_result.inserted_id})
+        print(f"[AUTH] New user created: {email}")
     else:
         update_data = {
             "name": payload.name or user.get("name"),
@@ -271,8 +275,10 @@ async def google_login(payload: GoogleAuthRequest):
             update_data["invite_code"] = create_invite_code()
         await users_collection.update_one({"_id": user["_id"]}, {"$set": update_data})
         user = await users_collection.find_one({"_id": user["_id"]})
+        print(f"[AUTH] Existing user updated: {email}")
 
     access_token = create_access_token(data={"sub": email})
+    print(f"[AUTH] Token created, returning success")
     return {
         "access_token": access_token,
         "token_type": "bearer",

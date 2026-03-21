@@ -11,6 +11,24 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
+    from fastapi import Request
+    from fastapi.responses import JSONResponse
+    import traceback
+
+    # Global error handler for debugging
+    @app.middleware("http")
+    async def error_handler_middleware(request: Request, call_next):
+        try:
+            response = await call_next(request)
+            return response
+        except Exception as e:
+            print(f"[ERROR] {request.method} {request.url.path}")
+            print(f"[ERROR] {str(e)}")
+            print(f"[ERROR] {traceback.format_exc()}")
+            return JSONResponse(
+                status_code=500,
+                content={"detail": f"Error: {str(e)}", "type": type(e).__name__}
+            )
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],

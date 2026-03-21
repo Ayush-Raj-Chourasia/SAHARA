@@ -159,13 +159,20 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error('[AUTH] Google sign-in error:', error);
             
+               // Firebase config errors
+               if (error.code === 'auth/auth-domain-config-required') {
+                   throw new Error('❌ Firebase not configured: OAuth consent screen needs setup in Firebase Console. Contact admin.');
+               } else if (error.code === 'auth/operation-not-allowed') {
+                   throw new Error('❌ Google sign-in is disabled in Firebase. Admin needs to enable it in Authentication settings.');
+               }
+           
             // Network/CORS errors
             if (error.message?.includes('Failed to fetch')) {
-                throw new Error('❌ Network error: Cannot reach backend. Check if backend is running and CORS is enabled.');
+                   throw new Error('❌ Network error: Cannot reach backend. Backend may have crashed. Check server status.');
             } else if (error.message?.includes('CORS')) {
-                throw new Error('❌ CORS error: Backend is blocking requests. Server admin needs to enable CORS.');
+                   throw new Error('❌ CORS error: Backend not properly configured. Admin needs to enable CORS.');
             } else if (error.message?.includes('net::ERR_FAILED')) {
-                throw new Error('❌ Connection failed: Backend server may be down. Try again in a moment.');
+                   throw new Error('❌ Connection failed: Backend server error (500). Try again in a moment.');
             } else if (error.message?.includes('timeout')) {
                 throw new Error('❌ Request timeout: Backend server is taking too long. Please try again.');
             }

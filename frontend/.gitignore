@@ -6,3 +6,5 @@ dist
 Deploy/
 .gemini/
 build/
+.vercel
+.env*.local
