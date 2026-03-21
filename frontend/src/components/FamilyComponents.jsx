@@ -1,8 +1,8 @@
 import React from 'react';
-import { G, Card, CH, Label } from './DashboardComponents';
-import { Sparkles, MapPin, Calendar, CheckCircle, AlertCircle, Clock } from './Icons';
+import { G, Label } from './DashboardComponents';
+import { Sparkles, MapPin, AlertCircle, Clock } from './Icons';
 
-export const AIWeeklySummary = ({ th, dark }) => {
+export const AIWeeklySummary = ({ summaryText, nutritionAdherence, medsCompliance }) => {
     return (
         <div style={{ background: 'linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%)', padding: 24, borderRadius: 28, border: '1px solid #E4E2DB', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: -10, right: -10, opacity: 0.1 }}><Sparkles size={120} /></div>
@@ -13,17 +13,17 @@ export const AIWeeklySummary = ({ th, dark }) => {
             </div>
 
             <p style={{ fontSize: 17, fontWeight: 700, color: '#111827', lineHeight: 1.5, marginBottom: 20 }}>
-                "Ratan Ji's haemoglobin dropped from <strong>11.8 to 10.6</strong> this week. While still within range, the downward trend suggests a dietary review for iron-rich foods."
+                {summaryText}
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div style={{ background: 'rgba(255,255,255,0.6)', padding: 15, borderRadius: 16 }}>
                     <Label>Nutrition Adherence</Label>
-                    <p style={{ fontSize: 24, fontWeight: 900, color: G.green }}>92%</p>
+                    <p style={{ fontSize: 24, fontWeight: 900, color: G.green }}>{nutritionAdherence}%</p>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.6)', padding: 15, borderRadius: 16 }}>
                     <Label>Meds Compliance</Label>
-                    <p style={{ fontSize: 24, fontWeight: 900, color: G.green }}>88%</p>
+                    <p style={{ fontSize: 24, fontWeight: 900, color: G.green }}>{medsCompliance}%</p>
                 </div>
             </div>
         </div>
@@ -31,11 +31,15 @@ export const AIWeeklySummary = ({ th, dark }) => {
 };
 
 export const SOSHistory = ({ th, events = [] }) => {
-    const mockEvents = [
-        { id: 1, time: '2 hours ago', loc: 'Saheed Nagar, BBSR', status: 'Resolved', coord: '20.2961,85.8245' },
-        { id: 2, time: '3 days ago', loc: 'Nayapalli, BBSR', status: 'False Alarm', coord: '20.3012,85.8189' }
-    ];
-    const data = events.length > 0 ? events : mockEvents;
+    const data = events;
+
+    if (!data.length) {
+        return (
+            <div style={{ background: th.s2, borderRadius: 16, border: `1.5px solid ${th.border}`, padding: 16 }}>
+                <p style={{ fontWeight: 700 }}>No SOS events found for the linked senior account.</p>
+            </div>
+        );
+    }
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

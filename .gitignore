@@ -198,3 +198,10 @@ temp/
 .kiro
 
 documents\SAHARA_Complete_Blueprint.html
+
+# Keep deploy manifests for backend service tracked
+!backend/requirements.txt
+!backend/Procfile
+!backend/railway.json
+.vercel
+.env*.local

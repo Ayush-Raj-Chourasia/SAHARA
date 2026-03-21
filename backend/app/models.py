@@ -27,12 +27,46 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None
 
+
+class GoogleAuthRequest(BaseModel):
+    id_token: Optional[str] = None
+    google_uid: Optional[str] = None
+    name: str
+    email: EmailStr
+    role: str = "senior"
+    photo_url: Optional[str] = None
+
+
+class ProfileCompleteRequest(BaseModel):
+    phone: str
+    name: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[str] = None
+    weight_kg: Optional[float] = None
+    conditions: List[str] = []
+    location: Optional[str] = None
+    language_preference: Optional[str] = None
+    living_status: Optional[str] = None
+    family_proximity: Optional[str] = None
+    relationship: Optional[str] = None
+    proximity: Optional[str] = None
+    invite_code: Optional[str] = None
+    senior_email: Optional[str] = None
+
+
+class FamilyLinkRequest(BaseModel):
+    invite_code: Optional[str] = None
+    senior_email: Optional[str] = None
+    relationship: str
+    proximity: str
+
 class HealthLogCreate(BaseModel):
     user_id: str
     bp_sys: int
     bp_dia: int
     sugar: int
     heart_rate: int
+    haemoglobin: Optional[float] = None
     weight: Optional[float] = None
     fatigue: Optional[int] = Field(None, ge=1, le=10) # 1-10
     timestamp: datetime = Field(default_factory=datetime.utcnow)

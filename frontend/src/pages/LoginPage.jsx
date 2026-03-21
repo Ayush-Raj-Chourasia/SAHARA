@@ -25,10 +25,10 @@ const LoginPage = ({ onBack }) => {
   const handleGoogle = async () => {
     setLoading(true);
     try {
-      await googleSignIn();
-      navigate('/onboarding');
+      const user = await googleSignIn();
+      navigate(user?.onboarded ? (user.role === 'senior' ? '/senior' : '/family') : '/onboarding');
     } catch (err) {
-      alert("Google Sign-In failed");
+      alert(err?.message || "Google Sign-In failed");
     }
     setLoading(false);
   };

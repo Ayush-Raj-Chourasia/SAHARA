@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { G } from './DashboardComponents';
 import { Mic, X, Send, Sparkles, Volume2 } from './Icons';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../api/client';
 
 const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
     const { user } = useAuth();
@@ -9,6 +10,7 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
     const [transcript, setTranscript] = useState('');
     const [status, setStatus] = useState('tap_to_speak'); // tap_to_speak, listening, analyzing, success
     const [analysis, setAnalysis] = useState(null);
+    const [mealType, setMealType] = useState('snacks');
 
     const startListening = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -31,46 +33,94 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
 
     const analyzeMeal = async (text) => {
         setStatus('analyzing');
+
         try {
-            const response = await fetch('/api/nutrition/analyze', {
+            const response = await apiFetch('/api/nutrition/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    meal_text: text,
-                    user_name: 'User',
-                    age: 65,
-                    gender: 'unknown',
-                    weight_kg: 65.0
+                    prompt: text,
+                    image: null,
+                    user_id: user?.id || 'default_user'
                 })
             });
+
             const data = await response.json();
-            if (data.error) throw new Error(data.error);
-            const nutrition = data.nutrition || {};
+            const meals = data?.results || [];
+
+            if (!response.ok || meals.length === 0) {
+                throw new Error(data?.detail || 'No nutrition analysis received');
+            }
+
+            const totalKcal = meals.reduce((sum, m) => sum + (Number(m.kcal) || 0), 0);
+            const totalProtein = meals.reduce((sum, m) => sum + (Number(m.protein_g) || 0), 0);
+            const totalIron = meals.reduce((sum, m) => sum + (Number(m.iron_mg) || 0), 0);
+
+            const dynamicTip = meals[0]?.care_tip ||
+                `Good meal choice: ${text}. Keep hydration and balanced portions in mind.`;
+
             const result = {
-                meal: data.food_name || text,
-                meal_type: data.meal_type || 'Snacks',
-                raw_text: text,
-                kcal: nutrition.calories ?? '—',
-                protein: nutrition.protein ?? '—',
-                iron: nutrition.iron_mg ?? '—',
-                suggestion: data.suggestion_english || '',
-                suggestion_hi: data.suggestion_hindi || data.suggestion_english || 'Accha khana khaya!'
+                meal: text,
+                kcal: totalKcal,
+                protein: Number(totalProtein.toFixed(1)),
+                iron_mg: Number(totalIron.toFixed(1)),
+                meal_type: mealType,
+                suggestion: dynamicTip,
+                suggestion_hi: dynamicTip,
+                parsed_meals: meals,
+                source: data?.source || 'api'
             };
+
             setAnalysis(result);
             setStatus('success');
         } catch (err) {
             console.error('Nutrition analysis failed:', err);
             setAnalysis({
                 meal: text,
-                meal_type: 'Snacks',
-                raw_text: text,
                 kcal: '—',
                 protein: '—',
-                iron: '—',
-                suggestion: 'Could not analyze meal. Please try again.',
-                suggestion_hi: 'Vishleshan nahi ho saka. Dobara try karein.'
+                iron_mg: '—',
+                meal_type: 'snack',
+                suggestion: 'Could not analyze meal right now. Please try again.',
+                suggestion_hi: 'Abhi analysis nahi ho paaya. Kripya phir se try karein.'
             });
             setStatus('success');
+        }
+    };
+
+    const handleConfirm = async () => {
+        try {
+            const token = localStorage.getItem('sahara_token');
+            const userObj = JSON.parse(localStorage.getItem('sahara_user') || '{}');
+            
+            const res = await apiFetch('/api/nutrition/log', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    user_id: userObj.id || "mock_id",
+                    meal_type: analysis.meal_type || "snack",
+                    food_name: analysis.meal,
+                    kcal: analysis.kcal,
+                    protein: analysis.protein,
+                    iron_mg: analysis.iron_mg
+                })
+            });
+
+            if (res.ok) {
+                onAdd(analysis);
+                onClose();
+            } else {
+                alert("Failed to sync nutrition log");
+                onAdd(analysis);
+                onClose();
+            }
+        } catch (err) {
+            console.error("Nutrition Sync Error:", err);
+            onAdd(analysis);
+            onClose();
         }
     };
 
@@ -85,6 +135,26 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
                     <div className="animate-in fade-in zoom-in">
                         <h2 style={{ color: '#FFF', fontSize: 32, fontWeight: 900, marginBottom: 10 }}>What did you eat?</h2>
                         <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 18, marginBottom: 50 }}>Speak in Hindi, Odia, or English</p>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 24 }}>
+                            {['breakfast', 'lunch', 'snacks', 'dinner'].map((m) => (
+                                <button
+                                    key={m}
+                                    onClick={() => setMealType(m)}
+                                    style={{
+                                        border: 'none',
+                                        borderRadius: 12,
+                                        padding: '10px 12px',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        background: mealType === m ? G.orange : 'rgba(255,255,255,0.15)',
+                                        color: '#fff',
+                                        textTransform: 'capitalize',
+                                    }}
+                                >
+                                    {m}
+                                </button>
+                            ))}
+                        </div>
                         <button onClick={startListening} style={{ width: 120, height: 120, borderRadius: '50%', background: G.orange, border: 'none', color: '#FFF', cursor: 'pointer', boxShadow: '0 0 50px rgba(234,88,12,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
                             <Mic size={48} />
                         </button>
@@ -138,27 +208,7 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
                             </div>
                         </div>
 
-                        <button onClick={async () => {
-                            // Save to MongoDB before adding to UI
-                            try {
-                                await fetch('/api/nutrition/log', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        user_id: user?.id || 'default',
-                                        meal: analysis.meal,
-                                        meal_type: analysis.meal_type || 'Snacks',
-                                        kcal: Number(analysis.kcal) || 0,
-                                        protein: Number(analysis.protein) || 0,
-                                        iron: Number(analysis.iron) || 0,
-                                        suggestion_hi: analysis.suggestion_hi || '',
-                                        suggestion_en: analysis.suggestion || ''
-                                    })
-                                });
-                            } catch (e) { console.error('Nutrition log save failed', e); }
-                            onAdd(analysis);
-                            onClose();
-                        }} style={{ width: '100%', padding: 22, borderRadius: 24, background: G.orange, color: '#FFF', border: 'none', fontSize: 20, fontWeight: 900, cursor: 'pointer', boxShadow: '0 10px 30px rgba(234,88,12,0.3)' }}>
+                        <button onClick={handleConfirm} style={{ width: '100%', padding: 22, borderRadius: 24, background: G.orange, color: '#FFF', border: 'none', fontSize: 20, fontWeight: 900, cursor: 'pointer', boxShadow: '0 10px 30px rgba(234,88,12,0.3)' }}>
                             Add to My Diary
                         </button>
                     </div>

@@ -11,5 +11,5 @@ app.include_router(nutrition_router, prefix="/api/nutrition")
 app.include_router(chat_router,      prefix="/api/ai")
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", 8080))
     uvicorn.run(app, host="0.0.0.0", port=port)
