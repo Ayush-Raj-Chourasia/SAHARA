@@ -18,7 +18,7 @@ export const AIWeeklySummary = ({ th, dark }) => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div style={{ background: 'rgba(255,255,255,0.6)', padding: 15, borderRadius: 16 }}>
-                    <Label>Nutrition Adherence</害>
+                    <Label>Nutrition Adherence</Label>
                     <p style={{ fontSize: 24, fontWeight: 900, color: G.green }}>92%</p>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.6)', padding: 15, borderRadius: 16 }}>
