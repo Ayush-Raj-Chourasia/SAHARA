@@ -2,6 +2,7 @@ const CACHE_NAME = 'sahara-v1';
 const urlsToCache = [
   '/',
   '/index.html',
+  '/google_icon.png',
   '/favicon.ico'
 ];
 

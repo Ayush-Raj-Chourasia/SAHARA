@@ -38,7 +38,7 @@ const RegisterPage = ({ onBack }) => {
         </div>
 
         <button onClick={handleGoogle} disabled={loading} className="w-full py-5 bg-white border-2 border-[#E4E2DB] text-[#111827] rounded-[24px] text-lg font-black flex items-center justify-center gap-4 hover:bg-gray-50 transition-all mb-8">
-          <span style={{ fontSize: 24 }}>🔐</span>
+          <img src="/google_icon.png" alt="Google" style={{ width: 28, height: 28 }} />
           Sign up with Google
         </button>
 
