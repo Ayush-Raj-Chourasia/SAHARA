@@ -48,9 +48,15 @@ def detect_anomaly(historical_values: List[float], new_value: float, param: str)
 
 @router.post("/log")
 async def log_health(log: HealthLogCreate):
-    # Fetch history for anomaly detection
-    cursor = health_logs_collection.find({"user_id": log.user_id}).sort("timestamp", -1).limit(7)
-    history = await cursor.to_list(length=7)
+    try:
+        # Fetch history for anomaly detection
+        cursor = health_logs_collection.find({"user_id": log.user_id}).sort("timestamp", -1).limit(7)
+        history = await cursor.to_list(length=7)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database unavailable or authentication failed: {str(e)}"
+        )
     
     anomalies = []
     if history:
@@ -75,17 +81,23 @@ async def log_health(log: HealthLogCreate):
     log_dict["timestamp"] = datetime.utcnow()
     log_dict["anomalies"] = anomalies
     
-    result = await health_logs_collection.insert_one(log_dict)
-    
-    # Update user's latest score
-    await users_collection.update_one(
-        {"_id": log.user_id},
-        {"$set": {
-            "latest_score": score, 
-            "last_sync": datetime.utcnow(),
-            "latest_anomalies": anomalies if anomalies else []
-        }}
-    )
+    try:
+        result = await health_logs_collection.insert_one(log_dict)
+        
+        # Update user's latest score
+        await users_collection.update_one(
+            {"_id": log.user_id},
+            {"$set": {
+                "latest_score": score, 
+                "last_sync": datetime.utcnow(),
+                "latest_anomalies": anomalies if anomalies else []
+            }}
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database write failed: {str(e)}"
+        )
     
     return {
         "status": "success", 
@@ -96,8 +108,14 @@ async def log_health(log: HealthLogCreate):
 
 @router.get("/history/{user_id}")
 async def get_history(user_id: str, limit: int = 10):
-    cursor = health_logs_collection.find({"user_id": user_id}).sort("timestamp", -1).limit(limit)
-    logs = await cursor.to_list(length=limit)
+    try:
+        cursor = health_logs_collection.find({"user_id": user_id}).sort("timestamp", -1).limit(limit)
+        logs = await cursor.to_list(length=limit)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database read failed: {str(e)}"
+        )
     for log in logs:
         log["_id"] = str(log["_id"])
     return logs

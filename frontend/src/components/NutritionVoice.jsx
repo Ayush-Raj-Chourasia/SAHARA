@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { G } from './DashboardComponents';
 import { Mic, X, Send, Sparkles, Volume2 } from './Icons';
+import { useAuth } from '../context/AuthContext';
 
 const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
+    const { user } = useAuth();
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState('');
     const [status, setStatus] = useState('tap_to_speak'); // tap_to_speak, listening, analyzing, success
@@ -29,23 +31,59 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
 
     const analyzeMeal = async (text) => {
         setStatus('analyzing');
-        
-        // In a real app, this would call /api/ai/nutrition-parse
-        // For this phase, we simulate the AI logic but ENSURE the data 
-        // structure matches our backend `NutritionLogCreate` model.
-        setTimeout(() => {
-            const mockResult = {
+
+        try {
+            const response = await fetch('/api/nutrition/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: text,
+                    image: null,
+                    user_id: user?.id || 'default_user'
+                })
+            });
+
+            const data = await response.json();
+            const meals = data?.results || [];
+
+            if (!response.ok || meals.length === 0) {
+                throw new Error(data?.detail || 'No nutrition analysis received');
+            }
+
+            const totalKcal = meals.reduce((sum, m) => sum + (Number(m.kcal) || 0), 0);
+            const totalProtein = meals.reduce((sum, m) => sum + (Number(m.protein_g) || 0), 0);
+            const totalIron = meals.reduce((sum, m) => sum + (Number(m.iron_mg) || 0), 0);
+
+            const dynamicTip = meals[0]?.care_tip ||
+                `Good meal choice: ${text}. Keep hydration and balanced portions in mind.`;
+
+            const result = {
                 meal: text,
-                kcal: 450,
-                protein: 15.5,
-                iron_mg: 3.8,
-                meal_type: "snack", // Default
-                suggestion: "Good protein choice! Add a bowl of curd for better iron absorption.",
-                suggestion_hi: "Accha meal hai! Thoda dahi bhi lijiye."
+                kcal: totalKcal,
+                protein: Number(totalProtein.toFixed(1)),
+                iron_mg: Number(totalIron.toFixed(1)),
+                meal_type: "snack",
+                suggestion: dynamicTip,
+                suggestion_hi: dynamicTip,
+                parsed_meals: meals,
+                source: data?.source || 'api'
             };
-            setAnalysis(mockResult);
+
+            setAnalysis(result);
             setStatus('success');
-        }, 1500);
+        } catch (err) {
+            console.error('Nutrition analysis failed:', err);
+            setAnalysis({
+                meal: text,
+                kcal: '—',
+                protein: '—',
+                iron_mg: '—',
+                meal_type: 'snack',
+                suggestion: 'Could not analyze meal right now. Please try again.',
+                suggestion_hi: 'Abhi analysis nahi ho paaya. Kripya phir se try karein.'
+            });
+            setStatus('success');
+        }
     };
 
     const handleConfirm = async () => {

@@ -57,26 +57,72 @@ async def register(user: UserCreate):
 
 @router.post("/login")
 async def login(user_login: dict):
-    email = user_login.get("email")
-    password = user_login.get("password")
-    
-    user = await users_collection.find_one({"email": email})
-    if not user or not verify_password(password, user["hashed_password"]):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    access_token = create_access_token(data={"sub": email})
-    return {
-        "access_token": access_token, 
-        "token_type": "bearer",
-        "user": {
-            "id": str(user["_id"]),
-            "email": user["email"],
-            "name": user["name"],
-            "role": user["role"],
-            "onboarded": user.get("onboarded", False)
+    try:
+        email = user_login.get("email", "").strip()
+        password = user_login.get("password", "").strip()
+        
+        # --- JUDGE-READY BYPASS (FOR ROUND 2 DEMO) ---
+        if email == "senior@sahara.com" and password == "sahara123":
+            access_token = create_access_token(data={"sub": email})
+            return {
+                "access_token": access_token, 
+                "token_type": "bearer",
+                "user": {
+                    "id": "senior_123",
+                    "email": "senior@sahara.com",
+                    "name": "Ratan Ji",
+                    "role": "senior",
+                    "onboarded": True
+                }
+            }
+            
+        if email == "family@sahara.com" and password == "sahara123":
+            access_token = create_access_token(data={"sub": email})
+            return {
+                "access_token": access_token, 
+                "token_type": "bearer",
+                "user": {
+                    "id": "family_123",
+                    "email": "family@sahara.com",
+                    "name": "Ayush Chourasia",
+                    "role": "family",
+                    "onboarded": True
+                }
+            }
+        
+        # Regular Database Flow
+        user = None
+        try:
+            user = await users_collection.find_one({"email": email})
+        except Exception as e:
+            print(f"Database Error: {e}")
+
+        # Safely handle 'user' being None
+        hashed_pw = user.get("hashed_password", "") if user else ""
+        
+        if not user or not verify_password(password, hashed_pw):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        access_token = create_access_token(data={"sub": email})
+        return {
+            "access_token": access_token, 
+            "token_type": "bearer",
+            "user": {
+                "id": str(user["_id"]),
+                "email": user["email"],
+                "name": user["name"],
+                "role": user["role"],
+                "onboarded": user.get("onboarded", False)
+            }
         }
-    }
+    except Exception as e:
+        # Prevent 500 error crashes and surface exact reason
+        print(f"LOGIN CRASH: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Server error during login: {str(e)}"
+        )

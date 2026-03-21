@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Send, Mic, Bot, User, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const AIChat = ({ onBack, th, G }) => {
   const { user } = useAuth();
