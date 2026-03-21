@@ -1,136 +1,123 @@
 import React from 'react';
-import { Shield, Pulse, Drop, Heart, Fork, Pill, Moon, Steps, Bell, Send, Family, Activity } from '../components/Icons';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-const Card = ({ children, th, full, d, show }) => (
-  <div style={{
-    background: th.surface, color: th.text, borderRadius: 24, padding: "24px",
-    boxShadow: th.shadow, border: `1px solid ${th.border}`,
-    transition: "transform 0.3s ease, opacity 0.3s ease",
-    opacity: show ? 1 : 0, transform: show ? 'translateY(0)' : 'translateY(16px)',
-    transitionDelay: `${d * 0.1}s`,
-    gridColumn: full ? "1 / -1" : "auto"
-  }}>
-    {children}
-  </div>
-);
-
-const CH = ({ icon, title, children, th }) => (
-  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      {icon}
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: th.text }}>{title}</h3>
-    </div>
-    {children}
-  </div>
-);
-
-const StatusPill = ({ eaten, dark, G }) => (
-  <span style={{
-    padding: "4px 10px", borderRadius: 99, fontSize: 11, fontWeight: 700,
-    background: eaten ? (dark ? G.gBgD : G.gBg) : (dark ? G.aBgD : G.aBg),
-    color: eaten ? G.green : G.amber,
-    border: `1.5px solid ${eaten ? (dark ? G.gBdD : G.gBd) : (dark ? G.aBdD : G.aBd)}`
-  }}>
-    {eaten ? "✓ Eaten" : "Pending"}
-  </span>
-);
+import { Card, CH, Label, G } from '../components/DashboardComponents';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { Shield, Pulse, Drop, Heart, Clock, AlertCircle, Phone, ArrowUp, ArrowDown } from '../components/Icons';
+import { AIWeeklySummary, SOSHistory } from '../components/FamilyComponents';
 
 const FamilyDashboard = (props) => {
-    const { th, dark, vitals, medTaken, kcal, prot, sleep, steps, score, logs, setLogs, sent, pushAlert, foodLog, now, show, G, MEALS_CFG, countdown } = props;
-    const col = score >= 80 ? G.green : score >= 60 ? G.amber : G.red;
+  const { th, dark, score, show } = props;
 
-    const mockData = [
-        { name: 'Mon', bp: 120, sugar: 95 },
-        { name: 'Tue', bp: 125, sugar: 98 },
-        { name: 'Wed', bp: 118, sugar: 92 },
-        { name: 'Thu', bp: 130, sugar: 105 },
-        { name: 'Fri', bp: 122, sugar: 96 },
-        { name: 'Sat', bp: 115, sugar: 90 },
-        { name: 'Sun', bp: 121, sugar: 94 },
-    ];
-    
-    return (
-        <main style={{ maxWidth: 1120, margin: "0 auto", padding: "24px 18px 60px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,480px),1fr))", gap: 18 }}>
+  const chartData = [
+    { day: 'Mon', bp: 135, sugar: 110, hb: 11.2 },
+    { day: 'Tue', bp: 140, sugar: 115, hb: 11.0 },
+    { day: 'Wed', bp: 138, sugar: 108, hb: 10.8 },
+    { day: 'Thu', bp: 145, sugar: 121, hb: 10.6 },
+    { day: 'Fri', bp: 142, sugar: 118, hb: 10.6 },
+    { day: 'Sat', bp: 139, sugar: 112, hb: 10.5 },
+    { day: 'Sun', bp: 141, sugar: 114, hb: 10.4 },
+  ];
 
-            <Card th={th} full d={0} show={show}>
-                <div style={{ display: "flex", alignItems: "center", gap: 15, flexWrap: "wrap", marginBottom: 17 }}>
-                    <div style={{ width: 62, height: 62, borderRadius: 17, background: "linear-gradient(135deg,#dbeafe,#bfdbfe)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>👴</div>
-                    <div style={{ flex: 1 }}>
-                        <p style={{ fontSize: 25, fontWeight: 800, color: th.text }}>Raj Kumar</p>
-                        <p style={{ color: th.sub, fontSize: 14, marginTop: 2 }}>Age 68 · Mumbai · Last sync: Today 8:30 AM</p>
-                    </div>
-                    <div style={{ textAlign: "center", background: `${col}12`, border: `1.5px solid ${col}28`, borderRadius: 15, padding: "11px 19px" }}>
-                        <p style={{ fontSize: 10, color: th.muted, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase" }}>Score</p>
-                        <p style={{ fontSize: 36, fontWeight: 800, color: col, lineHeight: 1 }}>{score}</p>
-                    </div>
+  return (
+    <main style={{ maxWidth: 1120, margin: "0 auto", padding: "24px 20px" }}>
+        
+        {/* Senior Header & Global Status (§4.7) */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 15 }}>
+            <div>
+                <h1 style={{ fontSize: 32, fontWeight: 900 }}>Monitoring Ratan Ji</h1>
+                <p style={{ color: th.sub, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}><Clock size={16} /> Last logged: 2 hours ago</p>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+                <div style={{ background: '#fef2f2', border: '1px solid #fee2e2', color: G.red, padding: '10px 18px', borderRadius: 16, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <AlertCircle w={20} /> HIGH RISK
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(132px,1fr))", gap: 9 }}>
-                    {[{ l: "Blood Pressure", v: vitals.bp, s: "g" }, { l: "Heart Rate", v: `${vitals.heart} bpm`, s: "g" },
-                    { l: "Blood Sugar", v: `${vitals.sugar} mg/dL`, s: "g" }, { l: "Medication", v: medTaken ? "Taken ✓" : "Pending", s: medTaken ? "g" : "a" }
-                    ].map(i => {
-                        const c = i.s === "g" ? G.green : G.amber;
-                        return (
-                            <div key={i.l} style={{ background: th.s2, border: `1.5px solid ${th.border}`, borderRadius: 13, padding: "12px 11px", textAlign: "center" }}>
-                                <span style={{ width: 9, height: 9, borderRadius: "50%", background: c, display: "inline-block", marginBottom: 6 }} />
-                                <p style={{ color: th.sub, fontSize: 11, fontWeight: 700 }}>{i.l}</p>
-                                <p style={{ fontSize: 16, fontWeight: 800, color: c, marginTop: 3 }}>{i.v}</p>
-                            </div>
-                        );
-                    })}
+                <button style={{ background: '#111827', color: '#FFF', padding: '10px 18px', borderRadius: 16, fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Phone size={18} /> Call Now
+                </button>
+            </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,480px),1fr))", gap: 20 }}>
+            
+            {/* AI Weekly Narrative (§4.9) */}
+            <div style={{ gridColumn: '1 / -1' }}>
+                <AIWeeklySummary th={th} dark={dark} />
+            </div>
+
+            {/* Health Trend Charts (§4.8) */}
+            <Card th={th} full d={1} show={show}>
+                <CH th={th} icon={<Pulse color={G.green} />} title="7-Day Blood Pressure Trend">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: G.red, fontSize: 13, fontWeight: 800 }}>
+                        <ArrowUp size={16} /> Declining
+                    </div>
+                </CH>
+                <div style={{ height: 260, width: '100%', marginTop: 20 }}>
+                    <ResponsiveContainer>
+                        <AreaChart data={chartData}>
+                            <defs>
+                                <linearGradient id="colorBp" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={G.orange} stopOpacity={0.1}/>
+                                    <stop offset="95%" stopColor={G.orange} stopOpacity={0}/>
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={th.border} />
+                            <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: th.sub, fontWeight: 700, fontSize: 12}} />
+                            <YAxis axisLine={false} tickLine={false} tick={{fill: th.sub, fontWeight: 700, fontSize: 12}} domain={[120, 160]} />
+                            <Tooltip contentStyle={{ borderRadius: 16, border: 'none', boxShadow: th.shadow }} />
+                            <Area type="monotone" dataKey="bp" stroke={G.orange} strokeWidth={4} fillOpacity={1} fill="url(#colorBp)" />
+                        </AreaChart>
+                    </ResponsiveContainer>
                 </div>
             </Card>
 
-            <Card th={th} full d={1} show={show}>
-                <CH th={th} icon={<Bell color={G.red} />} title="Recent Alerts">
-                    <button style={{ background: 'none', border: 'none', color: th.sub, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Clear All</button>
-                </CH>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {logs.map(log => (
-                        <div key={log.id} style={{ display: "flex", alignItems: "center", gap: 12, background: th.s2, border: `1px solid ${th.border}`, borderRadius: 14, padding: "12px 15px" }}>
-                            <div style={{ fontSize: 18 }}>{log.type === 'food' ? '🍽️' : '💊'}</div>
-                            <div style={{ flex: 1 }}>
-                                <p style={{ fontSize: 15, fontWeight: 700, color: th.text }}>{log.msg}</p>
-                                <p style={{ fontSize: 12, color: th.muted }}>{log.time}</p>
-                            </div>
-                        </div>
-                    ))}
+            <Card th={th} d={1.5} show={show}>
+                <CH th={th} icon={<Drop color="#3b82f6" />} title="Blood Sugar (mg/dL)" />
+                <div style={{ height: 180, width: '100%' }}>
+                    <ResponsiveContainer>
+                        <LineChart data={chartData}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={th.border} />
+                            <XAxis dataKey="day" hide />
+                            <YAxis hide domain={[100, 130]} />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="sugar" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, fill: '#3b82f6' }} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 15 }}>
+                    <div><Label>Avg Today</Label><p style={{ fontWeight: 800 }}>114</p></div>
+                    <div><Label>Status</Label><p style={{ fontWeight: 800, color: G.green }}>Stable</p></div>
                 </div>
             </Card>
 
             <Card th={th} d={2} show={show}>
-                <CH th={th} icon={<Send color={th.accent} />} title="Nudge Senior" />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
-                    {['Water', 'Medicine', 'Walk', 'Food'].map(type => (
-                        <button key={type} onClick={() => pushAlert(type, `Sent ${type} nudge`)} style={{ padding: '14px', borderRadius: '12px', background: th.s2, border: `1px solid ${th.border}`, color: th.text, fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}>
-                            Remind {type}
-                        </button>
-                    ))}
-                </div>
-            </Card>
-
-            <Card th={th} d={3} show={show}>
-                <CH th={th} icon={<Activity color={G.green} />} title="Health Trends (Last 7 Days)" />
-                <div style={{ height: 200, width: '100%', marginTop: 20 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={mockData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke={th.border} />
-                            <XAxis dataKey="name" stroke={th.muted} fontSize={12} />
-                            <YAxis stroke={th.muted} fontSize={12} />
-                            <Tooltip contentStyle={{ background: th.surface, border: `1px solid ${th.border}`, borderRadius: 12 }} />
-                            <Line type="monotone" dataKey="bp" stroke={G.blue} strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                            <Line type="monotone" dataKey="sugar" stroke={G.amber} strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                <CH th={th} icon={<Heart color="#ef4444" />} title="Haemoglobin Trend" />
+                <div style={{ height: 180, width: '100%' }}>
+                    <ResponsiveContainer>
+                        <LineChart data={chartData}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={th.border} />
+                            <XAxis dataKey="day" hide />
+                            <YAxis hide domain={[10, 12]} />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="hb" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, fill: '#ef4444' }} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
-                <div style={{ display: 'flex', gap: 15, justifyContent: 'center', marginTop: 10 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: '50%', background: G.blue }} /><span style={{ fontSize: 11, color: th.muted }}>BP (Sys)</span></div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: '50%', background: G.amber }} /><span style={{ fontSize: 11, color: th.muted }}>Sugar</span></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 15 }}>
+                    <div><Label>Current Hb</Label><p style={{ fontWeight: 800, color: G.red }}>10.4</p></div>
+                    <div><Label>Alert</Label><p style={{ fontWeight: 800, color: G.red }}>Declining</p></div>
                 </div>
             </Card>
 
-        </main>
-    );
+            {/* SOS History (§4.10) */}
+            <div style={{ gridColumn: '1 / -1', marginTop: 10 }}>
+                <Card th={th} full d={2.5} show={show}>
+                    <CH th={th} icon={<Shield color={G.red} />} title="Emergency / SOS History" />
+                    <SOSHistory th={th} />
+                </Card>
+            </div>
+
+        </div>
+    </main>
+  );
 };
 
 export default FamilyDashboard;
