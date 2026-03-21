@@ -132,6 +132,7 @@ async def analyze_meal(request: NutritionAnalyzeRequest):
         f"Return ONLY valid JSON in this exact format, but with YOUR CALCULATED VALUES:\n"
         f"{{\n"
         f"  'food_name': '<Estimated English name of the meal>',\n"
+        f"  'meal_type': '<Classify as Breakfast, Lunch, Snacks, or Dinner>',\n"
         f"  'calories': <calculated number>, 'carbs': <calculated number>, 'protein': <calculated number>, 'fat': <calculated number>,\n"
         f"  'sugar': <calculated number>, 'fiber': <calculated number>, 'sodium': <calculated number>,\n"
         f"  'calcium_mg': <calculated number>, 'iron_mg': <calculated number>, 'vitamin_c_mg': <calculated number>, 'folate_µg': <calculated number>,\n"
@@ -199,6 +200,8 @@ async def analyze_meal(request: NutritionAnalyzeRequest):
         # Build final response
         return {
             "meal_text": request.meal_text,
+            "food_name": parsed_json.get("food_name", request.meal_text),
+            "meal_type": parsed_json.get("meal_type", "Snacks"),
             "nutrition": {
                 "calories": parsed_json.get("calories"),
                 "carbs": parsed_json.get("carbs"),
@@ -227,6 +230,7 @@ async def analyze_meal(request: NutritionAnalyzeRequest):
 class NutritionLogEntry(BaseModel):
     user_id: str
     meal: str
+    meal_type: str = "Snacks"
     kcal: float
     protein: float
     iron: float = 0.0

@@ -38,6 +38,7 @@ const FOODS = [
 const MEALS_CFG = {
     breakfast: { label: "Breakfast", emoji: "🌅", time: "8:00 AM", hour: 8 },
     lunch: { label: "Lunch", emoji: "☀️", time: "1:00 PM", hour: 13 },
+    snacks: { label: "Snacks", emoji: "☕", time: "4:00 PM", hour: 16 },
     dinner: { label: "Dinner", emoji: "🌙", time: "8:00 PM", hour: 20 },
     medication: { label: "Metformin", emoji: "💊", time: "2:00 PM", hour: 14 },
 };
@@ -106,6 +107,27 @@ function AppContent() {
         }, 5 * 60 * 1000); // 5 minutes
         return () => clearInterval(id);
     }, [manualVitals]);
+
+    // Timer to update 'now' every minute and send meal reminders
+    useEffect(() => {
+        const id = setInterval(() => {
+            const current = new Date();
+            setNow(current);
+            const hour = current.getHours();
+            
+            // Check for missed meals
+            ['breakfast', 'lunch', 'snacks', 'dinner'].forEach(meal => {
+                const cfg = MEALS_CFG[meal];
+                if (!cfg) return;
+                const isMissed = hour >= cfg.hour && hour < cfg.hour + 3 && !foodLog.some(f => (f.meal_type || 'Snacks').toLowerCase() === meal);
+                if (isMissed && !sent[meal]) {
+                    pushAlert(meal, `Hey ${user?.name || ''}, it's time for your ${cfg.label}! Didn't see any logs.`);
+                }
+            });
+        }, 60000);
+        return () => clearInterval(id);
+    }, [foodLog, sent, user]);
+
     const [show, setShow] = useState(true);
     const [dbScore, setDbScore] = useState(null); // score loaded from backend
 
@@ -143,6 +165,7 @@ function AppContent() {
                 if (data.logs && data.logs.length > 0) {
                     const mapped = data.logs.map(l => ({
                         meal: l.meal,
+                        meal_type: l.meal_type || 'Snacks',
                         kcal: l.kcal,
                         protein: l.protein,
                         suggestion_hi: l.suggestion_hi

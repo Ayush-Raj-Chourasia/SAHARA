@@ -47,7 +47,9 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
             if (data.error) throw new Error(data.error);
             const nutrition = data.nutrition || {};
             const result = {
-                meal: text,
+                meal: data.food_name || text,
+                meal_type: data.meal_type || 'Snacks',
+                raw_text: text,
                 kcal: nutrition.calories ?? '—',
                 protein: nutrition.protein ?? '—',
                 iron: nutrition.iron_mg ?? '—',
@@ -60,6 +62,8 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
             console.error('Nutrition analysis failed:', err);
             setAnalysis({
                 meal: text,
+                meal_type: 'Snacks',
+                raw_text: text,
                 kcal: '—',
                 protein: '—',
                 iron: '—',
@@ -143,6 +147,7 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
                                     body: JSON.stringify({
                                         user_id: user?.id || 'default',
                                         meal: analysis.meal,
+                                        meal_type: analysis.meal_type || 'Snacks',
                                         kcal: Number(analysis.kcal) || 0,
                                         protein: Number(analysis.protein) || 0,
                                         iron: Number(analysis.iron) || 0,

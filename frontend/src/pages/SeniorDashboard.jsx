@@ -139,35 +139,62 @@ const SeniorDashboard = (props) => {
         {/* Today's Nutrition Summary */}
         <Card th={th} full d={0.3} show={show}>
             <CH th={th} icon={<Fork color={G.orange} />} title="Today's Nutrition" />
-            {props.foodLog && props.foodLog.length > 0 ? (
-                <>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
-                        <div style={{ background: th.s2, padding: 16, borderRadius: 16 }}>
-                            <span style={{ fontSize: 11, fontWeight: 800, color: th.muted, textTransform: 'uppercase' }}>Total Calories</span>
-                            <p style={{ fontSize: 26, fontWeight: 900, color: G.orange }}>{kcal} <span style={{ fontSize: 14 }}>kcal</span></p>
-                        </div>
-                        <div style={{ background: th.s2, padding: 16, borderRadius: 16 }}>
-                            <span style={{ fontSize: 11, fontWeight: 800, color: th.muted, textTransform: 'uppercase' }}>Total Protein</span>
-                            <p style={{ fontSize: 26, fontWeight: 900, color: G.green }}>{prot} <span style={{ fontSize: 14 }}>g</span></p>
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {props.foodLog.map((f, i) => (
-                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: th.s2, borderRadius: 14 }}>
-                                <span style={{ fontWeight: 700 }}>{f.meal || f.name || 'Meal'}</span>
-                                <div style={{ display: 'flex', gap: 14, fontSize: 13, color: th.muted, fontWeight: 700 }}>
-                                    <span style={{ color: G.orange }}>{f.kcal} kcal</span>
-                                    <span style={{ color: G.green }}>{f.protein}g protein</span>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16, marginTop: 12 }}>
+                <div style={{ background: th.s2, padding: 16, borderRadius: 16 }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: th.muted, textTransform: 'uppercase' }}>Total Calories</span>
+                    <p style={{ fontSize: 26, fontWeight: 900, color: G.orange }}>{kcal} <span style={{ fontSize: 14 }}>kcal</span></p>
+                </div>
+                <div style={{ background: th.s2, padding: 16, borderRadius: 16 }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: th.muted, textTransform: 'uppercase' }}>Total Protein</span>
+                    <p style={{ fontSize: 26, fontWeight: 900, color: G.green }}>{prot} <span style={{ fontSize: 14 }}>g</span></p>
+                </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {['Breakfast', 'Lunch', 'Snacks', 'Dinner'].map(mealType => {
+                    const items = (props.foodLog || []).filter(f => (f.meal_type || 'Snacks').toLowerCase() === mealType.toLowerCase());
+                    const cfg = props.MEALS_CFG?.[mealType.toLowerCase()] || { emoji: '🍽️', hour: 12 };
+                    const currentHour = new Date().getHours();
+                    const isMissed = items.length === 0 && currentHour >= cfg.hour;
+                    
+                    return (
+                        <div key={mealType} style={{ background: th.s2, borderRadius: 16, padding: '14px 16px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: items.length > 0 ? 10 : 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <span style={{ fontSize: 18 }}>{cfg.emoji}</span>
+                                    <span style={{ fontWeight: 800, fontSize: 15, color: dark ? th.text : '#1f2937' }}>{mealType}</span>
                                 </div>
+                                {isMissed && (
+                                    <span style={{ fontSize: 12, fontWeight: 800, color: G.red, background: dark ? G.rBgD : G.rBg, padding: '4px 10px', borderRadius: 10 }}>Time to eat!</span>
+                                )}
                             </div>
-                        ))}
-                    </div>
-                </>
-            ) : (
-                <div style={{ textAlign: 'center', padding: '24px 0', color: th.muted }}>
-                    <Fork size={32} color={th.muted} style={{ marginBottom: 12 }} />
-                    <p style={{ fontWeight: 700, fontSize: 15 }}>No meals logged today</p>
-                    <p style={{ fontSize: 13, marginTop: 4 }}>Tap <strong style={{ color: G.orange }}>Nutrition AI</strong> below to log a meal with your voice!</p>
+                            
+                            {items.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    {items.map((f, i) => (
+                                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: dark ? '#1a2218' : '#fff', borderRadius: 12, border: `1px solid ${th.border}` }}>
+                                            <span style={{ fontWeight: 700, fontSize: 14 }}>{f.meal || f.name || 'Meal'}</span>
+                                            <div style={{ display: 'flex', gap: 12, fontSize: 12, color: th.muted, fontWeight: 800 }}>
+                                                <span style={{ color: G.orange }}>{f.kcal} kcal</span>
+                                                <span style={{ color: G.green }}>{f.protein}g</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p style={{ fontSize: 13, color: th.muted, margin: 0, marginTop: isMissed ? 8 : 4, fontWeight: 600 }}>
+                                    {isMissed ? `You haven't logged ${mealType} today.` : `No ${mealType} logged yet.`}
+                                </p>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+            
+            {(props.foodLog || []).length === 0 && (
+                <div style={{ textAlign: 'center', padding: '16px 0', color: th.muted }}>
+                    <p style={{ fontSize: 13, marginTop: 4 }}>Tap <strong style={{ color: G.orange }}>Nutrition AI</strong> below to log meals with your voice!</p>
                 </div>
             )}
         </Card>
