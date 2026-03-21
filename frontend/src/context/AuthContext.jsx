@@ -147,11 +147,18 @@ export const AuthProvider = ({ children }) => {
             if (!res.ok) {
                 const message = await res.text();
                 console.error('[AUTH] Backend error response:', message);
+                if (res.status === 503 && message.includes('Database authentication failed')) {
+                    throw new Error('❌ Backend database credentials are invalid in Railway. Please update MONGO_URL/MONGO_URI in Railway variables.');
+                }
                 throw new Error(`Backend error (${res.status}): ${message || 'Unknown error'}`);
             }
 
             const data = await res.json();
             console.log('[AUTH] Received user data:', { id: data.user?.id, email: data.user?.email, role: data.user?.role });
+
+            if (data.degraded_mode) {
+                console.warn('[AUTH] Running in backend degraded mode:', data.warning || 'Database unavailable');
+            }
             
             localStorage.setItem('sahara_token', data.access_token);
             persistUser(data.user);

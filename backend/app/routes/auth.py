@@ -8,9 +8,46 @@ from jose import JWTError, jwt
 from bson import ObjectId
 import secrets
 import string
+import hashlib
+import os
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+AUTH_FALLBACK_ON_DB_ERROR = os.getenv("AUTH_FALLBACK_ON_DB_ERROR", "true").lower() in {"1", "true", "yes"}
+
+
+def _is_db_auth_error(err: Exception) -> bool:
+    message = str(err).lower()
+    return "authentication failed" in message or "atlaserror" in message or "serverselectiontimeout" in message
+
+
+def _fallback_user(email: str, role: str = "senior", name: str = "User", onboarded: bool = False) -> dict:
+    stable_id = hashlib.sha1(email.encode("utf-8")).hexdigest()[:12]
+    user = {
+        "id": f"fallback_{stable_id}",
+        "email": email,
+        "name": name,
+        "role": role,
+        "onboarded": onboarded,
+        "phone": "",
+        "age": None,
+        "gender": None,
+        "weight_kg": None,
+        "conditions": [],
+        "location": None,
+        "language_preference": None,
+        "living_status": None,
+        "family_proximity": None,
+        "relationship": None,
+        "proximity": None,
+        "invite_code": None,
+        "linked_senior_ids": [],
+        "linked_family_ids": [],
+        "storage_mode": "fallback",
+    }
+    if role == "senior":
+        user["invite_code"] = create_invite_code()
+    return user
 
 
 def create_invite_code(length: int = 6) -> str:
@@ -118,7 +155,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise credentials_exception
     
-    user = await users_collection.find_one({"email": email})
+    try:
+        user = await users_collection.find_one({"email": email})
+    except Exception as e:
+        if AUTH_FALLBACK_ON_DB_ERROR and _is_db_auth_error(e):
+            return _fallback_user(
+                email=email,
+                role=payload.get("role", "senior"),
+                name=payload.get("name", "User"),
+                onboarded=bool(payload.get("onboarded", False)),
+            )
+        raise
     if user is None:
         raise credentials_exception
     user["_id"] = str(user["_id"])
@@ -278,7 +325,7 @@ async def google_login(payload: GoogleAuthRequest):
             user = await users_collection.find_one({"_id": user["_id"]})
             print(f"[AUTH] Existing user updated: {email}")
 
-        access_token = create_access_token(data={"sub": email})
+        access_token = create_access_token(data={"sub": email, "role": role, "name": payload.name or "User", "onboarded": bool(user.get("onboarded", False))})
         print(f"[AUTH] Token created, returning success")
         return {
             "access_token": access_token,
@@ -290,7 +337,30 @@ async def google_login(payload: GoogleAuthRequest):
         raise
     except Exception as e:
         print(f"[AUTH] Google login failed: {str(e)}")
-        if "authentication failed" in str(e).lower() or "atlaserror" in str(e).lower():
+        if _is_db_auth_error(e):
+            if AUTH_FALLBACK_ON_DB_ERROR:
+                fallback_user = _fallback_user(
+                    email=payload.email.strip().lower(),
+                    role=payload.role if payload.role in ["senior", "family"] else "senior",
+                    name=payload.name or "User",
+                    onboarded=False,
+                )
+                access_token = create_access_token(
+                    data={
+                        "sub": fallback_user["email"],
+                        "role": fallback_user["role"],
+                        "name": fallback_user["name"],
+                        "onboarded": False,
+                    }
+                )
+                return {
+                    "access_token": access_token,
+                    "token_type": "bearer",
+                    "user": fallback_user,
+                    "is_new": True,
+                    "degraded_mode": True,
+                    "warning": "Database unavailable. Running in temporary fallback mode.",
+                }
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Database authentication failed. Check Railway MongoDB credentials.",
@@ -347,28 +417,57 @@ async def complete_profile(data: ProfileCompleteRequest, current_user: dict = De
             "proximity": data.proximity,
         })
 
-    await users_collection.update_one(
-        {"_id": ObjectId(current_user["_id"])},
-        {"$set": update_data},
-    )
-
-    refreshed_user = await users_collection.find_one({"_id": ObjectId(current_user["_id"])})
-    link_result = None
-
-    if role == "family" and (data.invite_code or data.senior_email):
-        link_request = FamilyLinkRequest(
-            invite_code=data.invite_code,
-            senior_email=data.senior_email,
-            relationship=data.relationship,
-            proximity=data.proximity,
+    try:
+        await users_collection.update_one(
+            {"_id": ObjectId(current_user["_id"])},
+            {"$set": update_data},
         )
-        link_result = await link_family_accounts(refreshed_user, link_request)
-        refreshed_user = await users_collection.find_one({"_id": ObjectId(current_user["_id"])})
 
-    return {
-        "user": serialize_user(refreshed_user),
-        "linked": link_result,
-    }
+        refreshed_user = await users_collection.find_one({"_id": ObjectId(current_user["_id"])})
+        link_result = None
+
+        if role == "family" and (data.invite_code or data.senior_email):
+            link_request = FamilyLinkRequest(
+                invite_code=data.invite_code,
+                senior_email=data.senior_email,
+                relationship=data.relationship,
+                proximity=data.proximity,
+            )
+            link_result = await link_family_accounts(refreshed_user, link_request)
+            refreshed_user = await users_collection.find_one({"_id": ObjectId(current_user["_id"])})
+
+        return {
+            "user": serialize_user(refreshed_user),
+            "linked": link_result,
+        }
+    except Exception as e:
+        if AUTH_FALLBACK_ON_DB_ERROR and _is_db_auth_error(e):
+            fallback = _fallback_user(
+                email=current_user.get("email", "user@example.com"),
+                role=role,
+                name=update_data.get("name") or current_user.get("name", "User"),
+                onboarded=True,
+            )
+            fallback.update({
+                "phone": update_data.get("phone"),
+                "age": update_data.get("age"),
+                "gender": update_data.get("gender"),
+                "weight_kg": update_data.get("weight_kg"),
+                "conditions": update_data.get("conditions", []),
+                "location": update_data.get("location"),
+                "language_preference": update_data.get("language_preference"),
+                "living_status": update_data.get("living_status"),
+                "family_proximity": update_data.get("family_proximity"),
+                "relationship": update_data.get("relationship"),
+                "proximity": update_data.get("proximity"),
+            })
+            return {
+                "user": fallback,
+                "linked": None,
+                "degraded_mode": True,
+                "warning": "Profile saved in fallback mode (not persisted).",
+            }
+        raise
 
 
 @router.post("/family/link")
