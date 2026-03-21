@@ -13,25 +13,14 @@
     }
   </style>
 
-  <!-- React 18 UMD builds -->
-  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
-  
-  <!-- Babel Standalone (v7) -->
-  <script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
-  
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" />
 
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
   <div id="root"></div>
-
-  <!-- Load App Component (JSX) -->
-  <script type="text/babel" src="./src/App.jsx"></script>
-  
-  <!-- Render -->
-  <script type="text/babel">
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<SAHARA />);
-  </script>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
