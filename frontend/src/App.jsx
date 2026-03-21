@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import * as Ic from './components/Icons';
 import { G, Card, CH, Sheet, FoodModal } from './components/DashboardComponents';
 
@@ -9,6 +9,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SeniorDashboard from './pages/SeniorDashboard';
 import FamilyDashboard from './pages/FamilyDashboard';
+import AIChat from './pages/AIChat';
+import OnboardingPage from './pages/OnboardingPage';
 
 const LIGHT = {
     bg: "#F5F4F0", surface: "#FFFFFF", s2: "#F2F1ED", s3: "#ECEAE3",
@@ -48,8 +50,10 @@ function countdown(hour, sent, key, now) {
 
 function AppContent() {
     const navigate = useNavigate();
+    const { user, login, googleSignIn, loading } = useAuth();
     const [dark, setDark] = useState(false);
-    const [user, setUser] = useState(null); // Mock auth
+    
+    // Vitals and other states
     const [vitals, setVitals] = useState({ bp: "120/80", sugar: "95", heart: "72" });
     const [medTaken, setMedTaken] = useState(false);
     const [sleep, setSleep] = useState(7);
@@ -79,26 +83,34 @@ function AppContent() {
         setEditV: () => {}, setTmpV: () => {}, // Mocked for now
     };
 
+    if (loading) return null;
+
     return (
         <div style={{ background: th.bg, minHeight: "100vh", color: th.text, transition: "background .35s" }}>
             <Routes>
                 <Route path="/" element={<LandingPage onStart={() => navigate('/register')} onLogin={() => navigate('/login')} />} />
-                <Route path="/login" element={<LoginPage onLogin={() => { setUser({role: 'senior'}); navigate('/senior'); }} onBack={() => navigate('/')} />} />
-                <Route path="/register" element={<RegisterPage onRegister={(data) => { setUser(data); navigate(data.role === 'senior' ? '/senior' : '/family'); }} onBack={() => navigate('/')} />} />
+                <Route path="/login" element={<LoginPage onBack={() => navigate('/')} />} />
+                <Route path="/register" element={<RegisterPage onBack={() => navigate('/')} />} />
+                <Route path="/onboarding" element={user ? <OnboardingPage /> : <Navigate to="/login" />} />
                 
                 <Route path="/senior" element={
-                    <>
-                        <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
-                        <SeniorDashboard {...sharedProps} />
-                    </>
+                    user?.onboarded && user.role === 'senior' ? (
+                        <>
+                            <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
+                            <SeniorDashboard {...sharedProps} />
+                        </>
+                    ) : <Navigate to={user ? "/onboarding" : "/login"} />
                 } />
                 
                 <Route path="/family" element={
-                    <>
-                        <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
-                        <FamilyDashboard {...sharedProps} />
-                    </>
+                    user?.onboarded && user.role === 'family' ? (
+                        <>
+                            <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
+                            <FamilyDashboard {...sharedProps} />
+                        </>
+                    ) : <Navigate to={user ? "/onboarding" : "/login"} />
                 } />
+                <Route path="/chat" element={user?.role === 'senior' ? <AIChat onBack={() => navigate('/senior')} th={th} G={G} /> : <Navigate to="/" />} />
             </Routes>
 
             {showFood && <FoodModal th={th} dark={dark} FOODS={FOODS} onClose={() => setShowFood(false)} onAdd={(f) => setFoodLog([...foodLog, f])} />}
@@ -107,7 +119,7 @@ function AppContent() {
 }
 
 function Header({ dark, setDark, th, logs, setLogs, navigate }) {
-    const unread = logs.filter(l => !l.read).length;
+    const { logout } = useAuth();
     return (
         <header style={{ background: th.hdr, backdropFilter: "blur(18px)", borderBottom: `1px solid ${th.border}`, position: "sticky", top: 0, zIndex: 50, padding: "14px 20px" }}>
             <div style={{ maxWidth: 1120, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -121,7 +133,7 @@ function Header({ dark, setDark, th, logs, setLogs, navigate }) {
                     <button onClick={() => setDark(!dark)} style={{ width: 40, height: 40, borderRadius: 12, background: th.s2, border: 'none', cursor: 'pointer' }}>
                         {dark ? <Ic.Sun w={20} /> : <Ic.Moon w={20} />}
                     </button>
-                    <button style={{ width: 40, height: 40, borderRadius: 12, background: th.accent, border: 'none', cursor: 'pointer', color: th.atext }}>
+                    <button onClick={() => { logout(); navigate('/'); }} style={{ width: 40, height: 40, borderRadius: 12, background: th.accent, border: 'none', cursor: 'pointer', color: th.atext }}>
                         <Ic.User w={20} />
                     </button>
                 </div>
@@ -133,7 +145,9 @@ function Header({ dark, setDark, th, logs, setLogs, navigate }) {
 export default function App() {
     return (
         <Router>
-            <AppContent />
+            <AuthProvider>
+                <AppContent />
+            </AuthProvider>
         </Router>
     );
 }
