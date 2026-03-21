@@ -867,10 +867,14 @@ function FoodModal({ th, dark, onClose, onAdd }) {
             const text = e.results[0][0].transcript; 
             setVt(text); setLoading(true);
             try {
-                const pr = `Extract food items from: '${text}'. Reply ONLY with valid JSON array, e.g. [{"name": "Idli", "kcal": 140, "protein": 5}]. No extra text.`;
-                const resp = await puter.ai.chat(pr);
-                const s = resp.substring(resp.indexOf('['), resp.lastIndexOf(']') + 1);
-                const results = JSON.parse(s);
+                const prompt = `Extract food items from: '${text}'. Reply ONLY with valid JSON array, e.g. [{"name": "Idli", "kcal": 140, "protein": 5}]. No extra text.`;
+                const response = await fetch('/api/ai/nutrition', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await response.json();
+                const results = data.results;
                 setVe(Array.isArray(results) ? results : [results]);
             } catch(err) { console.error("Voice AI Error:", err); }
             setLoading(false);
@@ -932,11 +936,13 @@ function FoodModal({ th, dark, onClose, onAdd }) {
                                 setPM({ name: "", kcal: "", protein: "" });
                                 try {
                                     const prompt = `Act as an Indian nutrition expert. Analyze this photo of food. Reply ONLY with a valid JSON array of objects, e.g. [{"name": "Poha", "kcal": 180, "protein": 4}]. Detect all visible items. No extra text.`;
-                                    const resp = await puter.ai.chat(prompt, dataUrl);
-                                    const start = resp.indexOf('[');
-                                    const end = resp.lastIndexOf(']') + 1;
-                                    if (start === -1 || end === 0) throw new Error("No JSON array found");
-                                    const results = JSON.parse(resp.substring(start, end));
+                                    const response = await fetch('/api/ai/nutrition', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ prompt, image: dataUrl })
+                                    });
+                                    const data = await response.json();
+                                    const results = data.results;
                                     setPe(Array.isArray(results) ? results : [results]); 
                                 } catch(err) {
                                     console.error("AI Analysis Error:", err);

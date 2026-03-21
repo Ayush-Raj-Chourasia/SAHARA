@@ -28,8 +28,7 @@ def build_standalone():
   <!-- Babel Standalone (v7) -->
   <script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
 
-  <!-- Puter.js for AI -->
-  <script src="https://js.puter.com/v2/"></script>
+
 </head>
 <body>
   <div id="root"></div>
