@@ -126,7 +126,7 @@ function countdown(hour, sent, key, now) {
 function SAHARA() {
     const [dark, setDark] = useState(false);
     const [view, setView] = useState("senior");
-    const [vitals, setVitals] = useState({ bp: "120/80", sugar: "95", heart: "72", hb: "12.5", fatigue: "low" });
+    const [vitals, setVitals] = useState({ bp: "120/80", sugar: "95", heart: "72", hb: "12.5" });
     const [vMode, setVMode] = useState("auto");
     const [editV, setEditV] = useState(null);
     const [tmpV, setTmpV] = useState("");
@@ -242,7 +242,6 @@ function SAHARA() {
         if (hbVal < 9) s -= 30; // 🚨 CRITICAL Anaemia
         else if (hbVal < 11) s -= 15; 
         else if (hbVal < 13) s -= 5;
-        if (vitals.fatigue === "high") s -= 10;
         
         // 💊 Meds: Critical penalty if missed
         if (!medTaken) s -= 15;
@@ -553,8 +552,7 @@ function SeniorView({ th, dark, vitals, setVitals, vMode, setVMode, setEditV, se
                     {[{ k: "bp", label: "Blood Pressure", unit: "mmHg", ic: <Ic.Pulse w={24} />, tint: dark ? "#1a2820" : "#f0fdf4" },
                     { k: "sugar", label: "Blood Sugar", unit: "mg/dL", ic: <Ic.Drop w={24} />, tint: dark ? "#0e1828" : "#eff6ff" },
                     { k: "heart", label: "Heart Rate", unit: "bpm", ic: <Ic.Heart w={24} />, tint: dark ? "#28100e" : "#fff1f2" },
-                    { k: "hb", label: "Haemoglobin", unit: "g/dL", ic: <Ic.Shield w={24} />, tint: dark ? "#1a1a24" : "#f5f5ff" },
-                    { k: "fatigue", label: "Fatigue Level", unit: "", ic: <Ic.Moon w={24} />, tint: dark ? "#1a2218" : "#fcfcf5" }].map(v => (
+                    { k: "hb", label: "Haemoglobin", unit: "g/dL", ic: <Ic.Shield w={24} />, tint: dark ? "#1a1a24" : "#f5f5ff" }].map(v => (
                         <div key={v.k} style={{ borderRadius: 18, padding: "18px 16px", position: "relative", background: v.tint, border: `1.5px solid ${th.border}`, transition: "border-color .2s" }}>
                             <span style={{ color: G.blue }}>{v.ic}</span>
                             <p style={{ color: th.sub, fontSize: 14, fontWeight: 600, marginTop: 9, letterSpacing: ".03em" }}>{v.label}</p>

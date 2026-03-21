@@ -96,7 +96,7 @@ function countdown(hour, sent, key, now) {
 function SAHARA() {
     const [dark, setDark] = useState(false);
     const [view, setView] = useState("senior");
-    const [vitals, setVitals] = useState({ bp: "120/80", sugar: "95", heart: "72", hb: "12.5", fatigue: "low" });
+    const [vitals, setVitals] = useState({ bp: "120/80", sugar: "95", heart: "72", hb: "12.5" });
     const [vMode, setVMode] = useState("auto");
     const [editV, setEditV] = useState(null);
     const [tmpV, setTmpV] = useState("");
@@ -212,7 +212,6 @@ function SAHARA() {
         if (hbVal < 9) s -= 30; // 🚨 CRITICAL Anaemia
         else if (hbVal < 11) s -= 15; 
         else if (hbVal < 13) s -= 5;
-        if (vitals.fatigue === "high") s -= 10;
         
         // 💊 Meds: Critical penalty if missed
         if (!medTaken) s -= 15;
@@ -523,8 +522,7 @@ function SeniorView({ th, dark, vitals, setVitals, vMode, setVMode, setEditV, se
                     {[{ k: "bp", label: "Blood Pressure", unit: "mmHg", ic: <Ic.Pulse w={24} />, tint: dark ? "#1a2820" : "#f0fdf4" },
                     { k: "sugar", label: "Blood Sugar", unit: "mg/dL", ic: <Ic.Drop w={24} />, tint: dark ? "#0e1828" : "#eff6ff" },
                     { k: "heart", label: "Heart Rate", unit: "bpm", ic: <Ic.Heart w={24} />, tint: dark ? "#28100e" : "#fff1f2" },
-                    { k: "hb", label: "Haemoglobin", unit: "g/dL", ic: <Ic.Shield w={24} />, tint: dark ? "#1a1a24" : "#f5f5ff" },
-                    { k: "fatigue", label: "Fatigue Level", unit: "", ic: <Ic.Moon w={24} />, tint: dark ? "#1a2218" : "#fcfcf5" }].map(v => (
+                    { k: "hb", label: "Haemoglobin", unit: "g/dL", ic: <Ic.Shield w={24} />, tint: dark ? "#1a1a24" : "#f5f5ff" }].map(v => (
                         <div key={v.k} style={{ borderRadius: 18, padding: "18px 16px", position: "relative", background: v.tint, border: `1.5px solid ${th.border}`, transition: "border-color .2s" }}>
                             <span style={{ color: G.blue }}>{v.ic}</span>
                             <p style={{ color: th.sub, fontSize: 14, fontWeight: 600, marginTop: 9, letterSpacing: ".03em" }}>{v.label}</p>
@@ -873,6 +871,7 @@ function FoodModal({ th, dark, onClose, onAdd }) {
     const [pManual, setPM] = useState({ name: "", kcal: "", protein: "" });
     const [rec, setRec] = useState(false);
     const [vtxt, setVt] = useState(""); const [vEntries, setVe] = useState([]); 
+    const [vLang, setVLang] = useState("hi-IN"); // 🌐 State for EN/HI toggle
     const [loading, setLoading] = useState(false);
     const fRef = useRef(); const rRef = useRef();
     const filtered = FOODS.filter(f => f.name.toLowerCase().includes(search.toLowerCase())).slice(0, 10);
@@ -893,8 +892,8 @@ function FoodModal({ th, dark, onClose, onAdd }) {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR) { alert("Voice recognition requires Chrome browser."); return; }
         const r = new SR(); 
-        // Support for both English (IN) and Hindi (IN)
-        r.lang = (navigator.language === "hi-IN" || true) ? "hi-IN" : "en-IN"; 
+        // Use user-selected language (HI or EN)
+        r.lang = vLang; 
         r.continuous = false; r.interimResults = false;
         r.onresult = async e => { 
             const text = e.results[0][0].transcript; 
@@ -1021,7 +1020,15 @@ function FoodModal({ th, dark, onClose, onAdd }) {
 
             {tab === "voice" && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 15 }}>
-                    <p style={{ color: th.sub, fontSize: 17, textAlign: "center", lineHeight: 1.6 }}>Press and say what you ate<br /><span style={{ fontSize: 13, color: th.muted }}>"I had idli for breakfast"</span></p>
+                    <div style={{ display: "flex", gap: 10, background: th.s2, padding: 6, borderRadius: 12, border: `1.5px solid ${th.border}` }}>
+                        {[{ id: "hi-IN", l: "हिन्दी" }, { id: "en-IN", l: "English" }].map(l => (
+                            <button key={l.id} className="b" onClick={() => setVLang(l.id)}
+                                style={{ padding: "6px 14px", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", background: vLang === l.id ? th.accent : "transparent", color: vLang === l.id ? th.atext : th.sub, transition: "all .2s" }}>
+                                {l.l}
+                            </button>
+                        ))}
+                    </div>
+                    <p style={{ color: th.sub, fontSize: 17, textAlign: "center", lineHeight: 1.6 }}>{vLang === "hi-IN" ? "मदद के लिए कहें कि आपने क्या खाया" : "Say what you ate today"}<br /><span style={{ fontSize: 13, color: th.muted }}>{vLang === "hi-IN" ? `"मैने दाल और रोटी खाई"` : `"I had rice and dal"`}</span></p>
                     <button className="b" onClick={rec ? () => { rRef.current?.stop(); setRec(false); } : startVoice}
                         style={{ width: 104, height: 104, borderRadius: "50%", border: "none", cursor: "pointer", background: rec ? G.red : th.accent, color: rec ? "#fff" : th.atext, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: rec ? `0 0 0 14px ${dark ? "#2a0808" : "#fee2e2"},0 8px 28px rgba(220,38,38,.35)` : th.shadow, transition: "all .25s" }}>
                         <Ic.Mic w={36} />
