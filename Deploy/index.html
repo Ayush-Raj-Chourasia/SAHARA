@@ -124,8 +124,8 @@ function countdown(hour, sent, key, now) {
 // DUMMY USERS DATABASE
 // ─────────────────────────────────────────────────────────────────────────────
 const USERS = [
-    { id: 1, name: "Ramesh Sharma",  email: "ramesh@sahara.health", pass: "senior123", role: "senior", age: 68, city: "Mumbai",  avatar: "👴", color: "#2563eb" },
-    { id: 2, name: "Anita Sharma",   email: "anita@sahara.health",  pass: "family123", role: "family",  age: 38, city: "Pune",    avatar: "👩", color: "#16a34a" },
+    { id: 1, name: "Ramesh Sharma", email: "ramesh@sahara.health", pass: "senior123", role: "senior", age: 68, city: "Mumbai", avatar: "👴", color: "#2563eb" },
+    { id: 2, name: "Anita Sharma", email: "anita@sahara.health", pass: "family123", role: "family", age: 38, city: "Pune", avatar: "👩", color: "#16a34a" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -172,117 +172,73 @@ function LoginPage({ onLogin }) {
     };
 
     return (
-        <div style={{ minHeight: "100vh", background: "linear-gradient(135deg,#0f0f0e 0%,#1a1a18 50%,#0f1a0e 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", fontFamily: "'Outfit', sans-serif", position: "relative", overflow: "hidden" }}>
-            {/* Animated background orbs */}
-            <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-                <div style={{ position: "absolute", top: "-10%", left: "15%", width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle,rgba(37,99,235,.18) 0%,transparent 70%)", animation: "float1 8s ease-in-out infinite" }} />
-                <div style={{ position: "absolute", bottom: "-5%", right: "10%", width: 360, height: 360, borderRadius: "50%", background: "radial-gradient(circle,rgba(22,163,74,.14) 0%,transparent 70%)", animation: "float2 10s ease-in-out infinite" }} />
-                <div style={{ position: "absolute", top: "40%", right: "30%", width: 220, height: 220, borderRadius: "50%", background: "radial-gradient(circle,rgba(220,38,38,.1) 0%,transparent 70%)", animation: "float3 7s ease-in-out infinite" }} />
-            </div>
+        <div style={{ minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", fontFamily: "'Outfit', sans-serif" }}>
             <style>{`
-                @keyframes float1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.05)}}
-                @keyframes float2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-20px,30px) scale(1.08)}}
-                @keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(15px,-25px)}}
-                @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-                @keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}70%{box-shadow:0 0 0 14px rgba(37,99,235,0)}100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}}
-                .lgn-inp:focus{border-color:#2563eb !important;background:#fff !important}
-                .lgn-btn:hover{opacity:.92;transform:translateY(-1px)}
-                .lgn-btn:active{transform:scale(.98)}
-                .uc:hover{border-color:#2563eb !important;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.25)}
+                @keyframes lu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+                .lu{animation:lu .38s cubic-bezier(.4,0,.2,1) both}
+                .lgn-inp:focus{border-color:#131313 !important;background:#fff !important}
+                .lgn-btn:hover:not(:disabled){background:#222 !important}
+                .lgn-btn:active:not(:disabled){transform:scale(.98)}
+                .lpill:hover{border-color:#131313 !important}
             `}</style>
 
-            <div style={{ display: "flex", gap: 0, width: "100%", maxWidth: 980, borderRadius: 28, overflow: "hidden", boxShadow: "0 32px 100px rgba(0,0,0,.55)", opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(20px)", transition: "opacity .5s ease, transform .5s ease" }}>
+            {/* Logo */}
+            <div className="lu" style={{ animationDelay: "0s", marginBottom: 44, display: "flex", alignItems: "center", gap: 9 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 9, background: "#131313", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Ic.Shield w={16} style={{ color: "#fff" }} />
+                </div>
+                <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-.01em", color: "#131313" }}>SAHARA</span>
+            </div>
 
-                {/* LEFT PANEL — Branding */}
-                <div style={{ flex: "0 0 42%", background: "linear-gradient(160deg,#131313 0%,#1e2a1c 100%)", padding: "48px 40px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 40 }}>
-                            <div style={{ width: 50, height: 50, borderRadius: 15, background: "linear-gradient(140deg,#2563eb,#1d4ed8)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 16px rgba(37,99,235,.4)", animation: "pulse-ring 2.5s infinite" }}>
-                                <Ic.Shield w={24} style={{ color: "#fff" }} />
-                            </div>
-                            <div>
-                                <p style={{ fontSize: 30, fontWeight: 800, color: "#fff", letterSpacing: "-.01em", lineHeight: 1 }}>SAHARA</p>
-                                <p style={{ fontSize: 11, color: "rgba(255,255,255,.4)", letterSpacing: ".08em", marginTop: 2 }}>ELDERLY HEALTH COMPANION</p>
-                            </div>
-                        </div>
-                        <h2 style={{ fontSize: 28, fontWeight: 700, color: "#fff", lineHeight: 1.3, marginBottom: 14 }}>Your health,<br /><span style={{ color: "#60a5fa" }}>always with you.</span></h2>
-                        <p style={{ fontSize: 15, color: "rgba(255,255,255,.5)", lineHeight: 1.7, marginBottom: 32 }}>Real-time health monitoring for seniors with smart AI-powered nutrition analysis and family alerts.</p>
+            <div className="lu" style={{ animationDelay: ".05s", width: "100%", maxWidth: 420 }}>
+                <h1 style={{ fontSize: 38, fontWeight: 800, color: "#131313", letterSpacing: "-.025em", lineHeight: 1.05, marginBottom: 7 }}>Welcome back.</h1>
+                <p style={{ fontSize: 15, color: "rgba(0,0,0,.36)", marginBottom: 30, lineHeight: 1.5 }}>Sign in to your health companion.</p>
 
-                        {/* Feature pills */}
-                        {[
-                            { icon: "🩺", label: "Clinical Health Score" },
-                            { icon: "🎙️", label: "Hindi & English Voice Logging" },
-                            { icon: "🚨", label: "Emergency SOS + GPS" },
-                            { icon: "👨‍👩‍👧", label: "Family Dashboard & Alerts" },
-                        ].map(f => (
-                            <div key={f.label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                                <span style={{ fontSize: 18 }}>{f.icon}</span>
-                                <span style={{ fontSize: 14, color: "rgba(255,255,255,.65)", fontWeight: 500 }}>{f.label}</span>
-                            </div>
-                        ))}
-                    </div>
-                    <p style={{ fontSize: 12, color: "rgba(255,255,255,.2)", marginTop: 24 }}>© 2025 SAHARA Health · Powered by Gemini AI</p>
+                {/* Quick-fill pills */}
+                <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "rgba(0,0,0,.28)", textTransform: "uppercase", marginBottom: 10 }}>Quick access</p>
+                <div style={{ display: "flex", gap: 8, marginBottom: 26, flexWrap: "wrap" }}>
+                    {USERS.map(u => (
+                        <button key={u.id} className="lpill" onClick={() => quickFill(u)}
+                            style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 14px", borderRadius: 99, border: `1.5px solid ${fillUser === u.id ? "#131313" : "#E4E2DB"}`, background: fillUser === u.id ? "#131313" : "#fff", color: fillUser === u.id ? "#fff" : "#131313", fontFamily: "'Outfit',sans-serif", fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all .15s" }}>
+                            <span style={{ fontSize: 15 }}>{u.avatar}</span>
+                            {u.name.split(" ")[0]}
+                            <span style={{ fontSize: 11, opacity: .5, fontWeight: 400, textTransform: "capitalize" }}>{u.role}</span>
+                        </button>
+                    ))}
                 </div>
 
-                {/* RIGHT PANEL — Login Form */}
-                <div style={{ flex: 1, background: "#fff", padding: "48px 44px", display: "flex", flexDirection: "column", justifyContent: "center", overflowY: "auto", maxHeight: "90vh" }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", color: "#9B9890", textTransform: "uppercase", marginBottom: 6 }}>Welcome back</p>
-                    <h1 style={{ fontSize: 30, fontWeight: 800, color: "#131313", marginBottom: 6 }}>Sign in to SAHARA</h1>
-                    <p style={{ color: "#9B9890", fontSize: 14, marginBottom: 28 }}>Use a demo account below or enter your credentials.</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+                    <div style={{ flex: 1, height: 1, background: "#ECEAE3" }} />
+                    <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "rgba(0,0,0,.24)" }}>OR</span>
+                    <div style={{ flex: 1, height: 1, background: "#ECEAE3" }} />
+                </div>
 
-                    {/* Demo accounts */}
-                    <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: "#9B9890", textTransform: "uppercase", marginBottom: 10 }}>🚀 Demo Accounts — click to fill</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginBottom: 24 }}>
-                        {USERS.map(u => (
-                            <button key={u.id} className="uc" onClick={() => quickFill(u)}
-                                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 13px", borderRadius: 13, border: `2px solid ${fillUser === u.id ? "#2563eb" : "#E4E2DB"}`, background: fillUser === u.id ? "#eff6ff" : "#F9F8F5", cursor: "pointer", textAlign: "left", fontFamily: "'Outfit', sans-serif", transition: "all .2s" }}>
-                                <span style={{ fontSize: 24, flexShrink: 0 }}>{u.avatar}</span>
-                                <div style={{ overflow: "hidden" }}>
-                                    <p style={{ fontSize: 13, fontWeight: 700, color: "#131313", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{u.name}</p>
-                                    <p style={{ fontSize: 11, color: u.color, fontWeight: 700 }}>{u.role === "senior" ? "👤 Senior" : "👨‍👩‍👧 Family"} · {u.city}</p>
-                                </div>
-                            </button>
-                        ))}
+                <form onSubmit={handleLogin}>
+                    <input id="login-email" className="lgn-inp" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email address"
+                        style={{ width: "100%", padding: "13px 16px", borderRadius: 12, border: "1.5px solid #E4E2DB", background: "#F5F4F0", fontSize: 15, fontFamily: "'Outfit',sans-serif", color: "#131313", outline: "none", marginBottom: 10, boxSizing: "border-box", transition: "all .15s" }} required />
+                    <div style={{ position: "relative", marginBottom: 14 }}>
+                        <input id="login-pass" className="lgn-inp" type={showPass ? "text" : "password"} value={pass} onChange={e => setPass(e.target.value)} placeholder="Password"
+                            style={{ width: "100%", padding: "13px 56px 13px 16px", borderRadius: 12, border: "1.5px solid #E4E2DB", background: "#F5F4F0", fontSize: 15, fontFamily: "'Outfit',sans-serif", color: "#131313", outline: "none", boxSizing: "border-box", transition: "all .15s" }} required />
+                        <button type="button" onClick={() => setShowPass(s => !s)} style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "rgba(0,0,0,.32)", fontSize: 11, fontWeight: 700, fontFamily: "'Outfit',sans-serif", letterSpacing: ".06em" }}>{showPass ? "HIDE" : "SHOW"}</button>
                     </div>
+                    {err && <div style={{ background: "#fff1f2", border: "1.5px solid #fecaca", color: "#dc2626", borderRadius: 10, padding: "9px 13px", fontSize: 13, fontWeight: 600, marginBottom: 12 }}>⚠️ {err}</div>}
+                    <button id="login-submit" className="lgn-btn" type="submit" disabled={loading}
+                        style={{ width: "100%", padding: "14px", borderRadius: 12, background: loading ? "#9B9890" : "#131313", color: "#fff", border: "none", fontSize: 15, fontWeight: 700, fontFamily: "'Outfit',sans-serif", cursor: loading ? "not-allowed" : "pointer", transition: "background .15s", letterSpacing: ".01em" }}>
+                        {loading ? "Signing in…" : "Continue →"}
+                    </button>
+                </form>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                        <div style={{ flex: 1, height: 1, background: "#E4E2DB" }} />
-                        <span style={{ fontSize: 12, color: "#9B9890", fontWeight: 600 }}>OR ENTER MANUALLY</span>
-                        <div style={{ flex: 1, height: 1, background: "#E4E2DB" }} />
-                    </div>
-
-                    <form onSubmit={handleLogin}>
-                        <div style={{ marginBottom: 14 }}>
-                            <label style={{ fontSize: 13, fontWeight: 700, color: "#5A5A53", display: "block", marginBottom: 6 }}>Email Address</label>
-                            <input id="login-email" className="lgn-inp" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@sahara.health" style={inp} required />
+                <div style={{ marginTop: 24, padding: "13px 15px", background: "#F5F4F0", borderRadius: 12, border: "1.5px solid #E4E2DB" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "rgba(0,0,0,.3)", textTransform: "uppercase", marginBottom: 10 }}>Test credentials</p>
+                    {USERS.map(u => (
+                        <div key={u.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
+                            <span style={{ fontSize: 13, color: "#131313", fontWeight: 600 }}>{u.avatar} {u.name} <span style={{ color: "rgba(0,0,0,.34)", fontWeight: 400, textTransform: "capitalize" }}>({u.role})</span></span>
+                            <span style={{ fontSize: 12, color: "rgba(0,0,0,.4)", fontFamily: "monospace", background: "#fff", padding: "2px 8px", borderRadius: 6, border: "1px solid #E4E2DB" }}>{u.pass}</span>
                         </div>
-                        <div style={{ marginBottom: 8, position: "relative" }}>
-                            <label style={{ fontSize: 13, fontWeight: 700, color: "#5A5A53", display: "block", marginBottom: 6 }}>Password</label>
-                            <input id="login-pass" className="lgn-inp" type={showPass ? "text" : "password"} value={pass} onChange={e => setPass(e.target.value)} placeholder="••••••••" style={{ ...inp, paddingRight: 50 }} required />
-                            <button type="button" onClick={() => setShowPass(s => !s)} style={{ position: "absolute", right: 14, bottom: 14, background: "none", border: "none", cursor: "pointer", color: "#9B9890", fontSize: 13, fontWeight: 700 }}>{showPass ? "Hide" : "Show"}</button>
-                        </div>
-                        {err && <div style={{ background: "#fef2f2", border: "1.5px solid #fecaca", color: "#dc2626", borderRadius: 11, padding: "10px 14px", fontSize: 14, fontWeight: 600, marginBottom: 14 }}>⚠️ {err}</div>}
-                        <button id="login-submit" className="lgn-btn" type="submit" disabled={loading}
-                            style={{ width: "100%", padding: "16px", borderRadius: 14, background: loading ? "#9B9890" : "linear-gradient(135deg,#1d4ed8,#2563eb)", color: "#fff", border: "none", fontSize: 17, fontWeight: 800, fontFamily: "'Outfit', sans-serif", cursor: loading ? "not-allowed" : "pointer", transition: "all .2s", marginTop: 4, letterSpacing: ".01em", boxShadow: loading ? "none" : "0 6px 20px rgba(37,99,235,.35)" }}>
-                            {loading ? "✨ Signing in..." : "Sign In →"}
-                        </button>
-                    </form>
-
-                    {/* Credentials cheatsheet */}
-                    <div style={{ marginTop: 22, background: "#F2F1ED", borderRadius: 14, padding: "14px 16px", border: "1.5px solid #E4E2DB" }}>
-                        <p style={{ fontSize: 11, fontWeight: 800, color: "#9B9890", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 9 }}>📋 Test Credentials</p>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                            {USERS.map(u => (
-                                <div key={u.id} style={{ background: "#fff", borderRadius: 10, padding: "8px 11px", border: "1.5px solid #E4E2DB" }}>
-                                    <p style={{ fontSize: 12, fontWeight: 700, color: "#131313" }}>{u.avatar} {u.name}</p>
-                                    <p style={{ fontSize: 11, color: "#9B9890", marginTop: 2 }}>📧 {u.email}</p>
-                                    <p style={{ fontSize: 11, color: "#9B9890" }}>🔑 {u.pass}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
+            <p className="lu" style={{ animationDelay: ".12s", marginTop: 36, fontSize: 11, color: "rgba(0,0,0,.22)" }}>© 2025 SAHARA Health · Powered by Gemini AI</p>
         </div>
     );
 }
@@ -301,7 +257,7 @@ function AppRoot() {
 // ─────────────────────────────────────────────────────────────────────────────
 function SAHARA({ currentUser, onLogout }) {
     const [dark, setDark] = useState(false);
-    const [view, setView] = useState("senior");
+    const [view, setView] = useState(currentUser?.role === "family" ? "family" : "senior");
     const [vitals, setVitals] = useState({ bp: "120/80", sugar: "95", heart: "72", hb: "12.5" });
     const [vMode, setVMode] = useState("auto");
     const [editV, setEditV] = useState(null);
@@ -570,7 +526,9 @@ _Via SAHARA Health Companion · ${timeStr}_`);
                         {/* View switcher */}
                         <div style={{ display: "flex", gap: 8, paddingBottom: 13 }}>
                             {[{ id: "senior", ic: <Ic.Shield w={19} />, lbl: "For Seniors", sub: "Your health dashboard" },
-                            { id: "family", ic: <Ic.Family w={19} />, lbl: "For Family", sub: "Monitor & alerts", badge: unread || null }].map(t => (
+                            { id: "family", ic: <Ic.Family w={19} />, lbl: "For Family", sub: "Monitor & alerts", badge: unread || null }]
+                            .filter(t => currentUser?.role === "family" ? t.id === "family" : t.id === "senior")
+                            .map(t => (
                                 <button key={t.id} className="tb"
                                     onClick={() => setView(t.id)}
                                     style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, padding: "11px 15px", borderRadius: 14, border: `1.5px solid ${view === t.id ? th.accent : th.border}`, background: view === t.id ? th.accent : "transparent", cursor: "pointer", fontFamily: "'Outfit', sans-serif", textAlign: "left", position: "relative", boxShadow: view === t.id ? "0 3px 14px rgba(0,0,0,.11)" : "none" }}>
@@ -764,7 +722,7 @@ function SeniorView({ th, dark, vitals, setVitals, vMode, setVMode, setEditV, se
                 {vMode === "auto" && (
                     <div style={{ marginTop: 13, display: "flex", alignItems: "center", gap: 8, color: th.muted, fontSize: 13 }}>
                         <span className="br" style={{ width: 8, height: 8, borderRadius: "50%", background: G.green, display: "inline-block" }} />
-                        Auto-monitoring active · Syncing every 15 minutes
+                        Auto-monitoring active · Syncing every 5 minutes
                     </div>
                 )}
             </Card>
