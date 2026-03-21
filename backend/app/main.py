@@ -1,8 +1,11 @@
 from fastapi import FastAPI
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from app.routes import auth, health, nutrition, emergency, ai_chat
 from app.database import client as db_client
 import uvicorn
+import traceback
 
 app = FastAPI(title="SAHARA API", version="1.0.0")
 
@@ -11,29 +14,26 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    from fastapi import Request
-    from fastapi.responses import JSONResponse
-    import traceback
-
-    # Global error handler for debugging
-    @app.middleware("http")
-    async def error_handler_middleware(request: Request, call_next):
-        try:
-            response = await call_next(request)
-            return response
-        except Exception as e:
-            print(f"[ERROR] {request.method} {request.url.path}")
-            print(f"[ERROR] {str(e)}")
-            print(f"[ERROR] {traceback.format_exc()}")
-            return JSONResponse(
-                status_code=500,
-                content={"detail": f"Error: {str(e)}", "type": type(e).__name__}
-            )
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
     max_age=3600,
 )
+
+# Global error handler for debugging
+@app.middleware("http")
+async def error_handler_middleware(request: Request, call_next):
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as e:
+        print(f"[ERROR] {request.method} {request.url.path}")
+        print(f"[ERROR] {str(e)}")
+        print(f"[ERROR] {traceback.format_exc()}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Error: {str(e)}", "type": type(e).__name__}
+        )
 
 # Include Routers (added after CORS middleware)
 app.include_router(auth.router)
