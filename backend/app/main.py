@@ -6,15 +6,18 @@ import uvicorn
 
 app = FastAPI(title="SAHARA API", version="1.0.0")
 
-# Enable CORS
+# Enable CORS - must be added before routers
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
-# Include Routers
+# Include Routers (added after CORS middleware)
 app.include_router(auth.router)
 app.include_router(health.router)
 app.include_router(nutrition.router)
