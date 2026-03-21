@@ -1,23 +1,45 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Shield, ArrowRight, ArrowLeft } from '../components/Icons';
 
 const RegisterPage = ({ onBack }) => {
-  const { googleSignIn } = useAuth();
+  const { googleSignIn, register } = useAuth();
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const { role: routeRole } = useParams();
+  const role = routeRole === 'family' ? 'family' : 'senior';
   const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleGoogle = async () => {
     setLoading(true);
     try {
-      await googleSignIn();
-      navigate('/onboarding');
+      const user = await googleSignIn(role);
+      navigate(user?.onboarded ? (user.role === 'senior' ? '/senior' : '/family') : '/onboarding');
     } catch (err) {
       alert("Google Sign-In failed");
+    }
+    setLoading(false);
+  };
+
+  const handleEmailSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const user = await register({
+        name,
+        email,
+        password,
+        phone,
+        role,
+        conditions: [],
+      });
+      navigate(user?.onboarded ? (user.role === 'senior' ? '/senior' : '/family') : '/onboarding');
+    } catch (err) {
+      alert('Registration failed. Please check details and try again.');
     }
     setLoading(false);
   };
@@ -37,6 +59,23 @@ const RegisterPage = ({ onBack }) => {
           <p className="text-gray-400 font-bold">Start your SAHARA journey today.</p>
         </div>
 
+        <div className="grid grid-cols-2 gap-2 mb-6 bg-[#F5F4F0] p-1 rounded-2xl">
+          <button
+            type="button"
+            onClick={() => navigate('/register/senior')}
+            className={`py-3 rounded-xl font-black text-sm ${role === 'senior' ? 'bg-white text-[#111827] shadow' : 'text-gray-500'}`}
+          >
+            Senior Signup
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/register/family')}
+            className={`py-3 rounded-xl font-black text-sm ${role === 'family' ? 'bg-white text-[#111827] shadow' : 'text-gray-500'}`}
+          >
+            Family Signup
+          </button>
+        </div>
+
         <button onClick={handleGoogle} disabled={loading} className="w-full py-5 bg-white border-2 border-[#E4E2DB] text-[#111827] rounded-[24px] text-lg font-black flex items-center justify-center gap-4 hover:bg-gray-50 transition-all mb-8">
           <img src="/google_icon.png" alt="Google" style={{ width: 28, height: 28 }} />
           Sign up with Google
@@ -47,17 +86,25 @@ const RegisterPage = ({ onBack }) => {
           <div className="relative flex justify-center text-xs uppercase font-black tracking-widest text-gray-400"><span className="bg-white px-4">Or use your email</span></div>
         </div>
 
-        <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-5" onSubmit={handleEmailSignup}>
+          <div className="space-y-2">
+            <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Full Name</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-6 py-4 bg-[#F5F4F0] border-2 border-transparent focus:border-[#EA580C] focus:bg-white rounded-[20px] outline-none transition-all font-bold" placeholder="Your full name" required />
+          </div>
           <div className="space-y-2">
             <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Email Address</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-6 py-4 bg-[#F5F4F0] border-2 border-transparent focus:border-[#EA580C] focus:bg-white rounded-[20px] outline-none transition-all font-bold" placeholder="name@example.com" />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-6 py-4 bg-[#F5F4F0] border-2 border-transparent focus:border-[#EA580C] focus:bg-white rounded-[20px] outline-none transition-all font-bold" placeholder="name@example.com" required />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Phone Number</label>
+            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-6 py-4 bg-[#F5F4F0] border-2 border-transparent focus:border-[#EA580C] focus:bg-white rounded-[20px] outline-none transition-all font-bold" placeholder="+91XXXXXXXXXX" required />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-6 py-4 bg-[#F5F4F0] border-2 border-transparent focus:border-[#EA580C] focus:bg-white rounded-[20px] outline-none transition-all font-bold" placeholder="••••••••" />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-6 py-4 bg-[#F5F4F0] border-2 border-transparent focus:border-[#EA580C] focus:bg-white rounded-[20px] outline-none transition-all font-bold" placeholder="••••••••" required />
           </div>
-          <button type="button" onClick={() => alert("Registration via email coming soon. Please use Google Sign-up for now.")} className="w-full py-5 bg-[#111827] text-white rounded-[24px] text-lg font-black shadow-xl hover:-translate-y-1 transition-all">
-            Continue with Email
+          <button type="submit" disabled={loading} className="w-full py-5 bg-[#111827] text-white rounded-[24px] text-lg font-black shadow-xl hover:-translate-y-1 transition-all disabled:opacity-60">
+            {loading ? 'Creating Account...' : 'Continue with Email'}
           </button>
         </form>
 

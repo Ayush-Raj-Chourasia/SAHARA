@@ -89,7 +89,7 @@ function AppContent() {
     return (
         <div style={{ background: th.bg, minHeight: "100vh", color: th.text, transition: "background .35s" }}>
             <Routes>
-                <Route path="/" element={<LandingPage onStart={() => navigate('/register')} onLogin={() => navigate('/login')} />} />
+                <Route path="/" element={<LandingPage onStart={() => navigate('/register/senior')} onLogin={() => navigate('/login')} />} />
                 <Route path="/login" element={<LoginPage onBack={() => navigate('/')} />} />
                 <Route path="/register" element={<RegisterPage onBack={() => navigate('/')} />} />
                 <Route path="/register/:role" element={<RegisterPage onBack={() => navigate('/')} />} />
