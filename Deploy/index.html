@@ -190,13 +190,13 @@ function LoginPage({ onLogin }) {
                 <span style={{ fontSize: 34, fontWeight: 800, letterSpacing: "-.02em", color: "#131313" }}>SAHARA</span>
             </div>
 
-            <div className="lu" style={{ animationDelay: ".05s", width: "100%", maxWidth: 420 }}>
+            <div className="lu" style={{ animationDelay: ".05s", width: "100%", maxWidth: 420, textAlign: "center" }}>
                 <h1 style={{ fontSize: 38, fontWeight: 800, color: "#131313", letterSpacing: "-.025em", lineHeight: 1.05, marginBottom: 7 }}>Welcome back.</h1>
                 <p style={{ fontSize: 15, color: "rgba(0,0,0,.36)", marginBottom: 30, lineHeight: 1.5 }}>Sign in to your health companion.</p>
 
                 {/* Quick-fill pills */}
                 <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "rgba(0,0,0,.28)", textTransform: "uppercase", marginBottom: 10 }}>Quick access</p>
-                <div style={{ display: "flex", gap: 8, marginBottom: 26, flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: 8, marginBottom: 26, flexWrap: "wrap", justifyContent: "center" }}>
                     {USERS.map(u => (
                         <button key={u.id} className="lpill" onClick={() => quickFill(u)}
                             style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 14px", borderRadius: 99, border: `1.5px solid ${fillUser === u.id ? "#131313" : "#E4E2DB"}`, background: fillUser === u.id ? "#131313" : "#fff", color: fillUser === u.id ? "#fff" : "#131313", fontFamily: "'Outfit',sans-serif", fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all .15s" }}>
@@ -215,10 +215,10 @@ function LoginPage({ onLogin }) {
 
                 <form onSubmit={handleLogin}>
                     <input id="login-email" className="lgn-inp" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email address"
-                        style={{ width: "100%", padding: "13px 16px", borderRadius: 12, border: "1.5px solid #E4E2DB", background: "#F5F4F0", fontSize: 15, fontFamily: "'Outfit',sans-serif", color: "#131313", outline: "none", marginBottom: 10, boxSizing: "border-box", transition: "all .15s" }} required />
+                        style={{ width: "100%", padding: "13px 16px", borderRadius: 12, border: "1.5px solid #E4E2DB", background: "#F5F4F0", fontSize: 15, fontFamily: "'Outfit',sans-serif", color: "#131313", outline: "none", marginBottom: 10, boxSizing: "border-box", transition: "all .15s", textAlign: "center" }} required />
                     <div style={{ position: "relative", marginBottom: 14 }}>
                         <input id="login-pass" className="lgn-inp" type={showPass ? "text" : "password"} value={pass} onChange={e => setPass(e.target.value)} placeholder="Password"
-                            style={{ width: "100%", padding: "13px 56px 13px 16px", borderRadius: 12, border: "1.5px solid #E4E2DB", background: "#F5F4F0", fontSize: 15, fontFamily: "'Outfit',sans-serif", color: "#131313", outline: "none", boxSizing: "border-box", transition: "all .15s" }} required />
+                            style={{ width: "100%", padding: "13px 56px 13px 16px", borderRadius: 12, border: "1.5px solid #E4E2DB", background: "#F5F4F0", fontSize: 15, fontFamily: "'Outfit',sans-serif", color: "#131313", outline: "none", boxSizing: "border-box", transition: "all .15s", textAlign: "center" }} required />
                         <button type="button" onClick={() => setShowPass(s => !s)} style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "rgba(0,0,0,.32)", fontSize: 11, fontWeight: 700, fontFamily: "'Outfit',sans-serif", letterSpacing: ".06em" }}>{showPass ? "HIDE" : "SHOW"}</button>
                     </div>
                     {err && <div style={{ background: "#fff1f2", border: "1.5px solid #fecaca", color: "#dc2626", borderRadius: 10, padding: "9px 13px", fontSize: 13, fontWeight: 600, marginBottom: 12 }}>⚠️ {err}</div>}
@@ -228,7 +228,7 @@ function LoginPage({ onLogin }) {
                     </button>
                 </form>
 
-                <div style={{ marginTop: 24, padding: "13px 15px", background: "#F5F4F0", borderRadius: 12, border: "1.5px solid #E4E2DB" }}>
+                <div style={{ marginTop: 24, padding: "13px 15px", background: "#F5F4F0", borderRadius: 12, border: "1.5px solid #E4E2DB", textAlign: "center" }}>
                     <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "rgba(0,0,0,.3)", textTransform: "uppercase", marginBottom: 10 }}>Test credentials</p>
                     {USERS.map(u => (
                         <div key={u.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
@@ -238,7 +238,7 @@ function LoginPage({ onLogin }) {
                     ))}
                 </div>
             </div>
-            <p className="lu" style={{ animationDelay: ".12s", marginTop: 36, fontSize: 11, color: "rgba(0,0,0,.22)" }}>© SAHARA.ai powered elderly care &nbsp;·&nbsp; Built by team <strong style={{fontWeight:700,color:"rgba(0,0,0,.4)"}}>IDIOTICS</strong> for <strong style={{fontWeight:700,color:"rgba(0,0,0,.4)"}}>TRITHON 2026</strong></p>
+            <p className="lu" style={{ animationDelay: ".12s", marginTop: 36, fontSize: 11, color: "rgba(0,0,0,.22)", textAlign: "center" }}>© SAHARA.ai powered elderly care &nbsp;·&nbsp; Built by team <strong style={{fontWeight:700,color:"rgba(0,0,0,.4)"}}>IDIOTICS</strong> for <strong style={{fontWeight:700,color:"rgba(0,0,0,.4)"}}>TRITHON 2026</strong></p>
         </div>
     );
 }
