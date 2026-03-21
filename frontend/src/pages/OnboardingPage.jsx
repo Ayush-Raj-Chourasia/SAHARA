@@ -27,12 +27,32 @@ const OnboardingPage = () => {
     const handleComplete = async () => {
         try {
             setLoading(true);
-            const payload = {
-                ...profile,
-                age: profile.age ? Number(profile.age) : null,
-                weight_kg: profile.weight_kg ? Number(profile.weight_kg) : null,
-                conditions: profile.conditions.length > 0 ? profile.conditions : ['none'],
+            const basePayload = {
+                name: (profile.name || '').trim(),
+                phone: (profile.phone || '').trim(),
             };
+
+            const payload = role === 'senior'
+                ? {
+                    ...basePayload,
+                    age: profile.age ? Number(profile.age) : null,
+                    gender: profile.gender || null,
+                    weight_kg: profile.weight_kg ? Number(profile.weight_kg) : null,
+                    conditions: profile.conditions.length > 0 ? profile.conditions : ['none'],
+                    location: (profile.location || '').trim(),
+                    language_preference: profile.language_preference || null,
+                    living_status: profile.living_status || null,
+                    family_proximity: profile.family_proximity || null,
+                }
+                : {
+                    ...basePayload,
+                    relationship: profile.relationship || null,
+                    location: (profile.location || '').trim(),
+                    proximity: profile.proximity || null,
+                    invite_code: (profile.invite_code || '').trim().toUpperCase() || null,
+                    senior_email: (profile.senior_email || '').trim() || null,
+                };
+
             const result = await completeOnboarding(payload);
             if (result?.user?.role === 'senior' && result?.user?.invite_code) {
                 alert(`Profile completed. Your family invite code is: ${result.user.invite_code}`);

@@ -51,12 +51,12 @@ class ProfileCompleteRequest(BaseModel):
     relationship: Optional[str] = None
     proximity: Optional[str] = None
     invite_code: Optional[str] = None
-    senior_email: Optional[EmailStr] = None
+    senior_email: Optional[str] = None
 
 
 class FamilyLinkRequest(BaseModel):
     invite_code: Optional[str] = None
-    senior_email: Optional[EmailStr] = None
+    senior_email: Optional[str] = None
     relationship: str
     proximity: str
 
