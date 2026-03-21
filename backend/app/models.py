@@ -27,6 +27,39 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None
 
+
+class GoogleAuthRequest(BaseModel):
+    id_token: Optional[str] = None
+    google_uid: Optional[str] = None
+    name: str
+    email: EmailStr
+    role: str = "senior"
+    photo_url: Optional[str] = None
+
+
+class ProfileCompleteRequest(BaseModel):
+    phone: str
+    name: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[str] = None
+    weight_kg: Optional[float] = None
+    conditions: List[str] = []
+    location: Optional[str] = None
+    language_preference: Optional[str] = None
+    living_status: Optional[str] = None
+    family_proximity: Optional[str] = None
+    relationship: Optional[str] = None
+    proximity: Optional[str] = None
+    invite_code: Optional[str] = None
+    senior_email: Optional[EmailStr] = None
+
+
+class FamilyLinkRequest(BaseModel):
+    invite_code: Optional[str] = None
+    senior_email: Optional[EmailStr] = None
+    relationship: str
+    proximity: str
+
 class HealthLogCreate(BaseModel):
     user_id: str
     bp_sys: int

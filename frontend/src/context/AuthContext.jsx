@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { apiFetch } from '../api/client';
+import { signInWithPopup, signOut } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase';
 
 const AuthContext = createContext();
 
@@ -8,6 +10,15 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const persistUser = (nextUser) => {
+        if (nextUser) {
+            localStorage.setItem('sahara_user', JSON.stringify(nextUser));
+        } else {
+            localStorage.removeItem('sahara_user');
+        }
+        setUser(nextUser);
+    };
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -30,8 +41,7 @@ export const AuthProvider = ({ children }) => {
                         role: userData.role,
                         onboarded: userData.onboarded
                     };
-                    setUser(normalizedUser);
-                    localStorage.setItem('sahara_user', JSON.stringify(normalizedUser));
+                    persistUser(normalizedUser);
                 } else {
                     localStorage.removeItem('sahara_token');
                     localStorage.removeItem('sahara_user');
@@ -41,6 +51,16 @@ export const AuthProvider = ({ children }) => {
             }
             setLoading(false);
         };
+
+        const localUser = localStorage.getItem('sahara_user');
+        if (localUser) {
+            try {
+                setUser(JSON.parse(localUser));
+            } catch {
+                localStorage.removeItem('sahara_user');
+            }
+        }
+
         checkAuth();
     }, []);
 
@@ -55,8 +75,7 @@ export const AuthProvider = ({ children }) => {
         
         const data = await res.json();
         localStorage.setItem('sahara_token', data.access_token);
-        localStorage.setItem('sahara_user', JSON.stringify(data.user));
-        setUser(data.user);
+        persistUser(data.user);
         return data.user;
     };
 
@@ -66,44 +85,90 @@ export const AuthProvider = ({ children }) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
         });
-        if (!res.ok) throw new Error("Registration failed");
+        if (!res.ok) {
+            const message = await res.text();
+            throw new Error(message || "Registration failed");
+        }
         const data = await res.json();
         localStorage.setItem('sahara_token', data.access_token);
-        // After register, user is not onboarded
-        const newUser = { ...userData, onboarded: false };
-        localStorage.setItem('sahara_user', JSON.stringify(newUser));
-        setUser(newUser);
+        const newUser = data.user || { ...userData, onboarded: false };
+        persistUser(newUser);
         return newUser;
     };
 
-    const googleSignIn = async () => {
-        // Simulate Firebase Google Sign-In but for this phase we keep it simple
-        // In a real prod app, you'd get the ID token from Google and send to backend
-        const mockUser = {
-            id: 'google_' + Date.now(),
-            email: 'user@gmail.com',
-            role: null,
-            onboarded: false
-        };
-        setUser(mockUser);
-        return mockUser;
+    const googleSignIn = async (role = 'senior') => {
+        const credential = await signInWithPopup(auth, googleProvider);
+        const token = await credential.user.getIdToken();
+        const res = await apiFetch('/api/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_token: token,
+                google_uid: credential.user.uid,
+                name: credential.user.displayName || '',
+                email: credential.user.email || '',
+                photo_url: credential.user.photoURL,
+                role,
+            }),
+        });
+
+        if (!res.ok) {
+            const message = await res.text();
+            throw new Error(message || 'Google sign-in failed');
+        }
+
+        const data = await res.json();
+        localStorage.setItem('sahara_token', data.access_token);
+        persistUser(data.user);
+        return data.user;
     };
 
     const logout = () => {
-        setUser(null);
+        signOut(auth).catch(() => {});
+        persistUser(null);
         localStorage.removeItem('sahara_token');
-        localStorage.removeItem('sahara_user');
     };
 
     const completeOnboarding = async (data) => {
-        // This will eventually call /api/profiles/update
-        const updatedUser = { ...user, ...data, onboarded: true };
-        setUser(updatedUser);
-        return updatedUser;
+        const token = localStorage.getItem('sahara_token');
+        const res = await apiFetch('/api/auth/complete-profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) {
+            const message = await res.text();
+            throw new Error(message || 'Profile completion failed');
+        }
+        const payload = await res.json();
+        persistUser(payload.user);
+        return payload;
+    };
+
+    const linkFamily = async (data) => {
+        const token = localStorage.getItem('sahara_token');
+        const res = await apiFetch('/api/auth/family/link', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) {
+            const message = await res.text();
+            throw new Error(message || 'Family linking failed');
+        }
+        const payload = await res.json();
+        persistUser(payload.user);
+        return payload;
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, googleSignIn, logout, loading, completeOnboarding }}>
+        <AuthContext.Provider value={{ user, login, register, googleSignIn, logout, loading, completeOnboarding, linkFamily }}>
             {children}
         </AuthContext.Provider>
     );
