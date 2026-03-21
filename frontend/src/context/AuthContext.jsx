@@ -65,78 +65,115 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        const res = await apiFetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        
-        if (!res.ok) throw new Error("Login failed");
-        
-        const data = await res.json();
-        localStorage.setItem('sahara_token', data.access_token);
-        persistUser(data.user);
-        return data.user;
+        try {
+            console.log('[AUTH] Login attempt for:', email);
+            const res = await apiFetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            if (!res.ok) {
+                const message = await res.text();
+                console.error('[AUTH] Login failed:', message);
+                throw new Error(`Login failed: ${message || 'Invalid credentials'}`);
+            }
+            
+            const data = await res.json();
+            localStorage.setItem('sahara_token', data.access_token);
+            persistUser(data.user);
+            console.log('[AUTH] Login successful for:', email);
+            return data.user;
+        } catch (error) {
+            console.error('[AUTH] Login error:', error);
+            throw error;
+        }
     };
 
     const register = async (userData) => {
-        const res = await apiFetch('/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(userData)
-        });
-        if (!res.ok) {
-            const message = await res.text();
-            throw new Error(message || "Registration failed");
+        try {
+            console.log('[AUTH] Register attempt for:', userData.email, 'role:', userData.role);
+            const res = await apiFetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+            
+            if (!res.ok) {
+                const message = await res.text();
+                console.error('[AUTH] Register failed:', message);
+                throw new Error(message || "Registration failed");
+            }
+            
+            const data = await res.json();
+            localStorage.setItem('sahara_token', data.access_token);
+            const newUser = data.user || { ...userData, onboarded: false };
+            persistUser(newUser);
+            console.log('[AUTH] Registration successful');
+            return newUser;
+        } catch (error) {
+            console.error('[AUTH] Register error:', error);
+            throw error;
         }
-        const data = await res.json();
-        localStorage.setItem('sahara_token', data.access_token);
-        const newUser = data.user || { ...userData, onboarded: false };
-        persistUser(newUser);
-        return newUser;
     };
 
     const googleSignIn = async (role = 'senior') => {
         try {
-            console.log('Starting Firebase Google sign-in...');
+            console.log('[AUTH] Starting Firebase Google sign-in for role:', role);
             const credential = await signInWithPopup(auth, googleProvider);
-            console.log('Firebase sign-in successful:', credential.user.email);
+            console.log('[AUTH] Firebase sign-in successful:', credential.user.email);
             
             const token = await credential.user.getIdToken();
-            console.log('ID token obtained');
+            console.log('[AUTH] ID token obtained, length:', token.length);
+            
+            const payloadData = {
+                id_token: token,
+                google_uid: credential.user.uid,
+                name: credential.user.displayName || '',
+                email: credential.user.email || '',
+                photo_url: credential.user.photoURL,
+                role,
+            };
+            console.log('[AUTH] Sending to backend:', { ...payloadData, id_token: '[REDACTED]' });
             
             const res = await apiFetch('/api/auth/google', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_token: token,
-                    google_uid: credential.user.uid,
-                    name: credential.user.displayName || '',
-                    email: credential.user.email || '',
-                    photo_url: credential.user.photoURL,
-                    role,
-                }),
+                body: JSON.stringify(payloadData),
             });
 
+            console.log('[AUTH] Backend response status:', res.status);
+            
             if (!res.ok) {
                 const message = await res.text();
-                console.error('Backend error:', message);
-                throw new Error(message || 'Backend authentication failed');
+                console.error('[AUTH] Backend error response:', message);
+                throw new Error(`Backend error (${res.status}): ${message || 'Unknown error'}`);
             }
 
             const data = await res.json();
+            console.log('[AUTH] Received user data:', { id: data.user?.id, email: data.user?.email, role: data.user?.role });
+            
             localStorage.setItem('sahara_token', data.access_token);
             persistUser(data.user);
             return data.user;
         } catch (error) {
-            console.error('Google sign-in error:', error);
+            console.error('[AUTH] Google sign-in error:', error);
+            
+            // Firebase-specific errors
             if (error.code === 'auth/popup-blocked') {
-                throw new Error('Popup blocked! Please enable popups for this site.');
+                throw new Error('❌ Popup blocked! Please enable popups for this site and restart.');
             } else if (error.code === 'auth/popup-closed-by-user') {
-                throw new Error('Google sign-in cancelled.');
+                throw new Error('❌ Google sign-in was cancelled. Please try again.');
             } else if (error.code === 'auth/operation-not-supported-in-this-environment') {
-                throw new Error('Google sign-in not available in this environment.');
+                throw new Error('❌ Google sign-in not available. Browser may not support required features.');
+            } else if (error.code === 'auth/unauthorized-domain') {
+                throw new Error('❌ This domain is not authorized for Google sign-in. Contact support.');
+            } else if (error.code === 'auth/invalid-api-key') {
+                throw new Error('❌ Firebase configuration invalid. Contact support.');
+            } else if (error.message) {
+                throw new Error(`❌ Sign-in failed: ${error.message}`);
             }
+            
             throw error;
         }
     };
@@ -148,41 +185,61 @@ export const AuthProvider = ({ children }) => {
     };
 
     const completeOnboarding = async (data) => {
-        const token = localStorage.getItem('sahara_token');
-        const res = await apiFetch('/api/auth/complete-profile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify(data),
-        });
-        if (!res.ok) {
-            const message = await res.text();
-            throw new Error(message || 'Profile completion failed');
+        try {
+            console.log('[AUTH] Completing onboarding with fields:', Object.keys(data));
+            const token = localStorage.getItem('sahara_token');
+            const res = await apiFetch('/api/auth/complete-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(data),
+            });
+            
+            if (!res.ok) {
+                const message = await res.text();
+                console.error('[AUTH] Profile completion failed:', message);
+                throw new Error(message || 'Profile completion failed');
+            }
+            
+            const payload = await res.json();
+            persistUser(payload.user);
+            console.log('[AUTH] Onboarding completed successfully');
+            return payload;
+        } catch (error) {
+            console.error('[AUTH] Onboarding error:', error);
+            throw error;
         }
-        const payload = await res.json();
-        persistUser(payload.user);
-        return payload;
     };
 
     const linkFamily = async (data) => {
-        const token = localStorage.getItem('sahara_token');
-        const res = await apiFetch('/api/auth/family/link', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify(data),
-        });
-        if (!res.ok) {
-            const message = await res.text();
-            throw new Error(message || 'Family linking failed');
+        try {
+            console.log('[AUTH] Linking family with:', { invite_code: data.invite_code ? '[PROVIDED]' : 'N/A', senior_email: data.senior_email });
+            const token = localStorage.getItem('sahara_token');
+            const res = await apiFetch('/api/auth/family/link', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(data),
+            });
+            
+            if (!res.ok) {
+                const message = await res.text();
+                console.error('[AUTH] Family linking failed:', message);
+                throw new Error(message || 'Family linking failed');
+            }
+            
+            const payload = await res.json();
+            persistUser(payload.user);
+            console.log('[AUTH] Family linked successfully');
+            return payload;
+        } catch (error) {
+            console.error('[AUTH] Link family error:', error);
+            throw error;
         }
-        const payload = await res.json();
-        persistUser(payload.user);
-        return payload;
     };
 
     return (
