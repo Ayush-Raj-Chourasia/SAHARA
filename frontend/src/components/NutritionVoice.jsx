@@ -10,6 +10,7 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
     const [transcript, setTranscript] = useState('');
     const [status, setStatus] = useState('tap_to_speak'); // tap_to_speak, listening, analyzing, success
     const [analysis, setAnalysis] = useState(null);
+    const [mealType, setMealType] = useState('snacks');
 
     const startListening = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -63,7 +64,7 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
                 kcal: totalKcal,
                 protein: Number(totalProtein.toFixed(1)),
                 iron_mg: Number(totalIron.toFixed(1)),
-                meal_type: "snack",
+                meal_type: mealType,
                 suggestion: dynamicTip,
                 suggestion_hi: dynamicTip,
                 parsed_meals: meals,
@@ -134,6 +135,26 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
                     <div className="animate-in fade-in zoom-in">
                         <h2 style={{ color: '#FFF', fontSize: 32, fontWeight: 900, marginBottom: 10 }}>What did you eat?</h2>
                         <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 18, marginBottom: 50 }}>Speak in Hindi, Odia, or English</p>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 24 }}>
+                            {['breakfast', 'lunch', 'snacks', 'dinner'].map((m) => (
+                                <button
+                                    key={m}
+                                    onClick={() => setMealType(m)}
+                                    style={{
+                                        border: 'none',
+                                        borderRadius: 12,
+                                        padding: '10px 12px',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        background: mealType === m ? G.orange : 'rgba(255,255,255,0.15)',
+                                        color: '#fff',
+                                        textTransform: 'capitalize',
+                                    }}
+                                >
+                                    {m}
+                                </button>
+                            ))}
+                        </div>
                         <button onClick={startListening} style={{ width: 120, height: 120, borderRadius: '50%', background: G.orange, border: 'none', color: '#FFF', cursor: 'pointer', boxShadow: '0 0 50px rgba(234,88,12,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
                             <Mic size={48} />
                         </button>

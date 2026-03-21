@@ -3,6 +3,7 @@ import { G } from './DashboardComponents';
 import { Pill, Check, X, Shield, Info, AlertTriangle } from './Icons';
 
 export const MedicationCompliance = ({ th, dark }) => {
+    const muted = th.textMuted || th.muted;
     const days = [
         { d: 'M', t: true }, { d: 'T', t: true }, { d: 'W', t: false },
         { d: 'T', t: true }, { d: 'F', t: true }, { d: 'S', t: true }, { d: 'S', t: null }
@@ -11,7 +12,7 @@ export const MedicationCompliance = ({ th, dark }) => {
     return (
         <div style={{ marginTop: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-                <h4 style={{ fontSize: 13, fontWeight: 800, textTransform: 'uppercase', color: th.textMuted }}>This Week</h4>
+                <h4 style={{ fontSize: 13, fontWeight: 800, textTransform: 'uppercase', color: muted }}>This Week</h4>
                 <span style={{ fontSize: 13, fontWeight: 800, color: G.green }}>85% Success</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
@@ -26,7 +27,7 @@ export const MedicationCompliance = ({ th, dark }) => {
                             {day.t === true && <Check w={16} />}
                             {day.t === false && <X w={16} />}
                         </div>
-                        <span style={{ fontSize: 11, fontWeight: 800, color: th.textMuted }}>{day.d}</span>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: muted }}>{day.d}</span>
                     </div>
                 ))}
             </div>

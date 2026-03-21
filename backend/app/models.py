@@ -66,6 +66,7 @@ class HealthLogCreate(BaseModel):
     bp_dia: int
     sugar: int
     heart_rate: int
+    haemoglobin: Optional[float] = None
     weight: Optional[float] = None
     fatigue: Optional[int] = Field(None, ge=1, le=10) # 1-10
     timestamp: datetime = Field(default_factory=datetime.utcnow)

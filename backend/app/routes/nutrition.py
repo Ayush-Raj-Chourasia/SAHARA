@@ -1,6 +1,7 @@
 import os
 import json
 import base64
+import random
 from fastapi import APIRouter, HTTPException, Request
 from app.models import NutritionLogCreate
 from app.database import nutrition_logs_collection, users_collection
@@ -60,6 +61,22 @@ COMMON_INDIAN_MEALS = {
     "rajma chawal": {"name": "Rajma with Rice", "kcal": 480, "protein_g": 18, "iron_mg": 5.5, "carbs_g": 72},
     "breakfast": {"name": "Light Breakfast", "kcal": 300, "protein_g": 8, "iron_mg": 2.5, "carbs_g": 48},
 }
+
+MEAL_WINDOWS = {
+    "breakfast": 10,
+    "lunch": 15,
+    "snacks": 18,
+    "dinner": 22,
+}
+
+
+def normalize_meal_type(meal_type: str) -> str:
+    mt = (meal_type or "").strip().lower()
+    if mt == "snack":
+        return "snacks"
+    if mt not in MEAL_WINDOWS:
+        return "snacks"
+    return mt
 
 @router.post("/analyze")
 async def analyze_food(req: dict):
@@ -237,24 +254,79 @@ def add_dynamic_care_tips(meals, meal_text):
 
 @router.post("/log")
 async def log_nutrition(log: NutritionLogCreate):
-    log_dict = log.dict()
-    log_dict["timestamp"] = datetime.utcnow()
-    result = await nutrition_logs_collection.insert_one(log_dict)
-    return {"status": "success", "id": str(result.inserted_id)}
+    try:
+        log_dict = log.dict()
+        log_dict["meal_type"] = normalize_meal_type(log.meal_type)
+        log_dict["timestamp"] = datetime.utcnow()
+        result = await nutrition_logs_collection.insert_one(log_dict)
+        return {"status": "success", "id": str(result.inserted_id)}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Database write failed: {str(e)}")
+
+
+@router.post("/auto-log/{user_id}")
+async def auto_log_nutrition(user_id: str, meal_type: str = "snacks"):
+    """Simulate auto-fetch nutrition entry for a meal label and persist it."""
+    mt = normalize_meal_type(meal_type)
+    picks = list(COMMON_INDIAN_MEALS.values())
+    meal = random.choice(picks)
+    entry = NutritionLogCreate(
+        user_id=user_id,
+        meal_type=mt,
+        food_name=meal.get("name", "Auto Meal"),
+        kcal=int(meal.get("kcal", random.randint(220, 520))),
+        protein=float(meal.get("protein_g", random.randint(6, 24))),
+        iron_mg=float(meal.get("iron_mg", round(random.uniform(1.2, 5.8), 1))),
+    )
+    return await log_nutrition(entry)
 
 @router.get("/today/{user_id}")
 async def get_today_nutrition(user_id: str):
     today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    cursor = nutrition_logs_collection.find({
-        "user_id": user_id,
-        "timestamp": {"$gte": today}
-    })
-    logs = await cursor.to_list(length=100)
+    try:
+        cursor = nutrition_logs_collection.find({
+            "user_id": user_id,
+            "timestamp": {"$gte": today}
+        })
+        logs = await cursor.to_list(length=100)
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Database read failed: {str(e)}")
+
+    for l in logs:
+        l["_id"] = str(l["_id"])
+        l["meal_type"] = normalize_meal_type(l.get("meal_type", "snacks"))
     
-    total_kcal = sum(l["kcal"] for l in logs)
-    total_protein = sum(l["protein"] for l in logs)
+    def to_num(v, fallback=0.0):
+        try:
+            return float(v)
+        except Exception:
+            return fallback
+
+    total_kcal = sum(to_num(l.get("kcal", 0), 0.0) for l in logs)
+    total_protein = sum(to_num(l.get("protein", 0), 0.0) for l in logs)
+
+    by_meal = {k: None for k in MEAL_WINDOWS.keys()}
+    for meal in MEAL_WINDOWS.keys():
+        meal_logs = [l for l in logs if normalize_meal_type(l.get("meal_type", "snacks")) == meal]
+        if meal_logs:
+            meal_logs.sort(key=lambda x: x.get("timestamp") or datetime.min, reverse=True)
+            by_meal[meal] = meal_logs[0]
+
+    now_hour = datetime.utcnow().hour
+    meal_status = []
+    for meal, due_hour in MEAL_WINDOWS.items():
+        logged = by_meal[meal] is not None
+        missed = (now_hour >= due_hour) and (not logged)
+        meal_status.append({
+            "meal_type": meal,
+            "due_hour": due_hour,
+            "logged": logged,
+            "missed": missed,
+            "entry": by_meal[meal],
+        })
     
     return {
         "logs": logs,
-        "summary": {"kcal": total_kcal, "protein": total_protein}
+        "summary": {"kcal": round(total_kcal, 1), "protein": round(total_protein, 1)},
+        "meal_status": meal_status,
     }

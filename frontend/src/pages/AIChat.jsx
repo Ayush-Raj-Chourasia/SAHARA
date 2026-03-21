@@ -29,10 +29,11 @@ const AIChat = ({ onBack, th, G }) => {
       const response = await apiFetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input, user_id: user?.id })
+        body: JSON.stringify({ message: input, user_id: user?.id, user_email: user?.email })
       });
       const data = await response.json();
-      setMessages(prev => [...prev, { id: Date.now() + 1, text: data.response, sender: "bot" }]);
+      const suffix = data?.source ? `\n\n(source: ${data.source})` : '';
+      setMessages(prev => [...prev, { id: Date.now() + 1, text: `${data.response || ''}${suffix}`, sender: "bot" }]);
     } catch (err) {
       setMessages(prev => [...prev, { id: Date.now() + 1, text: "I'm sorry, I'm having trouble connecting. Try again later.", sender: "bot" }]);
     } finally {

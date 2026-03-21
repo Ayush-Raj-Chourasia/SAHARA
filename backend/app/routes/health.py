@@ -3,6 +3,8 @@ from app.models import HealthLogCreate
 from app.database import health_logs_collection, users_collection
 from datetime import datetime
 from typing import List
+import random
+from bson import ObjectId
 
 router = APIRouter(prefix="/api/health", tags=["health"])
 
@@ -18,6 +20,10 @@ def calculate_health_score(log: HealthLogCreate) -> int:
     
     # Heart Rate
     if log.heart_rate > 105 or log.heart_rate < 55: score -= 10
+
+    # Haemoglobin (if available)
+    if log.haemoglobin is not None and (log.haemoglobin < 11.0 or log.haemoglobin > 17.0):
+        score -= 12
     
     # Fatigue
     if log.fatigue and log.fatigue > 7: score -= 10
@@ -70,6 +76,19 @@ async def log_health(log: HealthLogCreate):
         sugar_anon = detect_anomaly(sugar_vals, log.sugar, "Blood Sugar")
         if sugar_anon["anomaly"]: anomalies.append(sugar_anon)
 
+        # Check Heart Rate Anomaly
+        hr_vals = [h.get("heart_rate") for h in history if h.get("heart_rate") is not None]
+        if len(hr_vals) >= 3:
+            hr_anon = detect_anomaly(hr_vals, log.heart_rate, "Heart Rate")
+            if hr_anon["anomaly"]: anomalies.append(hr_anon)
+
+        # Check Haemoglobin Anomaly
+        if log.haemoglobin is not None:
+            hb_vals = [h.get("haemoglobin") for h in history if h.get("haemoglobin") is not None]
+            if len(hb_vals) >= 3:
+                hb_anon = detect_anomaly(hb_vals, float(log.haemoglobin), "Haemoglobin")
+                if hb_anon["anomaly"]: anomalies.append(hb_anon)
+
     score = calculate_health_score(log)
     
     # Penalize score if anomalies detected
@@ -85,8 +104,11 @@ async def log_health(log: HealthLogCreate):
         result = await health_logs_collection.insert_one(log_dict)
         
         # Update user's latest score
+        user_filter = {"_id": log.user_id}
+        if ObjectId.is_valid(log.user_id):
+            user_filter = {"_id": ObjectId(log.user_id)}
         await users_collection.update_one(
-            {"_id": log.user_id},
+            user_filter,
             {"$set": {
                 "latest_score": score, 
                 "last_sync": datetime.utcnow(),
@@ -119,3 +141,18 @@ async def get_history(user_id: str, limit: int = 10):
     for log in logs:
         log["_id"] = str(log["_id"])
     return logs
+
+
+@router.post("/auto-log/{user_id}")
+async def auto_log_health(user_id: str):
+    """Simulate device auto-fetch: generate realistic vitals and persist in MongoDB."""
+    log = HealthLogCreate(
+        user_id=user_id,
+        bp_sys=random.randint(118, 148),
+        bp_dia=random.randint(72, 94),
+        sugar=random.randint(92, 162),
+        heart_rate=random.randint(62, 102),
+        haemoglobin=round(random.uniform(10.2, 13.8), 1),
+        fatigue=random.randint(1, 8),
+    )
+    return await log_health(log)
