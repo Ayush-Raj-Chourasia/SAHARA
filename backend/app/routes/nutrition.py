@@ -69,12 +69,7 @@ MEAL_WINDOWS = {
     "dinner": 22,
 }
 
-FOOD_KEYWORDS = {
-    "poha", "dal", "chawal", "rice", "roti", "chapati", "idli", "dosa", "upma", "khichdi",
-    "paneer", "egg", "milk", "tea", "coffee", "curd", "yogurt", "sabzi", "vegetable", "salad",
-    "fruit", "banana", "apple", "mango", "orange", "bread", "paratha", "sambar", "rajma", "chole",
-    "snack", "breakfast", "lunch", "dinner",
-}
+
 
 
 def normalize_meal_type(meal_type: str) -> str:
@@ -99,20 +94,11 @@ def detect_meal_type(text: str, fallback: str = "snacks") -> str:
     return normalize_meal_type(fallback)
 
 
-def looks_like_food_text(text: str) -> bool:
-    t = (text or "").lower()
-    return any(k in t for k in FOOD_KEYWORDS)
-
-
 def sanitize_ai_meals(meals: list, meal_text: str, meal_type: str) -> list:
     safe = []
     for m in meals or []:
         name = str(m.get("name", "")).strip()
         if not name:
-            continue
-        # Keep only entries that look food-like by either meal text context or meal name keyword match.
-        lowered_name = name.lower()
-        if not looks_like_food_text(lowered_name) and not looks_like_food_text(meal_text):
             continue
         kcal = int(float(m.get("kcal", 0) or 0))
         protein = float(m.get("protein_g", m.get("protein", 0)) or 0)
@@ -137,19 +123,18 @@ async def analyze_food(req: dict):
     
     if not meal_text:
         return {"results": []}
-
-    if not looks_like_food_text(meal_text):
-        return {
-            "results": [],
-            "source": "validator",
-            "status": "no_food_detected",
-            "note": "No edible item detected in speech input.",
-        }
     
     # System prompt for structured nutrition analysis
     system_message = """You are a clinical nutritionist specializing in elderly Indian nutrition (60-85 years old).
 
-Analyze the meal(s) described and return ONLY valid JSON in this exact format:
+Analyze the speech/text described. 
+IMPORTANT: 
+1. Determine if the text describes an edible food, meal, or beverage.
+2. If it DOES NOT describe any edible item (e.g. general conversation, greetings, random words), return exactly:
+{
+  "meals": []
+}
+3. If it DOES describe an edible item, return ONLY valid JSON in this exact format, with nutrition values based on typical Indian serving sizes:
 {
   "meals": [
     {
@@ -163,12 +148,7 @@ Analyze the meal(s) described and return ONLY valid JSON in this exact format:
   ]
 }
 
-IMPORTANT:
-- Return ONLY valid JSON, no markdown, no explanation
-- Include nutrition values based on typical Indian serving sizes
-- For Hindi meal names, translate to English in the 'name' field
-- If multiple foods mentioned, list them separately in meals array
-- Include key nutrients: calories, protein, iron, carbs, calcium"""
+Return ONLY valid JSON, no Markdown, no explanation."""
     
     content = [system_message, f"Meal description: {meal_text}"]
     
@@ -190,10 +170,20 @@ IMPORTANT:
             text = response.text.strip()
             print(f"✅ Gemini raw response: {text[:150]}...")
             result = parse_ai_json(text)
+            
+            if "meals" in result and not result.get("meals"):
+                # AI explicitly detected no food
+                return {
+                    "results": [],
+                    "source": "gemini",
+                    "status": "no_food_detected",
+                    "note": "No edible item detected in speech.",
+                }
+
             if result.get("meals"):
                 meals = sanitize_ai_meals(result.get("meals"), meal_text, inferred_meal_type)
                 if not meals:
-                    raise ValueError("AI output did not include edible items")
+                    raise ValueError("AI output did not include safe edible items")
                 print(f"✅ Gemini parsed {len(meals)} meals successfully")
                 meals_with_tips = add_dynamic_care_tips(meals, meal_text)
                 return {"results": meals_with_tips, "source": "gemini", "status": "success"}
@@ -214,10 +204,20 @@ IMPORTANT:
             text = chat_completion.choices[0].message.content
             print(f"✅ Groq raw response: {text[:150]}...")
             result = parse_ai_json(text)
+            
+            if "meals" in result and not result.get("meals"):
+                # AI explicitly detected no food
+                return {
+                    "results": [],
+                    "source": "groq",
+                    "status": "no_food_detected",
+                    "note": "No edible item detected in speech.",
+                }
+
             if result.get("meals"):
                 meals = sanitize_ai_meals(result.get("meals"), meal_text, inferred_meal_type)
                 if not meals:
-                    raise ValueError("AI output did not include edible items")
+                    raise ValueError("AI output did not include safe edible items")
                 print(f"✅ Groq parsed {len(meals)} meals successfully")
                 meals_with_tips = add_dynamic_care_tips(meals, meal_text)
                 return {"results": meals_with_tips, "source": "groq", "status": "success"}

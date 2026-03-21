@@ -238,8 +238,8 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
             {(nutritionSummary?.meal_status || []).map((m) => (
               <div key={m.meal_type} style={{ border: `1px solid ${th.border}`, borderRadius: 12, padding: 10, background: m.logged ? '#f0fdf4' : m.missed ? '#fef2f2' : th.s2 }}>
                 <p style={{ fontWeight: 800, textTransform: 'capitalize' }}>{m.meal_type}</p>
-                <p style={{ fontSize: 12, color: th.muted, marginTop: 2 }}>
-                  {m.logged ? 'Logged' : m.missed ? 'Missed' : `Due by ${m.due_hour}:00`}
+                <p style={{ fontSize: 12, color: m.logged ? '#166534' : th.muted, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={m.logged && m.entry ? `${m.entry.food_name} (${m.entry.kcal} kcal)` : ''}>
+                  {m.logged ? (m.entry?.food_name ? `${m.entry.food_name} • ${m.entry.kcal} kcal` : 'Logged') : m.missed ? 'Missed' : `Due by ${m.due_hour}:00`}
                 </p>
                 {!m.logged && (
                   <button
