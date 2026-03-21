@@ -122,38 +122,35 @@ function SAHARA() {
     const cloudRef = useRef();
     const initRef = useRef(false);
 
-    // 1. Puter Persistence (Load)
+    // 1. localStorage Persistence (Load)
     useEffect(() => {
-        const load = async () => {
-            try {
-                const data = await puter.kv.get("sahara_v1");
-                if (data) {
-                    const d = JSON.parse(data);
-                    if (d.vitals) setVitals(d.vitals);
-                    if (d.medTaken !== undefined) setMedTaken(d.medTaken);
-                    if (d.sleep !== undefined) setSleep(d.sleep);
-                    if (d.steps !== undefined) setSteps(d.steps);
-                    if (d.foodLog) setFoodLog(d.foodLog);
-                    if (d.sent) setSent(d.sent);
-                    if (d.logs) setLogs(d.logs);
-                    if (d.dark !== undefined) setDark(d.dark);
-                }
-            } catch (e) { console.warn("Puter Load Error", e); }
-            initRef.current = true;
-        };
-        load();
+        try {
+            const data = localStorage.getItem("sahara_v1");
+            if (data) {
+                const d = JSON.parse(data);
+                if (d.vitals) setVitals(d.vitals);
+                if (d.medTaken !== undefined) setMedTaken(d.medTaken);
+                if (d.sleep !== undefined) setSleep(d.sleep);
+                if (d.steps !== undefined) setSteps(d.steps);
+                if (d.foodLog) setFoodLog(d.foodLog);
+                if (d.sent) setSent(d.sent);
+                if (d.logs) setLogs(d.logs);
+                if (d.dark !== undefined) setDark(d.dark);
+            }
+        } catch (e) { console.warn("Load Error", e); }
+        initRef.current = true;
     }, []);
 
-    // 2. Puter Persistence (Save)
+    // 2. localStorage Persistence (Save — debounced)
     useEffect(() => {
         if (!initRef.current) return;
         if (cloudRef.current) clearTimeout(cloudRef.current);
-        cloudRef.current = setTimeout(async () => {
+        cloudRef.current = setTimeout(() => {
             setIsCloud(true);
             try {
                 const payload = { vitals, medTaken, sleep, steps, foodLog, sent, logs, dark };
-                await puter.kv.set("sahara_v1", JSON.stringify(payload));
-            } catch (e) { console.warn("Puter Save Error", e); }
+                localStorage.setItem("sahara_v1", JSON.stringify(payload));
+            } catch (e) { console.warn("Save Error", e); }
             setTimeout(() => setIsCloud(false), 1200);
         }, 800);
     }, [vitals, medTaken, sleep, steps, foodLog, sent, logs, dark]);
