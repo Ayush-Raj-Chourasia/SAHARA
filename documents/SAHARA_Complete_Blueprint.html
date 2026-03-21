@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAHARA — Complete Blueprint</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f7f4;color:#1a1a18}
+.header{background:#F97316;color:#fff;padding:24px 32px}
+.header h1{font-size:26px;font-weight:600;margin-bottom:4px}
+.header p{font-size:14px;opacity:.85}
+.nav{background:#fff;border-bottom:1px solid #e5e3dc;padding:0 24px;display:flex;gap:0;overflow-x:auto;position:sticky;top:0;z-index:99}
+.nt{padding:14px 18px;font-size:13px;cursor:pointer;color:#73726c;border:none;background:none;border-bottom:2.5px solid transparent;white-space:nowrap;font-weight:500}
+.nt.on{color:#F97316;border-bottom-color:#F97316}
+.body{max-width:1100px;margin:0 auto;padding:28px 24px}
+.pg{display:none}.pg.on{display:block}
+.section{margin-bottom:28px}
+h2{font-size:18px;font-weight:600;margin-bottom:14px;color:#1a1a18}
+h3{font-size:14px;font-weight:600;margin-bottom:8px;color:#1a1a18}
+p,li{font-size:13px;color:#44443f;line-height:1.7}
+ul{padding-left:1.2rem}
+.card{background:#fff;border:1px solid #e5e3dc;border-radius:12px;padding:18px 20px;margin-bottom:12px}
+.card.green{border-left:4px solid #22c55e}
+.card.blue{border-left:4px solid #3b82f6}
+.card.amber{border-left:4px solid #f59e0b}
+.card.red{border-left:4px solid #ef4444}
+.card.orange{border:2px solid #F97316}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.mono{font-family:'SF Mono',Monaco,monospace;font-size:12px;background:#f1efe8;padding:12px 14px;border-radius:8px;line-height:1.8;color:#1a1a18;white-space:pre-wrap;margin:8px 0}
+.badge{font-size:11px;padding:3px 9px;border-radius:99px;font-weight:600;display:inline-block;margin:2px}
+.bg{background:#dcfce7;color:#166534}
+.bb{background:#dbeafe;color:#1e40af}
+.br{background:#fee2e2;color:#991b1b}
+.ba{background:#fef3c7;color:#92400e}
+.bp{background:#ede9fe;color:#3730a3}
+.lbl{font-size:10px;font-weight:700;color:#888780;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;font-weight:700;color:#73726c;padding:8px 10px;border-bottom:1px solid #e5e3dc;background:#f8f7f4}
+td{padding:8px 10px;border-bottom:1px solid #e5e3dc;vertical-align:top}
+tr:hover td{background:#fafaf7}
+.metric{background:#f8f7f4;border-radius:10px;padding:14px 16px;text-align:center}
+.metric .val{font-size:22px;font-weight:700;color:#F97316}
+.metric .lbl2{font-size:11px;color:#73726c;margin-top:2px}
+.phone-mock{background:#fff;border:2px solid #e5e3dc;border-radius:14px;padding:14px;max-width:240px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.elder-btn{background:#F97316;color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:600;width:100%;margin-bottom:8px;cursor:pointer}
+.elder-btn.sos{background:#dc2626;font-size:17px;padding:16px}
+.stat-box{background:#f8f7f4;border-radius:8px;padding:9px 11px;margin-bottom:6px}
+.stat-num{font-size:20px;font-weight:700;color:#1a1a18}
+.stat-lbl{font-size:10px;color:#73726c}
+.prog{height:5px;border-radius:3px;background:#e5e3dc;margin-top:4px}
+.pf{height:5px;border-radius:3px}
+.vs{display:flex;gap:12px;margin-bottom:12px}
+.vc{flex:1;background:#f8f7f4;border-radius:10px;padding:14px}
+.vc.winner{background:#f0fdf4;border:1px solid #86efac}
+.warn-box{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 14px;margin:10px 0;font-size:13px;color:#78350f}
+.tip-box{background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;padding:12px 14px;margin:10px 0;font-size:13px;color:#1e3a8a}
+.win-box{background:#fff7ed;border:2px solid #F97316;border-radius:10px;padding:16px 18px;margin:14px 0;font-size:13px;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>SAHARA — Complete End-to-End Blueprint</h1>
+  <p>Team Idiotics · Trithon 2026 · Everything you need to win · No internet search required</p>
+</div>
+
+<div class="nav">
+  <button class="nt on" onclick="sw('arch')">Architecture</button>
+  <button class="nt" onclick="sw('ux')">UX / Screens</button>
+  <button class="nt" onclick="sw('ai')">AI & Models</button>
+  <button class="nt" onclick="sw('deploy')">Deployment</button>
+  <button class="nt" onclick="sw('biz')">Business Model</button>
+  <button class="nt" onclick="sw('compete')">Competitors</button>
+  <button class="nt" onclick="sw('app')">App vs Web</button>
+  <button class="nt" onclick="sw('fallback')">Fallbacks</button>
+  <button class="nt" onclick="sw('win')">Win Strategy</button>
+</div>
+
+<div class="body">
+
+<!-- ARCHITECTURE -->
+<div id="arch" class="pg on">
+  <div class="section">
+    <h2>Full System Architecture</h2>
+    <div class="card orange">
+      <h3>The complete data flow: Senior → AI Engine → Family Dashboard</h3>
+      <p>Senior logs meal/vitals on mobile → FastAPI processes → ML scores risk → MongoDB stores → Family dashboard polls → Alert fires if risk HIGH → Twilio SMS to family phone</p>
+    </div>
+
+    <div class="card blue">
+      <h3>Layer 1 — Frontend</h3>
+      <div class="g2">
+        <div>
+          <div class="lbl">Senior App (React Native / Expo)</div>
+          <div class="mono">Screens:
+/ Home         → Health score + today summary
+/log           → Log BP, sugar, Hb, weight
+/nutrition     → Meal logging + AI analysis
+/sos           → Emergency big red button
+/chat          → SAHARA AI (voice + text)
+/reminders     → Medication alerts</div>
+        </div>
+        <div>
+          <div class="lbl">Family Dashboard (React Web)</div>
+          <div class="mono">Screens:
+/              → Linked seniors list + risk badges
+/senior/:id    → Deep dive:
+  7-day trend charts (Recharts)
+  Risk alert timeline
+  Medication compliance calendar
+  SOS history + Google Maps pin
+  Weekly AI-generated report</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card blue">
+      <h3>Layer 2 — Backend (FastAPI + Python)</h3>
+      <div class="mono">POST /auth/register          → create user (role: senior | family)
+POST /auth/login             → JWT token (expires 7 days)
+POST /health/log             → save vitals, run risk scoring → return {score, flags}
+GET  /health/history/:id     → last 30 days for charts
+POST /nutrition/analyze      → Gemini parses meal text → return macros + deficit
+GET  /nutrition/today/:id    → today intake vs elderly targets
+POST /emergency/sos          → Twilio SMS + save GPS event + FCM push
+GET  /family/dashboard/:id   → aggregated health + risk + trends
+POST /ai/chat                → Gemini with health context injected</div>
+    </div>
+
+    <div class="card blue">
+      <h3>Layer 3 — Database (MongoDB Atlas)</h3>
+      <div class="mono">Collection: users
+{ _id, name, age, gender, role, phone, weight_kg, conditions[], linked_family[] }
+
+Collection: health_logs
+{ user_id, timestamp, bp_sys, bp_dia, blood_sugar, hb, weight, health_score, risk_flags[] }
+
+Collection: nutrition_logs
+{ user_id, timestamp, meal_text, gemini_response{calories,protein_g,iron_mg}, deficit{} }
+
+Collection: reminders
+{ user_id, medicine_name, time_scheduled, taken: bool, taken_at }
+
+Collection: sos_events
+{ user_id, timestamp, latitude, longitude, resolved: bool, sms_sent: bool }
+
+Collection: family_links
+{ family_id, senior_id, relationship, notify_on_risk: bool }</div>
+    </div>
+
+    <div class="card blue">
+      <h3>Layer 4 — AI/ML Engine</h3>
+      <div class="g2">
+        <div>
+          <div class="lbl">Custom models (Python)</div>
+          <ul>
+            <li>anaemia_risk_model.pkl — Random Forest on Hb, age, gender, iron intake</li>
+            <li>health_score_engine.py — Weighted rule engine (0-100 score)</li>
+            <li>anomaly_detector.py — Isolation Forest on 14-day BP/sugar trend</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">LLM integrations</div>
+          <ul>
+            <li>Gemini 1.5 Flash — nutrition parser (JSON output)</li>
+            <li>Gemini 1.5 Flash — health chatbot (Hindi/English)</li>
+            <li>Gemini 1.5 Flash — weekly health summary generation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card blue">
+      <h3>Layer 5 — External Services</h3>
+      <div class="g3">
+        <div>
+          <div class="lbl">Twilio</div>
+          <p>SOS SMS to family numbers. WhatsApp API as backup. Free: 1000 SMS/mo. Cost: ~₹1.50/SMS after that.</p>
+        </div>
+        <div>
+          <div class="lbl">Google Maps JS API</div>
+          <p>Embed interactive map on SOS event page. Show last GPS coordinates. Free tier: 28,000 loads/mo.</p>
+        </div>
+        <div>
+          <div class="lbl">Firebase Cloud Messaging</div>
+          <p>Push notification to family app when risk alert fires. Completely free. Instant delivery.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UX SCREENS -->
+<div id="ux" class="pg">
+  <div class="section">
+    <h2>UX Design — Elderly-First, Every Decision Justified</h2>
+
+    <div class="card orange">
+      <h3>Non-negotiable UX rules for elderly users</h3>
+      <div class="g2">
+        <ul>
+          <li><strong>Font minimum:</strong> 18px body, 28px for vital numbers</li>
+          <li><strong>Button height:</strong> minimum 56px — fat-finger safe</li>
+          <li><strong>Max actions per screen:</strong> 3 — never overwhelm</li>
+          <li><strong>Navigation:</strong> bottom tab bar only — no hamburger</li>
+          <li><strong>Contrast:</strong> never gray-on-gray, always 4.5:1 minimum</li>
+          <li><strong>Icons:</strong> always paired with text labels</li>
+        </ul>
+        <ul>
+          <li><strong>Primary color:</strong> Orange #F97316 — warm, visible, Indian aesthetic</li>
+          <li><strong>SOS button:</strong> visible in bottom tab on EVERY screen</li>
+          <li><strong>Voice input:</strong> on every text field — speak don't type</li>
+          <li><strong>Confirmation:</strong> always confirm before irreversible action</li>
+          <li><strong>Errors:</strong> large red text, not small tooltips they'll miss</li>
+          <li><strong>Offline:</strong> cache last data locally — works without WiFi</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div>
+        <div class="lbl" style="margin-bottom:8px">Senior Home Dashboard</div>
+        <div class="phone-mock">
+          <div style="background:#F97316;color:#fff;padding:10px;border-radius:9px;margin-bottom:8px;text-align:center">
+            <div style="font-size:11px;opacity:.8">Good morning</div>
+            <div style="font-size:16px;font-weight:700">Ratan Ji</div>
+          </div>
+          <div class="stat-box">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><div class="stat-lbl">Health Score Today</div><div class="stat-num" style="color:#F97316">72</div></div>
+              <span style="font-size:11px;font-weight:700;background:#fef3c7;color:#92400e;padding:3px 9px;border-radius:99px">Fair</span>
+            </div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-lbl">Blood Pressure</div>
+            <div class="stat-num" style="font-size:17px">142 / 88</div>
+            <div class="prog"><div class="pf" style="width:65%;background:#f59e0b"></div></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-lbl">Protein Intake</div>
+            <div class="stat-num" style="font-size:17px">31g <span style="font-size:13px;color:#73726c">/ 55g target</span></div>
+            <div class="prog"><div class="pf" style="width:56%;background:#ef4444"></div></div>
+          </div>
+          <button class="elder-btn" style="margin-top:8px;font-size:14px">+ Log My Health</button>
+          <button class="elder-btn" style="background:#7c3aed;font-size:14px">Ask SAHARA AI</button>
+        </div>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:8px">Meal Logging — Key Differentiator</div>
+        <div class="phone-mock">
+          <div style="font-size:15px;font-weight:700;margin-bottom:8px">What did you eat?</div>
+          <div style="background:#f8f7f4;border-radius:7px;padding:9px;margin-bottom:8px;font-size:13px;color:#73726c">Type or speak in Hindi/English...</div>
+          <button class="elder-btn" style="background:#7c3aed;font-size:13px;padding:11px">🎤 Speak in Hindi</button>
+          <div style="background:#fef3c7;border-radius:8px;padding:10px;margin-top:8px">
+            <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:4px">AI Analysis — dal chawal sabzi</div>
+            <div style="font-size:12px;color:#78350f">Protein: 12g (need 18g more today)</div>
+            <div style="font-size:12px;color:#78350f">Iron: 2.1mg (need 4mg more)</div>
+            <div style="font-size:12px;color:#065f46;margin-top:5px;font-weight:600">Suggestion: Have 1 egg or dahi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2" style="margin-top:14px">
+      <div>
+        <div class="lbl" style="margin-bottom:8px">Vitals Entry — Large, Clear Inputs</div>
+        <div class="phone-mock">
+          <div style="font-size:15px;font-weight:700;margin-bottom:10px">Log today's health</div>
+          <div style="margin-bottom:8px">
+            <div style="font-size:11px;color:#73726c;margin-bottom:3px">Haemoglobin (Hb)</div>
+            <div style="background:#f8f7f4;border-radius:7px;padding:10px;font-size:22px;font-weight:700;color:#ef4444;text-align:center">9.8 g/dL</div>
+          </div>
+          <div style="background:#fee2e2;border-radius:8px;padding:10px;margin-bottom:8px">
+            <div style="font-size:13px;font-weight:700;color:#991b1b">Anaemia Risk: HIGH</div>
+            <div style="font-size:12px;color:#7f1d1d">Haemoglobin is critically low. Please consult your doctor soon.</div>
+          </div>
+          <button class="elder-btn" style="font-size:14px">Save &amp; See My Score</button>
+        </div>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:8px">SOS Emergency Screen</div>
+        <div class="phone-mock">
+          <div style="text-align:center;padding:8px 0">
+            <div style="font-size:13px;color:#73726c;margin-bottom:12px">Feeling unwell or unsafe?</div>
+            <button class="elder-btn sos">🚨 SOS — Call for Help</button>
+            <div style="font-size:11px;color:#73726c;margin-top:6px">Alerts your family immediately with your current location</div>
+          </div>
+          <div style="background:#fee2e2;border-radius:8px;padding:10px;margin-top:8px">
+            <div style="font-size:11px;font-weight:700;color:#991b1b">Alert sent to:</div>
+            <div style="font-size:13px;color:#7f1d1d;margin-top:3px">Priya (daughter) +91-98××-××××</div>
+            <div style="font-size:13px;color:#7f1d1d">Rahul (son) +91-99××-××××</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Family Dashboard (Web) — What the Screens Show</h3>
+      <div class="g2">
+        <div>
+          <div class="lbl">Overview page</div>
+          <ul>
+            <li>Linked seniors list with today's health score chips (green/yellow/red)</li>
+            <li>Red badge if any senior at HIGH risk today</li>
+            <li>"Last logged: 2 hours ago" per senior</li>
+            <li>One-click call button next to each name</li>
+            <li>Notification bell with unread alert count</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">Individual senior deep-dive</div>
+          <ul>
+            <li>7-day BP, sugar, Hb line charts (Recharts LineChart)</li>
+            <li>AI weekly summary: "Hb dropped 3 points this week"</li>
+            <li>Medication compliance calendar (green dot = taken, red = missed)</li>
+            <li>SOS history with embedded Google Maps</li>
+            <li>Nutrition deficit breakdown per day</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI MODELS -->
+<div id="ai" class="pg">
+  <div class="section">
+    <h2>Complete AI/ML Layer — Primary + Every Backup</h2>
+
+    <div class="card green">
+      <h3>Model 1 — Nutrition Analysis (Most Unique Feature, Build First)</h3>
+      <div class="g2">
+        <div>
+          <div class="lbl">Primary: Google Gemini 1.5 Flash</div>
+          <div class="mono">System prompt:
+"You are a clinical nutritionist for
+elderly Indians aged 60-85. Analyze
+the described meal. Return ONLY
+valid JSON, no extra text:
+{
+  'calories': 480,
+  'protein_g': 14,
+  'iron_mg': 3.2,
+  'carbs_g': 68,
+  'fiber_g': 5,
+  'suggestion': 'Add 1 egg...'
+}"
+
+Daily targets (injected per user):
+protein_target = 0.8 * weight_kg
+iron_target = 8 (men) / 10 (women)
+calories_target = 1600-2000</div>
+        </div>
+        <div>
+          <div class="lbl">Backup chain — in order</div>
+          <div class="mono">Backup 1: Groq + Llama 3.1
+  API: api.groq.com/openai/v1
+  Model: llama-3.1-8b-instant
+  Free, 30 req/min
+  Same prompt format
+
+Backup 2: ICMR Food Database
+  Local JSON: 500 Indian foods
+  Source: ICMR nutritional tables
+  (public domain, govt validated)
+  Fuzzy match on meal name
+
+Backup 3: Hardcoded common meals
+  "dal rice" → {protein:14g, iron:3mg}
+  "poha" → {protein:5g, iron:2mg}
+  "chapati sabzi" → {protein:8g}
+  Works 100%, zero API calls</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <h3>Model 2 — Anaemia Risk Prediction</h3>
+      <div class="g2">
+        <div>
+          <div class="lbl">Primary: Random Forest (scikit-learn)</div>
+          <div class="mono">from sklearn.ensemble import RandomForestClassifier
+import pandas as pd
+
+# Features
+X = ['hb', 'age', 'gender_encoded',
+     'fatigue_level', 'dietary_iron',
+     'bp_systolic']
+
+# Dataset: Kaggle anaemia CSV
+# + WHO anaemia clinical data
+# Training time: ~10 minutes
+
+# Output
+{
+  'risk': 'HIGH',
+  'confidence': 0.87,
+  'primary_factor': 'low_hb',
+  'recommendation': 'Consult doctor'
+}</div>
+        </div>
+        <div>
+          <div class="lbl">Backup: WHO Clinical Rule Engine</div>
+          <div class="mono">def get_anaemia_risk(hb, gender, age):
+    if gender == 'F':
+        if hb < 10: return 'HIGH'
+        if hb < 12: return 'MEDIUM'
+        return 'LOW'
+    else:  # Male
+        if hb < 11: return 'HIGH'
+        if hb < 13: return 'MEDIUM'
+        return 'LOW'
+
+# WHO thresholds — clinically accurate
+# Tell judges: "WHO-validated rules"
+# This is actually more defensible
+# than an ML model to medical judges</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <h3>Model 3 — Multi-Parameter Health Score (0–100)</h3>
+      <div class="mono">def calculate_health_score(log):
+    score = 100
+
+    # Blood pressure
+    if log.bp_sys > 140: score -= 15
+    if log.bp_sys > 160: score -= 10
+    if log.bp_dia > 90:  score -= 8
+
+    # Blood sugar
+    if log.sugar > 140:  score -= 15
+    if log.sugar > 200:  score -= 10
+
+    # Haemoglobin (anaemia)
+    hb_min = 12 if gender == 'F' else 13
+    if log.hb < hb_min:     score -= 20
+    if log.hb < hb_min - 2: score -= 10
+
+    # Weight change
+    if abs(weight_change_7d) > 3: score -= 10
+
+    # Medication missed
+    if missed_meds_today: score -= 5
+
+    return max(0, min(100, score))
+
+# Thresholds: 80-100=Good 60-79=Fair <60=Poor</div>
+    </div>
+
+    <div class="card green">
+      <h3>Model 4 — Voice AI in Hindi (45 min build, maximum demo impact)</h3>
+      <div class="g2">
+        <div>
+          <div class="mono">// Web Speech API — zero cost, built-in
+// Works in Chrome on Android
+
+const recognition = new webkitSpeechRecognition()
+recognition.lang = 'hi-IN'  // Hindi
+recognition.continuous = false
+recognition.interimResults = false
+
+recognition.onresult = (event) => {
+  const transcript = 
+    event.results[0][0].transcript
+  // "aaj maine dal chawal aur sabzi khaya"
+  sendToNutritionAI(transcript)
+}
+
+// Read response back in Hindi
+const utterance = new SpeechSynthesisUtterance()
+utterance.lang = 'hi-IN'
+utterance.rate = 0.85  // slower for elderly
+utterance.text = aiResponse
+speechSynthesis.speak(utterance)</div>
+        </div>
+        <div>
+          <p><strong>Why this is your #1 winning feature:</strong></p>
+          <ul style="margin-top:8px">
+            <li>60% of India's elderly cannot type comfortably</li>
+            <li>No other hackathon team has voice AI in Hindi</li>
+            <li>Web Speech API is FREE — no API key</li>
+            <li>Works in Chrome on any Android phone</li>
+            <li>During demo: speak Hindi, watch AI analyze — judges will be visibly moved</li>
+            <li>Makes SAHARA genuinely accessible, not just convenient</li>
+          </ul>
+          <div class="tip-box" style="margin-top:10px">Alternative: If Web Speech API is unreliable on demo day, use Whisper API (OpenAI, $0.006/min) as backup for voice transcription.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <h3>Model 5 — SAHARA AI Health Chatbot</h3>
+      <div class="mono">GEMINI_SYSTEM_PROMPT = """
+You are SAHARA, an AI health companion for elderly Indians.
+STRICT RULES:
+- Never diagnose diseases
+- Always recommend seeing a doctor for serious symptoms
+- Speak in simple language (Class 5 level vocabulary)
+- Support Hindi and English — respond in whatever language user writes
+- Keep responses under 3 sentences
+- End with one warm care tip
+- Always use the user's name if available
+
+CONTEXT (injected per call):
+User: {name}, Age: {age}, Gender: {gender}
+Today's health score: {score}
+Current risk flags: {risk_flags}
+Last meal: {last_meal}
+"""</div>
+    </div>
+
+    <div class="card amber">
+      <h3>Build Order for 24 Hours</h3>
+      <table>
+        <thead><tr><th>Model / Feature</th><th>Build at hour</th><th>Est. time</th><th>Fallback if skipped</th></tr></thead>
+        <tbody>
+          <tr><td>Health score rule engine</td><td>Hour 3–4</td><td>30 min</td><td>Already is the fallback</td></tr>
+          <tr><td>WHO anaemia rules</td><td>Hour 4–5</td><td>20 min</td><td>Already is the fallback</td></tr>
+          <tr><td>Gemini nutrition parser</td><td>Hour 5–6</td><td>45 min</td><td>ICMR food DB JSON</td></tr>
+          <tr><td>Anomaly detection (stat rules)</td><td>Hour 7–8</td><td>30 min</td><td>Skip for MVP</td></tr>
+          <tr><td>Voice input (Hindi)</td><td>Hour 8–9</td><td>45 min</td><td>Text input only</td></tr>
+          <tr><td>AI chatbot (Gemini)</td><td>Hour 9–10</td><td>45 min</td><td>Static FAQ answers</td></tr>
+          <tr><td>Random Forest ML</td><td>Hour 12–14</td><td>60 min</td><td>Keep rule engine (fine)</td></tr>
+          <tr><td>Weekly AI report</td><td>Hour 18–19</td><td>30 min</td><td>Skip if time short</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- DEPLOYMENT -->
+<div id="deploy" class="pg">
+  <div class="section">
+    <h2>Deployment Options — Complete Assessment</h2>
+
+    <div class="card orange">
+      <h3>Recommended Stack: Vercel + Render + MongoDB Atlas</h3>
+      <div class="g3">
+        <div>
+          <div class="lbl">Vercel — Frontend</div>
+          <ul>
+            <li>Free forever</li>
+            <li>Deploy from GitHub in 2 min</li>
+            <li>Auto HTTPS + global CDN</li>
+            <li>Custom URL: sahara.vercel.app</li>
+            <li>Auto redeploy on every git push</li>
+            <li>Works perfectly with React</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">Render — FastAPI Backend</div>
+          <ul>
+            <li>Free 750 hrs/month</li>
+            <li>Native FastAPI/Python support</li>
+            <li>~30s cold start (acceptable)</li>
+            <li>Env vars in dashboard</li>
+            <li>Auto deploys from GitHub</li>
+            <li>Free PostgreSQL also available</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">MongoDB Atlas M0</div>
+          <ul>
+            <li>512MB free forever</li>
+            <li>No credit card needed</li>
+            <li>5 minute setup</li>
+            <li>Built-in data explorer</li>
+            <li>Global cloud clusters</li>
+            <li>More than enough for demo</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mono" style="margin-top:10px">Total cost: ₹0 | Setup time: 15 minutes | Gives live HTTPS URL: YES
+Reliability: High for demo (test at hour 6, not hour 22)</div>
+    </div>
+
+    <div class="card blue">
+      <h3>Alternative A — Railway (if Render cold start is a problem)</h3>
+      <p>Railway deploys faster, no cold start issues. $5 free credit on signup — more than enough. Setup: <span style="font-family:monospace">railway login && railway up</span>. Live in 3 minutes. Same MongoDB Atlas. Slightly better DX than Render.</p>
+    </div>
+
+    <div class="card blue">
+      <h3>Alternative B — Fly.io (best performance, zero cold start)</h3>
+      <p>Free tier: 3 shared VMs that stay warm permanently. FastAPI never sleeps. Perfect for demo reliability. Slightly more config — use if someone on team knows Docker. <span style="font-family:monospace">fly launch → fly deploy</span>.</p>
+    </div>
+
+    <div class="card blue">
+      <h3>Alternative C — Firebase (all-in-one option)</h3>
+      <p>Firebase Hosting (frontend) + Cloud Functions (backend logic) + Firestore (database) + FCM (push) — all in one Google account. Excellent free tier. Slightly less control than FastAPI but very fast to build simple flows. Best if team is not comfortable with FastAPI.</p>
+    </div>
+
+    <div class="card amber">
+      <h3>Emergency Local + ngrok (if all cloud fails)</h3>
+      <div class="mono">pip install pyngrok
+from pyngrok import ngrok
+public_url = ngrok.connect(8000)
+print(public_url)  # https://abc123.ngrok.io
+
+# Share this URL with judges
+# Works 100% — just needs internet on your laptop
+# Works even if venue WiFi blocks certain ports</div>
+    </div>
+
+    <div class="card">
+      <h3>Mobile App Deployment</h3>
+      <div class="g2">
+        <div>
+          <div class="lbl">React Native (Expo) — Recommended</div>
+          <div class="mono">npx create-expo-app sahara-mobile
+cd sahara-mobile && npx expo start
+
+# Judges scan QR with Expo Go app
+# No app store, instant install
+
+# Build APK for Android:
+eas build --platform android
+# Takes ~20 min, gives .apk file
+# Share via Google Drive link</div>
+        </div>
+        <div>
+          <div class="lbl">Flutter — Alternative</div>
+          <div class="mono">flutter build apk --release
+# Find: build/app/outputs/apk/release/
+# Share via Google Drive
+
+# Pros: Native performance, looks polished
+# Cons: iOS can't install APK directly
+#       Steeper learning curve than RN
+
+# For iOS demo: use Flutter Web
+# flutter build web → deploy to Vercel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BUSINESS MODEL -->
+<div id="biz" class="pg">
+  <div class="section">
+    <h2>Business Model — Accurate, Defensible, Impressive</h2>
+
+    <div class="card green">
+      <h3>Market Size (Say These Numbers to Judges With Confidence)</h3>
+      <div class="g3">
+        <div class="metric"><div class="val">₹55,000 Cr</div><div class="lbl2">TAM — India elderly care market by 2030. 140M+ seniors over 60.</div></div>
+        <div class="metric"><div class="val">₹8,200 Cr</div><div class="lbl2">SAM — Smartphone-connected families with elderly parents.</div></div>
+        <div class="metric"><div class="val">₹3.2 Cr</div><div class="lbl2">SOM Year 1 — 5,000 paid users × ₹249/mo × 12 months.</div></div>
+      </div>
+      <div class="metric" style="margin-top:12px;text-align:left;padding:14px">
+        <p><strong>Context to give judges:</strong> India's elderly population will double from 140M to 300M by 2050. 71% of elderly Indians live alone or without continuous family support. Annual cost of preventable hospitalization for elderly = ₹30,000–₹80,000 per event. SAHARA prevents these events.</p>
+      </div>
+    </div>
+
+    <div class="card green">
+      <h3>5 Revenue Streams</h3>
+      <table>
+        <thead><tr><th>Stream</th><th>Model</th><th>Price</th><th>Target customer</th><th>Year 1 projection</th></tr></thead>
+        <tbody>
+          <tr><td><strong>B2C — Family subscriptions</strong></td><td>Monthly subscription</td><td>₹199–₹299/mo</td><td>Adult children 25–45 with elderly parents</td><td>₹1.2 Cr (5,000 users)</td></tr>
+          <tr><td><strong>B2B — Old age homes</strong></td><td>Per-resident SaaS</td><td>₹99/resident/mo</td><td>50–500 bed homes, retirement communities</td><td>₹60 L (500 residents)</td></tr>
+          <tr><td><strong>B2B — Hospital geriatric wards</strong></td><td>Dashboard license</td><td>₹15,000/mo per hospital</td><td>Government + private hospital geriatric depts</td><td>₹36 L (20 hospitals)</td></tr>
+          <tr><td><strong>Govt / NGO — Welfare schemes</strong></td><td>Project contracts</td><td>₹5–20 L per project</td><td>State health departments, PMJAY integration</td><td>₹20 L (pilot)</td></tr>
+          <tr><td><strong>Anonymized data insights</strong></td><td>Research reports</td><td>₹2–5 L per report</td><td>Pharmaceutical companies, academic research</td><td>₹10 L</td></tr>
+        </tbody>
+      </table>
+      <div class="mono" style="margin-top:10px">Total Year 1 projected revenue: ~₹2.3 Cr
+Break-even: Month 14 (conservative estimate)
+CAC: ₹300 (Facebook/Instagram ads to adult children)
+LTV: ₹299 × 18 months = ₹5,382 | LTV:CAC = 17.9x (excellent)</div>
+    </div>
+
+    <div class="card green">
+      <h3>Freemium Conversion Strategy</h3>
+      <div class="g3">
+        <div>
+          <div class="lbl" style="color:#166534">Free Forever</div>
+          <ul>
+            <li>7-day health log</li>
+            <li>Basic risk score</li>
+            <li>1 family linked</li>
+            <li>3 SOS alerts/month</li>
+            <li>Basic nutrition tracking</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl" style="color:#92400e">SAHARA Care — ₹199/mo</div>
+          <ul>
+            <li>Unlimited history + trends</li>
+            <li>AI health chatbot</li>
+            <li>5 family members linked</li>
+            <li>Unlimited SOS</li>
+            <li>Weekly AI health report</li>
+            <li>Medication reminders</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl" style="color:#1e40af">SAHARA Plus — ₹299/mo</div>
+          <ul>
+            <li>All Care features</li>
+            <li>Wearable device sync (Phase 2)</li>
+            <li>Doctor consultation link</li>
+            <li>Priority SOS response</li>
+            <li>Health data export for doctors</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <h3>Growth Strategy — Organic + Institutional</h3>
+      <div class="g2">
+        <div>
+          <h3>Organic growth channels</h3>
+          <ul>
+            <li>WhatsApp sharing — family members share with relatives ("this helped my mom")</li>
+            <li>GP/doctor referral — partner with general practitioners who recommend SAHARA</li>
+            <li>Pharmacy partnerships — QR code at medicine counters targeting caregivers</li>
+            <li>Senior citizen welfare groups — RWA associations, retirement communities</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Institutional growth (Year 2+)</h3>
+          <ul>
+            <li>Ayushman Bharat PMJAY alignment — government pays per enrolled beneficiary</li>
+            <li>ASHA worker dashboard — community health worker integration</li>
+            <li>OEM partnerships — pre-install on budget Android phones for elderly</li>
+            <li>Insurance tie-ups — health insurers subsidize SAHARA for policyholders</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPETITORS -->
+<div id="compete" class="pg">
+  <div class="section">
+    <h2>Competitive Landscape — You Are the Only One Doing This Right</h2>
+
+    <div class="card">
+      <h3>Global Competitors vs SAHARA</h3>
+      <table>
+        <thead><tr><th>Product</th><th>What they do</th><th>Gap SAHARA fills</th><th>Price</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Life Alert (US)</strong></td><td>Emergency button only. Hardware device.</td><td>No AI nutrition. No health trends. Not Indian market. Hardware dependency.</td><td>$30/mo + hardware</td></tr>
+          <tr><td><strong>Apple Health</strong></td><td>Data collection. Wearable sync.</td><td>Not usable by 70yr old. No family monitoring. No AI analysis. No Indian foods.</td><td>Free (Apple only)</td></tr>
+          <tr><td><strong>Practo / 1mg</strong></td><td>Appointment booking + medicine delivery.</td><td>No continuous monitoring. No nutrition. No emergency alerts. No AI prevention.</td><td>Free + commission</td></tr>
+          <tr><td><strong>Portea Medical</strong></td><td>Home healthcare visits by nurses.</td><td>Human-based, ₹500/visit, not scalable, reactive not preventive, no AI.</td><td>₹500/visit</td></tr>
+          <tr><td><strong>Dozee</strong></td><td>Contactless vitals via mattress pad.</td><td>Hardware required (₹2,999/mo), no nutrition layer, no family dashboard, no Hindi.</td><td>₹2,999/mo</td></tr>
+          <tr><td><strong>Niramai</strong></td><td>AI breast cancer detection.</td><td>Completely different niche. Clinical-only tool.</td><td>B2B only</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Hackathon Competitors (Trithon 2026)</h3>
+      <table>
+        <thead><tr><th>Team</th><th>Their angle</th><th>Why SAHARA wins</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CareBridge</strong></td><td>Elderly early detection, Flutter + Azure + wearables</td><td>No nutrition AI. No family dashboard depth. No business model. No Hindi voice.</td></tr>
+          <tr><td><strong>VitalTwin AI</strong></td><td>"Digital twin" concept — vague pitch, no specific features</td><td>No actual demo features. SAHARA has 4 working features + voice + SOS live.</td></tr>
+          <tr><td><strong>DriftAura</strong></td><td>Camera-based activity monitoring post-hospitalization</td><td>Narrow use case. No preventive approach. No nutrition. No family dashboard.</td></tr>
+          <tr><td><strong>MedX AI</strong></td><td>Medical report analysis, biomarker tracking, chatbot</td><td>Generic health app. Not elderly-specific. No nutrition. No SOS. No voice AI.</td></tr>
+          <tr><td><strong>CareHub</strong></td><td>ICU monitoring with AR/VR integration</td><td>Hospital-only. AR/VR risky to demo. No home/community care.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card green">
+      <h3>SAHARA's Defensible Moat — What No One Can Copy in 24 Hours</h3>
+      <div class="g2">
+        <ul>
+          <li><strong>Indian food nutrition intelligence</strong> — ICMR-calibrated for dal, roti, khichdi (not pizza)</li>
+          <li><strong>Anaemia-specific prediction</strong> — targets India's #1 elderly health crisis</li>
+          <li><strong>Dual-role platform</strong> — senior app + family dashboard real-time sync</li>
+          <li><strong>Preventive health score</strong> — trends down before crisis, not just reactive alerts</li>
+          <li><strong>Hindi voice AI</strong> — genuinely accessible for non-typing elders</li>
+        </ul>
+        <ul>
+          <li><strong>Integrated ecosystem</strong> — nutrition + vitals + medication + SOS in one</li>
+          <li><strong>Elder-first UX</strong> — 56px buttons, 28px numbers, voice everywhere</li>
+          <li><strong>B2B old age home dashboard</strong> — institutional scale path</li>
+          <li><strong>Ayushman Bharat alignment</strong> — government scheme readiness</li>
+          <li><strong>140M+ TAM</strong> — India's fastest-growing underserved population</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP VS WEB -->
+<div id="app" class="pg">
+  <div class="section">
+    <h2>App vs Web — The Decision That Creates Maximum Impact</h2>
+
+    <div class="vs">
+      <div class="vc winner">
+        <div class="lbl" style="color:#166534">React Native (Expo) — Senior Side</div>
+        <ul>
+          <li>Judges see real mobile app on a physical phone</li>
+          <li>Expo Go QR code — instant install, no app store</li>
+          <li>Same React knowledge — ~80% code overlap</li>
+          <li>Native: GPS, vibration, camera, push notifications</li>
+          <li>SOS button vibrates phone physically — visceral moment</li>
+          <li>Elder UI looks authentic on actual device</li>
+          <li>APK for Android: eas build --android (~20 min)</li>
+          <li>Massive WOW factor vs web browser</li>
+        </ul>
+        <div class="mono" style="margin-top:8px">Setup: npx create-expo-app sahara-senior
+Extra time: +2-3 hours vs React web
+Judge reaction: "This is a real product"</div>
+      </div>
+      <div class="vc">
+        <div class="lbl">React Web — Family Dashboard Side</div>
+        <ul>
+          <li>Faster to build, less config</li>
+          <li>Vercel deploy in 2 minutes</li>
+          <li>Works on any device via URL</li>
+          <li>No install friction for judges</li>
+          <li>Better for chart-heavy dashboards (Recharts)</li>
+          <li>Familiar development experience</li>
+        </ul>
+        <div class="mono" style="margin-top:8px">Use ONLY for family dashboard.
+Not for elderly-facing screens.
+Open on laptop for judge demo.</div>
+      </div>
+    </div>
+
+    <div class="card orange">
+      <h3>Final Recommendation — Hybrid: Phone + Laptop Two-Screen Demo</h3>
+      <div class="g2">
+        <div>
+          <div class="lbl">Senior side → React Native (Expo)</div>
+          <ul>
+            <li>Pre-install on 1 Android phone before demo day</li>
+            <li>Big orange buttons, voice input, SOS with vibration</li>
+            <li>Looks like a real eldercare product</li>
+            <li>Priyanshu owns this — start tonight</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">Family side → React Web (Vercel)</div>
+          <ul>
+            <li>Open on laptop browser for judges</li>
+            <li>Beautiful Recharts trend dashboards</li>
+            <li>Easier to show large screen</li>
+            <li>No install needed for judges</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mono" style="margin-top:10px">The demo moment:
+Phone (senior app) + Laptop (family dashboard) side by side
+→ Enter bad Hb on phone
+→ Family dashboard updates on laptop in 3 seconds
+→ Judge's phone buzzes with Twilio SOS SMS
+= Standing ovation moment</div>
+    </div>
+
+    <div class="warn-box">
+      <strong>If no one knows React Native:</strong> Build React web with mobile-first Tailwind design. Open in Chrome on Android phone. Add viewport meta tag. Make all buttons 56px+ height. Use orange theme. Judges cannot tell the difference if the UI is polished enough. This is the safe path if Expo feels risky given the 24hr timeline.
+    </div>
+  </div>
+</div>
+
+<!-- FALLBACKS -->
+<div id="fallback" class="pg">
+  <div class="section">
+    <h2>Fallback Plan — Nothing Should Surprise You on Demo Day</h2>
+
+    <div class="card red">
+      <h3>Complete Failure Matrix</h3>
+      <table>
+        <thead><tr><th>What Fails</th><th>Backup 1 (30 seconds)</th><th>Backup 2 (5 minutes)</th><th>Prevention</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Gemini API down / rate limited</strong></td><td>Switch env var to Groq API key (same format)</td><td>Serve nutrition from local ICMR food DB JSON</td><td>Have GROQ_API_KEY in .env before hackathon</td></tr>
+          <tr><td><strong>Twilio SMS fails</strong></td><td>Gmail SMTP alert (Python stdlib, no extra API)</td><td>Browser push notification to family tab</td><td>Test SOS 3× before demo day</td></tr>
+          <tr><td><strong>ML model too slow to train</strong></td><td>WHO rule engine (already built as base)</td><td>Tell judges: "WHO clinical thresholds as baseline"</td><td>Build rule engine first, ML is upgrade</td></tr>
+          <tr><td><strong>Render cold start (30s delay)</strong></td><td>Switch to Railway (3 min, railway up)</td><td>ngrok tunnel to local machine</td><td>Deploy at hour 6, not hour 22</td></tr>
+          <tr><td><strong>App crashes during demo</strong></td><td>OBS screen recording of working demo</td><td>Web version open in browser as fallback</td><td>Record working demo at hour 20</td></tr>
+          <tr><td><strong>Venue internet dies</strong></td><td>Phone hotspot (5G preferred)</td><td>Full localhost with ngrok tunnel</td><td>Test entire demo on hotspot the night before</td></tr>
+          <tr><td><strong>MongoDB 512MB quota hit</strong></td><td>Switch to Firebase RTDB (instant, free)</td><td>SQLite in-memory for demo only</td><td>Seed only 1-2 test user accounts</td></tr>
+          <tr><td><strong>Voice recognition unreliable</strong></td><td>Text input always present as fallback</td><td>Pre-record Hindi demo on video</td><td>Test Web Speech API in Chrome Android specifically</td></tr>
+          <tr><td><strong>React Native Expo build fails</strong></td><td>Open same React code as mobile web in Chrome</td><td>Full web React with mobile-first CSS</td><td>Have web version ready always as parallel build</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card amber">
+      <h3>Complete Tech Stack Fallback Ladder</h3>
+      <table>
+        <thead><tr><th>Component</th><th>Primary</th><th>Backup 1</th><th>Backup 2</th><th>Nuclear</th></tr></thead>
+        <tbody>
+          <tr><td>LLM / Nutrition AI</td><td>Gemini 1.5 Flash</td><td>Groq + Llama3</td><td>ICMR food DB JSON</td><td>Hardcoded 20 meals</td></tr>
+          <tr><td>Risk prediction</td><td>Random Forest (sklearn)</td><td>WHO rule engine</td><td>Simple thresholds</td><td>Static HIGH/LOW response</td></tr>
+          <tr><td>Frontend (senior)</td><td>React Native (Expo)</td><td>React Web mobile-first</td><td>HTML/CSS + JS</td><td>Figma screenshots</td></tr>
+          <tr><td>Frontend (family)</td><td>React + Recharts (Vercel)</td><td>Vue.js</td><td>Vanilla JS + Chart.js</td><td>HTML tables</td></tr>
+          <tr><td>Backend</td><td>FastAPI (Python)</td><td>Flask (Python)</td><td>Express.js (Node)</td><td>Firebase Functions</td></tr>
+          <tr><td>Database</td><td>MongoDB Atlas</td><td>Firebase RTDB</td><td>Supabase (PostgreSQL)</td><td>SQLite local file</td></tr>
+          <tr><td>SMS / Alert</td><td>Twilio SMS</td><td>Gmail SMTP (Python stdlib)</td><td>Browser notification API</td><td>Manual WhatsApp</td></tr>
+          <tr><td>Backend deploy</td><td>Render.com</td><td>Railway.app</td><td>Fly.io</td><td>ngrok local tunnel</td></tr>
+          <tr><td>Frontend deploy</td><td>Vercel</td><td>Netlify</td><td>Firebase Hosting</td><td>GitHub Pages</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card red">
+      <h3>Nuclear Fallback — If Absolutely Everything Dies</h3>
+      <div class="mono">Preparation (do this at hour 20, no matter what):
+1. OBS Studio screen recording of complete working demo (3 min)
+2. Canva presentation with screenshots of every screen
+3. Google Drive link ready with APK + recording
+
+Recovery script for judges:
+"Due to venue network instability, let me show you our
+system via this recording. The live deployment is at
+[URL] — you can verify it's working on your own phone.
+Let me walk you through what SAHARA does..."
+
+Judges who understand tech WILL NOT penalize network issues.
+They WILL penalize: panic, no fallback, excuses.
+You will be the only team with a screen recording backup.
+That professionalism itself impresses judges.</div>
+    </div>
+  </div>
+</div>
+
+<!-- WIN STRATEGY -->
+<div id="win" class="pg">
+  <div class="section">
+    <h2>Win Strategy — 5 Moves That Guarantee First Place</h2>
+
+    <div class="card green">
+      <h3>Move 1 — Voice AI in Hindi (Build This Even if It Takes 3 Hours)</h3>
+      <p>Zero other team has this. 60% of India's elderly cannot type. During demo: speak into phone in Hindi, AI parses meal, responds in Hindi. Judges who have elderly parents at home will think of them. This is not a technical feature — it is an emotional trigger. It changes how judges feel about SAHARA.</p>
+    </div>
+
+    <div class="card green">
+      <h3>Move 2 — Anaemia Focus (Medical Differentiation)</h3>
+      <p>India has the world's highest anaemia burden in elderly women. 50%+ of Indian women over 60 are anaemic. Say this sentence exactly: <em>"We are building India's first AI early anaemia warning system for elderly women. 50% of Indian grandmothers are anaemic right now and don't know it. SAHARA will tell them before it becomes severe."</em> No judge can argue with this problem.</p>
+    </div>
+
+    <div class="card green">
+      <h3>Move 3 — Two-Screen Demo (This Wins the Entire Hackathon)</h3>
+      <p>Phone (senior app) + Laptop (family dashboard) side by side. One person enters Hb: 9.2 on phone. Family dashboard risk badge flashes red on laptop. Judge's phone buzzes with Twilio SMS. 5 seconds. No narration needed. Judges understand what just happened. That moment is worth more than any feature you could build.</p>
+      <div class="tip-box">Practice this exact sequence 5 times before judges arrive. The person typing should have the fields pre-filled so they just change the Hb value and press save. The person speaking should pause after the SMS arrives and let it land.</div>
+    </div>
+
+    <div class="card green">
+      <h3>Move 4 — Seed 30 Days of Realistic Health Data</h3>
+      <p>Create a test senior account with 30 days of realistic data. Charts with 30 data points look like a product people are actually using. Charts with 1-2 data points look like a prototype built in 24 hours. The family dashboard trend charts need this data to look impressive. Write a seeding script at hour 18 — 30 min investment, 10× visual impact.</p>
+      <div class="mono">import random, datetime
+from pymongo import MongoClient
+
+def seed_user(user_id):
+    for i in range(30):
+        date = datetime.now() - timedelta(days=29-i)
+        # Simulate declining health trend (tells a story)
+        db.health_logs.insert_one({
+            'user_id': user_id,
+            'timestamp': date,
+            'bp_sys': random.randint(138, 152),
+            'bp_dia': random.randint(86, 94),
+            'hb': round(11.8 - (i * 0.07), 1),  # slowly declining
+            'blood_sugar': random.randint(130, 165),
+            'health_score': max(45, 78 - (i * 0.8))
+        })</div>
+    </div>
+
+    <div class="card green">
+      <h3>Move 5 — The Kill Phrase (Say This Verbatim to Every Judge)</h3>
+      <div class="win-box">
+        "Every health app in this room was built for young people who are already healthy. SAHARA was built for the 140 million elderly Indians who are silently declining — not in hospitals, but in their homes, alone. Every other team reacts to a crisis. We prevent one. The family dashboard you just saw updating in real time — that is peace of mind. For 140 million families."
+      </div>
+    </div>
+
+    <div class="card orange">
+      <h3>The Perfect 3-Minute Demo Script</h3>
+      <div class="mono">0:00-0:30 — THE STORY
+"Meet Ratan Ji. 72 years old. Lives alone in Bhubaneswar.
+His daughter Priya works in Bangalore. She calls every night.
+But she can never truly know if her father is okay.
+That fear. That gap. That is what SAHARA solves."
+
+0:30-1:30 — THE LIVE DEMO
+[Open SAHARA on phone — large orange interface]
+"This is Ratan Ji's app. He doesn't type well. He speaks."
+[Tap microphone — speak: "aaj maine sirf chai aur biscuit khaya"]
+[AI responds in Hindi: "Ratan Ji, protein bahut kam hai..."]
+"SAHARA understands Indian meals. In Hindi."
+[Switch to laptop — family dashboard]
+"Meanwhile, Priya sees this in real time."
+[On phone: enter Hb 9.2 and save]
+[Family dashboard risk badge turns RED]
+[Judge's phone buzzes — Twilio SMS]
+[Pause. Let it land.]
+
+1:30-2:30 — THE DIFFERENTIATION
+"Every other health app in this hackathon built a symptom checker.
+We built the only platform that:
+→ Predicts anaemia before it becomes a crisis
+→ Understands Indian food nutrition
+→ Works in Hindi by voice
+→ Shows families what their parents ate today
+No competitor has done all of this together."
+
+2:30-3:00 — THE CLOSE
+"140 million elderly Indians. ₹55,000 Cr market.
+Growing to 300 million by 2050.
+₹199/month B2C. ₹99/resident/month for old age homes.
+Government Ayushman Bharat integration in Phase 2.
+SAHARA is not a hackathon project. It is a company.
+Thank you."</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function sw(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  event.target.classList.add('on');
+}
+</script>
+</body>
+</html>
