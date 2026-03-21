@@ -94,7 +94,16 @@ function AppContent() {
                 <Route path="/register" element={<RegisterPage onBack={() => navigate('/')} />} />
                 <Route path="/register/:role" element={<RegisterPage onBack={() => navigate('/')} />} />
                 <Route path="/signup/:role" element={<RegisterPage onBack={() => navigate('/')} />} />
-                <Route path="/onboarding" element={user ? <OnboardingPage /> : <Navigate to="/login" />} />
+                <Route
+                    path="/onboarding"
+                    element={
+                        !user
+                            ? <Navigate to="/login" />
+                            : user.onboarded
+                                ? <Navigate to={user.role === 'senior' ? '/senior' : '/family'} />
+                                : <OnboardingPage />
+                    }
+                />
                 
                 <Route path="/senior" element={
                     <>
