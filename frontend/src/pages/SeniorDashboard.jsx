@@ -260,13 +260,13 @@ const SeniorDashboard = (props) => {
       {/* SOS Button (§4.4) */}
       <button onClick={triggerSOS} style={{
         position: 'fixed', bottom: 30, left: '50%', transform: 'translateX(-50%)',
-        width: 140, height: 140, borderRadius: '50%', background: G.red, color: '#FFF',
-        border: '10px solid rgba(255,255,255,0.2)', cursor: 'pointer', zIndex: 1000,
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        width: 240, height: 70, borderRadius: 24, background: G.red, color: '#FFF',
+        border: '6px solid rgba(255,255,255,0.2)', cursor: 'pointer', zIndex: 1000,
+        display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12,
         boxShadow: '0 20px 50px rgba(220,38,38,0.5)'
       }}>
-        <Shield size={48} />
-        <span style={{ fontSize: 24, fontWeight: 900, marginTop: 4 }}>SOS</span>
+        <Shield size={32} />
+        <span style={{ fontSize: 24, fontWeight: 900 }}>SOS</span>
       </button>
 
     </main>
