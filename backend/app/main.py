@@ -15,10 +15,10 @@ app.add_middleware(
 
 # Include Routers
 app.include_router(auth.router)
-app.include_router(health.router)
-app.include_router(nutrition.router)
+# app.include_router(health.router) # Disabled to use actual ML routes
+# app.include_router(nutrition.router) # Disabled to use actual ML routes
 app.include_router(emergency.router)
-app.include_router(ai_chat.router)
+# app.include_router(ai_chat.router) # Disabled to use actual ML routes
 
 @app.get("/")
 async def root():
