@@ -417,6 +417,34 @@ async def complete_profile(data: ProfileCompleteRequest, current_user: dict = De
             "proximity": data.proximity,
         })
 
+    # In degraded mode, return a merged user shape without database persistence.
+    if current_user.get("storage_mode") == "fallback" or str(current_user.get("id", "")).startswith("fallback_"):
+        fallback = _fallback_user(
+            email=current_user.get("email", "user@example.com"),
+            role=role,
+            name=update_data.get("name") or current_user.get("name", "User"),
+            onboarded=True,
+        )
+        fallback.update({
+            "phone": update_data.get("phone"),
+            "age": update_data.get("age"),
+            "gender": update_data.get("gender"),
+            "weight_kg": update_data.get("weight_kg"),
+            "conditions": update_data.get("conditions", []),
+            "location": update_data.get("location"),
+            "language_preference": update_data.get("language_preference"),
+            "living_status": update_data.get("living_status"),
+            "family_proximity": update_data.get("family_proximity"),
+            "relationship": update_data.get("relationship"),
+            "proximity": update_data.get("proximity"),
+        })
+        return {
+            "user": fallback,
+            "linked": None,
+            "degraded_mode": True,
+            "warning": "Profile saved in fallback mode (not persisted).",
+        }
+
     try:
         await users_collection.update_one(
             {"_id": ObjectId(current_user["_id"])},
