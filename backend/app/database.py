@@ -4,11 +4,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGO_URL = os.getenv("MONGO_URL")
+# Support both README naming (MONGO_URI) and existing naming (MONGO_URL).
+MONGO_URL = os.getenv("MONGO_URI") or os.getenv("MONGO_URL")
 MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "sahara")
 
 if not MONGO_URL:
-    raise RuntimeError("MONGO_URL is required. Local Mongo fallback has been removed.")
+    raise RuntimeError("MONGO_URI or MONGO_URL is required. Local Mongo fallback has been removed.")
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL, serverSelectionTimeoutMS=10000)
 db = client[MONGO_DB_NAME]
