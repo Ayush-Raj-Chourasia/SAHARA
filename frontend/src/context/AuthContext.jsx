@@ -159,6 +159,17 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error('[AUTH] Google sign-in error:', error);
             
+            // Network/CORS errors
+            if (error.message?.includes('Failed to fetch')) {
+                throw new Error('❌ Network error: Cannot reach backend. Check if backend is running and CORS is enabled.');
+            } else if (error.message?.includes('CORS')) {
+                throw new Error('❌ CORS error: Backend is blocking requests. Server admin needs to enable CORS.');
+            } else if (error.message?.includes('net::ERR_FAILED')) {
+                throw new Error('❌ Connection failed: Backend server may be down. Try again in a moment.');
+            } else if (error.message?.includes('timeout')) {
+                throw new Error('❌ Request timeout: Backend server is taking too long. Please try again.');
+            }
+            
             // Firebase-specific errors
             if (error.code === 'auth/popup-blocked') {
                 throw new Error('❌ Popup blocked! Please enable popups for this site and restart.');
