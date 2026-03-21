@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { G } from './DashboardComponents';
 import { ArrowLeft, ArrowRight, Check, Pulse, Drop, Heart, Activity } from './Icons';
+import { apiFetch } from '../api/client';
 
 const STEPS = [
     { k: 'bp_sys', label: 'Blood Pressure (Systolic)', icon: <Pulse size={48} color={G.orange} />, unit: 'mmHg', placeholder: '120', hint: 'The top number from your machine' },
@@ -29,7 +30,7 @@ const VitalsWizard = ({ onComplete, onClose, th }) => {
                 const token = localStorage.getItem('sahara_token');
                 const userObj = JSON.parse(localStorage.getItem('sahara_user') || '{}');
                 
-                const res = await fetch('/api/health/log', {
+                const res = await apiFetch('/api/health/log', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { G } from './DashboardComponents';
 import { Mic, X, Send, Sparkles, Volume2 } from './Icons';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../api/client';
 
 const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
     const { user } = useAuth();
@@ -33,7 +34,7 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
         setStatus('analyzing');
 
         try {
-            const response = await fetch('/api/nutrition/analyze', {
+            const response = await apiFetch('/api/nutrition/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -91,7 +92,7 @@ const NutritionVoice = ({ onClose, onAdd, th, dark }) => {
             const token = localStorage.getItem('sahara_token');
             const userObj = JSON.parse(localStorage.getItem('sahara_user') || '{}');
             
-            const res = await fetch('/api/nutrition/log', {
+            const res = await apiFetch('/api/nutrition/log', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

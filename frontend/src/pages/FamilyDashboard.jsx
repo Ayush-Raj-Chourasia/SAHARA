@@ -3,33 +3,47 @@ import { Card, CH, Label, G } from '../components/DashboardComponents';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Shield, Pulse, Drop, Heart, Clock, AlertCircle, Phone, ArrowUp, ArrowDown } from '../components/Icons';
 import { AIWeeklySummary, SOSHistory } from '../components/FamilyComponents';
+import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../api/client';
 
 const FamilyDashboard = (props) => {
   const { th, dark, score, show } = props;
+    const { user } = useAuth();
   const [history, setHistory] = useState([]);
   const [sosEvents, setSosEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+        let isMounted = true;
+
+        const fetchData = async () => {
         try {
             const token = localStorage.getItem('sahara_token');
-            const seniorId = "mock_id"; // In real app, this is linked to user
+                        const seniorId = user?.role === 'family' ? 'senior_123' : (user?.id || 'senior_123');
             
             const [hRes, sRes] = await Promise.all([
-                fetch(`/api/health/history/${seniorId}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(`/api/emergency/history/${seniorId}`, { headers: { 'Authorization': `Bearer ${token}` } })
+                                apiFetch(`/api/health/history/${seniorId}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                                apiFetch(`/api/emergency/history/${seniorId}`, { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
 
-            if (hRes.ok) setHistory(await hRes.json());
-            if (sRes.ok) setSosEvents(await sRes.json());
+                        if (isMounted && hRes.ok) setHistory(await hRes.json());
+                        if (isMounted && sRes.ok) setSosEvents(await sRes.json());
         } catch (err) {
             console.error("Fetch data error", err);
         }
-        setLoading(false);
+                if (isMounted) setLoading(false);
     };
+
     fetchData();
-  }, []);
+
+        // README-aligned near real-time refresh cadence.
+        const intervalId = setInterval(fetchData, 15000);
+
+        return () => {
+            isMounted = false;
+            clearInterval(intervalId);
+        };
+    }, [user?.id, user?.role]);
 
   const chartData = history.length > 0 ? history.map(h => ({
     day: new Date(h.timestamp).toLocaleDateString('en-IN', { weekday: 'short' }),

@@ -4,6 +4,7 @@ import VitalsWizard from '../components/VitalsWizard';
 import NutritionVoice from '../components/NutritionVoice';
 import { MedicationCompliance, AnaemiaRiskCard } from '../components/ClinicalComponents';
 import { Card, CH, Label, G } from '../components/DashboardComponents';
+import { apiFetch } from '../api/client';
 
 const SeniorDashboard = (props) => {
   const { th, dark, vitals, setVitals, kcal, prot, score, show } = props;
@@ -27,7 +28,7 @@ const SeniorDashboard = (props) => {
             try {
                 const token = localStorage.getItem('sahara_token');
                 const userObj = JSON.parse(localStorage.getItem('sahara_user') || '{}');
-                const res = await fetch('/api/emergency/sos', {
+                const res = await apiFetch('/api/emergency/sos', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',

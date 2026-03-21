@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiFetch } from '../api/client';
 
 const AuthContext = createContext();
 
@@ -17,20 +18,23 @@ export const AuthProvider = ({ children }) => {
             }
 
             try {
-                const res = await fetch('/api/auth/me', {
+                const res = await apiFetch('/api/auth/me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) {
                     const userData = await res.json();
-                    setUser({
+                    const normalizedUser = {
                         id: userData._id,
                         email: userData.email,
                         name: userData.name,
                         role: userData.role,
                         onboarded: userData.onboarded
-                    });
+                    };
+                    setUser(normalizedUser);
+                    localStorage.setItem('sahara_user', JSON.stringify(normalizedUser));
                 } else {
                     localStorage.removeItem('sahara_token');
+                    localStorage.removeItem('sahara_user');
                 }
             } catch (err) {
                 console.error("Auth check failed", err);
@@ -41,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        const res = await fetch('/api/auth/login', {
+        const res = await apiFetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -51,12 +55,13 @@ export const AuthProvider = ({ children }) => {
         
         const data = await res.json();
         localStorage.setItem('sahara_token', data.access_token);
+        localStorage.setItem('sahara_user', JSON.stringify(data.user));
         setUser(data.user);
         return data.user;
     };
 
     const register = async (userData) => {
-        const res = await fetch('/api/auth/register', {
+        const res = await apiFetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
@@ -66,6 +71,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('sahara_token', data.access_token);
         // After register, user is not onboarded
         const newUser = { ...userData, onboarded: false };
+        localStorage.setItem('sahara_user', JSON.stringify(newUser));
         setUser(newUser);
         return newUser;
     };
@@ -86,6 +92,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setUser(null);
         localStorage.removeItem('sahara_token');
+        localStorage.removeItem('sahara_user');
     };
 
     const completeOnboarding = async (data) => {
