@@ -11,7 +11,9 @@ SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-for-dev-only")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 1 week
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use pbkdf2_sha256 as primary hash to avoid bcrypt runtime issues on newer Python builds.
+# Keep bcrypt in the list for backward compatibility with existing stored hashes.
+pwd_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt"], deprecated="auto")
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
