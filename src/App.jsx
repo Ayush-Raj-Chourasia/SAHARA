@@ -94,10 +94,8 @@ function countdown(hour, sent, key, now) {
 // DUMMY USERS DATABASE
 // ─────────────────────────────────────────────────────────────────────────────
 const USERS = [
-    { id: 1, name: "Raj Kumar",    email: "raj@sahara.health",   pass: "senior123", role: "senior", age: 68, city: "Mumbai",    avatar: "👴", color: "#2563eb" },
-    { id: 2, name: "Priya Kumar",  email: "priya@sahara.health", pass: "family123", role: "family",  age: 38, city: "Pune",      avatar: "👩", color: "#16a34a" },
-    { id: 3, name: "Arjun Kumar",  email: "arjun@sahara.health", pass: "family456", role: "family",  age: 34, city: "Bengaluru", avatar: "👨", color: "#b45309" },
-    { id: 4, name: "Sunita Devi",  email: "sunita@sahara.health",pass: "senior456", role: "senior",  age: 72, city: "Delhi",     avatar: "👵", color: "#dc2626" },
+    { id: 1, name: "Ramesh Sharma",  email: "ramesh@sahara.health", pass: "senior123", role: "senior", age: 68, city: "Mumbai",  avatar: "👴", color: "#2563eb" },
+    { id: 2, name: "Anita Sharma",   email: "anita@sahara.health",  pass: "family123", role: "family",  age: 38, city: "Pune",    avatar: "👩", color: "#16a34a" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -380,17 +378,17 @@ function SAHARA({ currentUser, onLogout }) {
         let s = 100;
         // 🩸 Vitals: Penalties for BP, Sugar, Heart Rate out of range
         const [sys, dia] = vitals.bp.split("/").map(Number);
-        if (sys > 140 || sys < 95) s -= 12; 
+        if (sys > 140 || sys < 95) s -= 12;
         if (dia > 90 || dia < 60) s -= 8;
         if (vitals.sugar > 140 || vitals.sugar < 70) s -= 15;
         if (vitals.heart > 105 || vitals.heart < 55) s -= 10;
-        
+
         // 🧪 Lab Parameters (ICMR specific)
         const hbVal = Number(vitals.hb);
         if (hbVal < 9) s -= 30; // 🚨 CRITICAL Anaemia
-        else if (hbVal < 11) s -= 15; 
+        else if (hbVal < 11) s -= 15;
         else if (hbVal < 13) s -= 5;
-        
+
         // 💊 Meds: Critical penalty if missed
         if (!medTaken) s -= 15;
 
@@ -401,7 +399,7 @@ function SAHARA({ currentUser, onLogout }) {
         // 🍎 Nutrition: Optimal calorie and protein intake (ICMR 1800-2000 kcal)
         if (kcal < 1400 || kcal > 2200) s -= 10;
         if (prot < 45) s -= 10;
-        
+
         return Math.max(15, Math.min(100, s));
     })();
     const unread = logs.filter(l => !l.read).length;
@@ -419,7 +417,7 @@ function SAHARA({ currentUser, onLogout }) {
 
     const waText = encodeURIComponent(
         `*SAHARA Health Report* 🏥
-👤 Raj Kumar | Age 68 | ${now.toLocaleDateString("en-IN")}
+👤 ${USERS[0].name} | Age ${USERS[0].age} | ${now.toLocaleDateString("en-IN")}
 
 📊 *Health Score:* ${score}/100 — ${score >= 80 ? "Good" : score >= 60 ? "Monitor" : "Needs Attention"}
 
@@ -519,17 +517,17 @@ _Via SAHARA Health Companion · ${timeStr}_`);
                                     {dark ? <Ic.Sun w={20} /> : <Ic.Moon w={20} />}
                                 </button>
                                 <div style={{ display: "flex", alignItems: "center", gap: 9, background: th.s2, border: `1.5px solid ${th.border}`, borderRadius: 13, padding: "5px 12px 5px 6px" }}>
-                                        <span style={{ fontSize: 26 }}>{currentUser?.avatar || "👤"}</span>
-                                        <div style={{ lineHeight: 1.2 }}>
-                                            <p style={{ fontSize: 13, fontWeight: 700, color: th.text }}>{currentUser?.name || "Guest"}</p>
-                                            <p style={{ fontSize: 11, color: th.muted, textTransform: "capitalize" }}>{currentUser?.role || "user"}</p>
-                                        </div>
+                                    <span style={{ fontSize: 26 }}>{currentUser?.avatar || "👤"}</span>
+                                    <div style={{ lineHeight: 1.2 }}>
+                                        <p style={{ fontSize: 13, fontWeight: 700, color: th.text }}>{currentUser?.name || "Guest"}</p>
+                                        <p style={{ fontSize: 11, color: th.muted, textTransform: "capitalize" }}>{currentUser?.role || "user"}</p>
                                     </div>
-                                    <button className="b" onClick={onLogout} title="Sign Out"
-                                        style={{ width: 44, height: 44, borderRadius: 13, background: dark ? "#2c0808" : "#fef2f2", border: `1.5px solid ${G.red}44`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: G.red }}
-                                        >
-                                        <Svg w={18}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></Svg>
-                                    </button>
+                                </div>
+                                <button className="b" onClick={onLogout} title="Sign Out"
+                                    style={{ width: 44, height: 44, borderRadius: 13, background: dark ? "#2c0808" : "#fef2f2", border: `1.5px solid ${G.red}44`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: G.red }}
+                                >
+                                    <Svg w={18}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></Svg>
+                                </button>
                                 {isCloud && (
                                     <div className="nd" style={{ position: "fixed", bottom: 100, right: 24, background: th.surface, padding: "8px 16px", borderRadius: 12, border: `1.5px solid ${th.border}`, boxShadow: th.shadow, display: "flex", alignItems: "center", gap: 8, zIndex: 1000 }}>
                                         <span className="br" style={{ width: 8, height: 8, borderRadius: "50%", background: G.green }} />
@@ -585,7 +583,7 @@ _Via SAHARA Health Companion · ${timeStr}_`);
                     <Sheet th={th} title="Share Health Report" onClose={() => setShowShare(false)}>
                         <div style={{ background: th.s2, border: `1.5px solid ${th.border}`, borderRadius: 14, padding: "15px 17px", marginBottom: 18, fontSize: 13, color: th.sub, lineHeight: 1.75, maxHeight: 210, overflowY: "auto", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
                             {`SAHARA Health Report 🏥
-Raj Kumar · Age 68 · ${now.toLocaleDateString("en-IN")}
+${USERS[0].name} · Age ${USERS[0].age} · ${now.toLocaleDateString("en-IN")}
 
 Health Score: ${score}/100 — Good Condition
 
@@ -640,7 +638,7 @@ Generated at ${timeStr}`}
                                 <h2 style={{ fontSize: 44, fontWeight: 800, marginBottom: 15 }}>CALLING NOW...</h2>
                                 <p style={{ fontSize: 22, opacity: 0.9, marginBottom: 40 }}>Emergency services and your family have been notified.</p>
                                 <div style={{ background: "#fff", color: G.red, padding: "20px 40px", borderRadius: 20, fontSize: 24, fontWeight: 800 }}>HELP IS ON THE WAY</div>
-                                <p style={{ marginTop: 15, fontSize: 16, opacity: 0.8 }}>SMS Alerts sent to Rajat and Sneha via Twilio.</p>
+                                <p style={{ marginTop: 15, fontSize: 16, opacity: 0.8 }}>SMS Alerts sent to {USERS[1].name} via Twilio.</p>
                                 <button className="b" onClick={() => setSos(null)} style={{ marginTop: 40, opacity: 0.7, color: "#fff", background: "none", border: "none", textDecoration: "underline", fontSize: 18, cursor: "pointer" }}>End Call</button>
                             </>
                         )}
@@ -722,9 +720,9 @@ function SeniorView({ th, dark, vitals, setVitals, vMode, setVMode, setEditV, se
                                 <span style={{ fontSize: 12, color: (v.k === "hb" && Number(vitals.hb) < 12) ? G.amber : G.green, fontWeight: 600 }}>{(v.k === "hb" && Number(vitals.hb) < 12) ? "Low" : "Optimal"}</span>
                             </div>
                             {vMode === "manual" && (
-                                <button className="b" onClick={() => { 
-                                    setEditV(v.k); 
-                                    setTmpV(vitals[v.k]); 
+                                <button className="b" onClick={() => {
+                                    setEditV(v.k);
+                                    setTmpV(vitals[v.k]);
                                 }}
                                     style={{ position: "absolute", top: 11, right: 11, background: th.s2, border: `1.5px solid ${th.border}`, borderRadius: 9, padding: "6px 10px", cursor: "pointer", color: th.sub, display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontFamily: "'Outfit', sans-serif" }}>
                                     <Ic.Edit w={12} /> Edit
@@ -936,8 +934,8 @@ function FamilyView({ th, dark, vitals, medTaken, kcal, prot, sleep, steps, scor
                 <div style={{ display: "flex", alignItems: "center", gap: 15, flexWrap: "wrap", marginBottom: 17 }}>
                     <div style={{ width: 62, height: 62, borderRadius: 17, background: "linear-gradient(135deg,#dbeafe,#bfdbfe)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>👴</div>
                     <div style={{ flex: 1 }}>
-                        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 25, fontWeight: 700, color: th.text }}>Raj Kumar</p>
-                        <p style={{ color: th.sub, fontSize: 14, marginTop: 2 }}>Age 68 · Mumbai · Last sync: Today 8:30 AM</p>
+                        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 25, fontWeight: 700, color: th.text }}>{USERS[0].name}</p>
+                        <p style={{ color: th.sub, fontSize: 14, marginTop: 2 }}>Age {USERS[0].age} · {USERS[0].city} · Last sync: Today 8:30 AM</p>
                     </div>
                     <div style={{ textAlign: "center", background: `${col}12`, border: `1.5px solid ${col}28`, borderRadius: 15, padding: "11px 19px" }}>
                         <p style={{ fontSize: 10, color: th.muted, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase" }}>Score</p>
@@ -1051,13 +1049,13 @@ function FamilyView({ th, dark, vitals, medTaken, kcal, prot, sleep, steps, scor
 function FoodModal({ th, dark, onClose, onAdd }) {
     const [tab, setTab] = useState("manual");
     const [search, setS] = useState("");
-    const [sels, setSels] = useState([]); 
+    const [sels, setSels] = useState([]);
     const [meal, setMeal] = useState("Breakfast");
     const [photo, setPh] = useState(null);
-    const [pEntries, setPe] = useState([]); 
+    const [pEntries, setPe] = useState([]);
     const [pManual, setPM] = useState({ name: "", kcal: "", protein: "" });
     const [rec, setRec] = useState(false);
-    const [vtxt, setVt] = useState(""); const [vEntries, setVe] = useState([]); 
+    const [vtxt, setVt] = useState(""); const [vEntries, setVe] = useState([]);
     const [vLang, setVLang] = useState("hi-IN"); // 🌐 State for EN/HI toggle
     const [loading, setLoading] = useState(false);
     const fRef = useRef(); const rRef = useRef();
@@ -1078,12 +1076,12 @@ function FoodModal({ th, dark, onClose, onAdd }) {
     function startVoice() {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR) { alert("Voice recognition requires Chrome browser."); return; }
-        const r = new SR(); 
+        const r = new SR();
         // Use user-selected language (HI or EN)
-        r.lang = vLang; 
+        r.lang = vLang;
         r.continuous = false; r.interimResults = false;
-        r.onresult = async e => { 
-            const text = e.results[0][0].transcript; 
+        r.onresult = async e => {
+            const text = e.results[0][0].transcript;
             setVt(text); setLoading(true);
             try {
                 const pr = `Detect food items from: '${text}'. Reply ONLY with valid JSON array, e.g. [{"name": "Idli", "kcal": 140, "protein": 5}]. No extra text. If no food found, return []. Focus on Indian cuisine.`;
@@ -1094,12 +1092,12 @@ function FoodModal({ th, dark, onClose, onAdd }) {
                     setVe(results);
                     setTimeout(() => {
                         results.forEach(it => onAdd({ ...it, meal, time: nowT(), type: "voice" }));
-                        onClose(); 
+                        onClose();
                     }, 1200);
                 } else if (results.length === 0) {
                     setVe([{ name: "No food detected. Please try again.", kcal: 0, protein: 0 }]);
                 }
-            } catch(err) { console.error("Voice AI Error:", err); }
+            } catch (err) { console.error("Voice AI Error:", err); }
             setLoading(false);
         };
         r.onend = () => setRec(false); r.onerror = () => setRec(false); r.start(); rRef.current = r; setRec(true);
@@ -1149,9 +1147,9 @@ function FoodModal({ th, dark, onClose, onAdd }) {
 
             {tab === "camera" && (
                 <>
-                    <input type="file" accept="image/*" capture="environment" ref={fRef} style={{ display: "none" }} onChange={e => { 
-                        const f = e.target.files[0]; 
-                        if (f) { 
+                    <input type="file" accept="image/*" capture="environment" ref={fRef} style={{ display: "none" }} onChange={e => {
+                        const f = e.target.files[0];
+                        if (f) {
                             const reader = new FileReader();
                             reader.onload = async (ev) => {
                                 const dataUrl = ev.target.result;
@@ -1164,15 +1162,15 @@ function FoodModal({ th, dark, onClose, onAdd }) {
                                     const end = resp.lastIndexOf(']') + 1;
                                     if (start === -1 || end === 0) throw new Error("No JSON array found");
                                     const results = JSON.parse(resp.substring(start, end));
-                                    setPe(Array.isArray(results) ? results : [results]); 
-                                } catch(err) {
+                                    setPe(Array.isArray(results) ? results : [results]);
+                                } catch (err) {
                                     console.error("AI Analysis Error:", err);
-                                    setPe([]); 
+                                    setPe([]);
                                 }
                                 setLoading(false);
                             };
                             reader.readAsDataURL(f);
-                        } 
+                        }
                     }} />
                     {!photo
                         ? <button className="b" onClick={() => fRef.current.click()} style={{ width: "100%", padding: "32px 20px", borderRadius: 18, border: `3px dashed ${th.border}`, background: th.s2, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 11 }}>
@@ -1180,7 +1178,7 @@ function FoodModal({ th, dark, onClose, onAdd }) {
                         </button>
                         : <>
                             <img src={photo} alt="food" style={{ width: "100%", maxHeight: 190, objectFit: "cover", borderRadius: 15, marginBottom: 11 }} />
-                            <button onClick={() => { setPh(null); setPe([]); setPM({name:"",kcal:"",protein:""}); fRef.current.click(); }} style={{ marginBottom: 9, background: th.s2, border: `1.5px solid ${th.border}`, borderRadius: 9, padding: "8px 15px", fontSize: 14, color: th.text, cursor: "pointer", fontFamily: "'Outfit', sans-serif" }}>📷 Retake</button>
+                            <button onClick={() => { setPh(null); setPe([]); setPM({ name: "", kcal: "", protein: "" }); fRef.current.click(); }} style={{ marginBottom: 9, background: th.s2, border: `1.5px solid ${th.border}`, borderRadius: 9, padding: "8px 15px", fontSize: 14, color: th.text, cursor: "pointer", fontFamily: "'Outfit', sans-serif" }}>📷 Retake</button>
                             {loading && <p style={{ color: th.accent, fontSize: 15, fontWeight: 700, textAlign: "center", padding: 10 }}>✨ AI is detecting food items...</p>}
                             <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
                                 {pEntries.map((e, i) => (
