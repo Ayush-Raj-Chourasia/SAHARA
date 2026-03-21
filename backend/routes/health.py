@@ -36,57 +36,67 @@ class HealthLogRequest(BaseModel):
     bp_dia: float
     blood_sugar: float
     hemoglobin: float
-    weight_kg: float
-    fatigue_level: float
-    age: int
-    gender: str
-    sleep_duration: float
-    quality_of_sleep: float
-    physical_activity_level: float
-    stress_level: float
-    heart_rate: float
-    daily_steps: float
-    MCH: float
-    MCHC: float
-    MCV: float
+    weight_kg: float = 65
+    fatigue_level: float = 2
+    age: int = 70
+    gender: str = "male"
+    sleep_duration: float = 7
+    quality_of_sleep: float = 7
+    physical_activity_level: float = 40
+    stress_level: float = 4
+    heart_rate: float = 72
+    daily_steps: float = 3000
+    MCH: float = 28
+    MCHC: float = 33
+    MCV: float = 85
     user_id: str = "default"
+    # Optional extras for full score
+    medication_taken: bool = True
+    kcal_today: float = 1800
+    protein_today: float = 50
 
 @router.post("/log")
 async def log_health(request: HealthLogRequest):
     try:
-        # Step 1: Rule-based health score
+        # ── Exact health score formula ─────────────────────────────
         score = 100
-        bp_sys = request.bp_sys
-        bp_dia = request.bp_dia
+        bp_sys      = request.bp_sys
+        bp_dia      = request.bp_dia
         blood_sugar = request.blood_sugar
-        hb = request.hemoglobin
-        age = request.age
-        gender = request.gender.lower()
+        hr          = request.heart_rate
+        steps       = request.daily_steps
+        sleep_h     = request.sleep_duration
+        kcal        = request.kcal_today
+        protein     = request.protein_today
 
-        if bp_sys > 160: score -= 25
-        elif bp_sys > 140: score -= 15
-        elif bp_sys > 130: score -= 8
-        
-        if bp_dia > 100: score -= 10
-        elif bp_dia > 90: score -= 6
-        
-        if blood_sugar > 250: score -= 25
-        elif blood_sugar > 200: score -= 15
-        elif blood_sugar > 140: score -= 8
-        
-        hb_low = 12.0 if gender == "female" else 13.0
-        if age >= 65: hb_low -= 1.0
-        
-        if hb < hb_low - 2: score -= 25
-        elif hb < hb_low: score -= 12
-        
-        final = max(0, min(100, score))
+        # Vitals  (45% weight)
+        if bp_sys > 140 or bp_sys < 95:   score -= 12
+        if bp_dia > 90  or bp_dia < 60:   score -= 8
+        if blood_sugar > 140 or blood_sugar < 70: score -= 15
+        if hr < 55 or hr > 105:           score -= 10
+
+        # Medication (15% weight)
+        if not request.medication_taken:  score -= 15
+
+        # Physical activity (20% weight)
+        if steps < 4000:                  score -= 10
+        elif steps < 6000:                score -= 5
+        if sleep_h < 6 or sleep_h > 9:   score -= 7
+
+        # Nutrition (20% weight)
+        if kcal < 1400 or kcal > 2200:   score -= 10
+        if protein < 45:                  score -= 10
+
+        final    = max(0, min(100, score))
         category = "Good" if final >= 75 else "Fair" if final >= 50 else "Poor"
-        color = "green" if final >= 75 else "amber" if final >= 50 else "red"
+        color    = "green" if final >= 75 else "amber" if final >= 50 else "red"
+        label_map = {"Good": "Good Condition", "Fair": "Monitor Closely", "Poor": "Needs Attention"}
 
         # Step 2: Anemia model
+        gender = request.gender.lower()
         gender_encoded = 1 if gender == "female" else 0
         anemia_features = [[gender_encoded, request.hemoglobin, request.MCH, request.MCHC, request.MCV]]
+
         
         if anemia_model:
             an_pred = anemia_model.predict(anemia_features)[0]

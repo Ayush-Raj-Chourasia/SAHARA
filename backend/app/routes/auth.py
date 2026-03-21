@@ -6,15 +6,11 @@ from datetime import datetime
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
-@router.post("/register", response_model=Token)
+@router.post("/register")
 async def register(user: UserCreate):
-    # Check if user exists
     existing_user = await users_collection.find_one({"email": user.email})
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
+        raise HTTPException(status_code=400, detail="Email already registered")
     
     hashed_password = get_password_hash(user.password)
     user_dict = user.dict()
@@ -23,11 +19,19 @@ async def register(user: UserCreate):
     user_dict["created_at"] = datetime.utcnow()
     
     result = await users_collection.insert_one(user_dict)
+    user_id = str(result.inserted_id)
     
     access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_id": user_id,
+        "email": user.email,
+        "name": user.name,
+        "role": user.role
+    }
 
-@router.post("/login", response_model=Token)
+@router.post("/login")
 async def login(user_login: dict):
     email = user_login.get("email")
     password = user_login.get("password")
@@ -41,4 +45,11 @@ async def login(user_login: dict):
         )
     
     access_token = create_access_token(data={"sub": email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_id": str(user["_id"]),
+        "email": user.get("email"),
+        "name": user.get("name", email.split("@")[0]),
+        "role": user.get("role", "senior")
+    }

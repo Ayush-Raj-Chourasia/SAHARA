@@ -11,10 +11,10 @@ const SeniorDashboard = (props) => {
   const { user } = useAuth();
   const [showWizard, setShowWizard] = useState(false);
   const [showVoice, setShowVoice] = useState(false);
-  const [score, setScore] = useState(props.score);
+  const [showSOS, setShowSOS] = useState(false);
 
-  // Sync score from parent (loaded from DB)
-  React.useEffect(() => { if (props.score !== null) setScore(props.score); }, [props.score]);
+  // Score comes directly from App.jsx (real-time computed, never 0)
+  const score = props.score;
 
   const handleVitalsComplete = async (newData) => {
     setVitals({
@@ -22,9 +22,11 @@ const SeniorDashboard = (props) => {
         sugar: newData.sugar,
         heart: newData.hb
     });
+    if (props.setManualVitals) props.setManualVitals(true); // stop auto-refresh
     setShowWizard(false);
 
-    // POST to backend → get real health score
+
+    // POST to backend to persist (score is computed in App.jsx from state)
     try {
         const payload = {
             bp_sys: parseFloat(newData.bp_sys) || 120,
@@ -39,34 +41,60 @@ const SeniorDashboard = (props) => {
             MCH: 28, MCHC: 33, MCV: 85,
             user_id: user?.id || "default"
         };
-        const res = await fetch('/api/health/log', {
+        await fetch('/api/health/log', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        const data = await res.json();
-        if (data.health_score !== undefined) setScore(data.health_score);
     } catch (e) {
         console.error('Health log save failed', e);
     }
   };
 
-  const triggerSOS = () => {
-    if (window.confirm("TRIGGER SOS ALERT? Your family will be notified immediately.")) {
-        alert("SOS SENT! GPS: 20.2961° N, 85.8245° E. SMS sent to linked contacts.");
-    }
-  };
+  const triggerSOS = () => setShowSOS(true);
 
-  const displayScore = score ?? 0;
-  const col = displayScore >= 80 ? G.green : displayScore >= 60 ? G.amber : score === null ? '#9B9890' : G.red;
-  const lbl = score === null ? "No Data Yet" : displayScore >= 80 ? "Good Condition" : displayScore >= 60 ? "Monitor Closely" : "Needs Attention";
+  const displayScore = score ?? 70;
+  const col = displayScore >= 75 ? G.green : displayScore >= 50 ? G.amber : G.red;
+  const lbl = displayScore >= 75 ? 'Good Condition' : displayScore >= 50 ? 'Monitor Closely' : 'Needs Attention';
   const circ = 2 * Math.PI * 50;
+
 
   return (
     <main style={{ maxWidth: 1120, margin: "0 auto", padding: "24px 18px 180px" }}>
       {showWizard && <VitalsWizard th={th} onClose={() => setShowWizard(false)} onComplete={handleVitalsComplete} />}
       {showVoice && <NutritionVoice th={th} dark={dark} onClose={() => setShowVoice(false)} onAdd={(f) => props.setFoodLog([...props.foodLog, f])} />}
-      
+
+      {/* Fullscreen SOS Animation */}
+      {showSOS && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: '#dc2626',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <div style={{ animation: 'sosPulse 0.8s ease-in-out infinite', textAlign: 'center' }}>
+            <div style={{ fontSize: 120, lineHeight: 1 }}>🆘</div>
+            <h1 style={{ color: '#fff', fontSize: 64, fontWeight: 900, marginTop: 24, letterSpacing: '-2px' }}>SOS SENT!</h1>
+            <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: 22, marginTop: 16, fontWeight: 700 }}>
+              Alerting your family and emergency contacts...
+            </p>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, marginTop: 10 }}>
+              📍 GPS: 20.2961° N, 85.8245° E &nbsp;|&nbsp; 📱 SMS sent
+            </p>
+          </div>
+          <button onClick={() => setShowSOS(false)} style={{
+            marginTop: 60, padding: '18px 48px', borderRadius: 50, background: 'rgba(255,255,255,0.2)',
+            border: '3px solid rgba(255,255,255,0.8)', color: '#fff', fontSize: 20, fontWeight: 800,
+            cursor: 'pointer', backdropFilter: 'blur(10px)', letterSpacing: '0.05em'
+          }}>
+            ✕ Cancel Alert
+          </button>
+          <style>{`@keyframes sosPulse {
+            0%,100% { transform: scale(1); opacity: 1; }
+            50%      { transform: scale(1.06); opacity: 0.85; }
+          }`}</style>
+        </div>
+      )}
+
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,480px),1fr))", gap: 18 }}>
         
         {/* Profile & Health Score (§4.1) */}

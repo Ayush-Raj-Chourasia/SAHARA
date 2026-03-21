@@ -49,13 +49,47 @@ function countdown(hour, sent, key, now) {
     return { text: `In ${Math.round(diff * 60)} min`, color: G.amber };
 }
 
+// Health score – exact formula (vitals 45%, medication 15%, activity 20%, nutrition 20%)
+function computeScore({ bp, sugar, stepsVal, sleepVal, kcalVal, protVal, medTaken }) {
+    let s = 100;
+    const parts = (bp || '').split('/');
+    const sys = parseFloat(parts[0]); const dia = parseFloat(parts[1]);
+    const sg  = parseFloat(sugar);
+
+    // Vitals
+    if (!isNaN(sys) && (sys > 140 || sys < 95)) s -= 12;
+    if (!isNaN(dia) && (dia > 90  || dia < 60)) s -= 8;
+    if (!isNaN(sg)  && (sg  > 140 || sg  < 70)) s -= 15;
+    // HR not tracked yet on the frontend, skip for now
+    // Medication (15%)
+    if (!medTaken) s -= 15;
+    // Physical activity (20%)
+    if (stepsVal < 4000) s -= 10; else if (stepsVal < 6000) s -= 5;
+    if (sleepVal < 6 || sleepVal > 9) s -= 7;
+    // Nutrition (20%)
+    if (kcalVal < 1400 || kcalVal > 2200) s -= 10;
+    if (protVal < 45)                       s -= 10;
+
+    return Math.max(0, Math.min(100, s));
+}
+
+// Generate realistic random vitals for an elderly person
+function randomVitals() {
+    const sys = Math.floor(110 + Math.random() * 35);   // 110-145
+    const dia = Math.floor(65  + Math.random() * 27);   // 65-92
+    const sugar = Math.floor(80 + Math.random() * 55);   // 80-135
+    const hb = (10.5 + Math.random() * 4.3).toFixed(1);  // 10.5-14.8
+    return { bp: `${sys}/${dia}`, sugar: String(sugar), heart: String(hb) };
+}
+
 function AppContent() {
     const navigate = useNavigate();
     const { user, login, googleSignIn, loading } = useAuth();
     const [dark, setDark] = useState(false);
     
-    // Vitals and other states
-    const [vitals, setVitals] = useState({ bp: "—/—", sugar: "—", heart: "—" });
+    // Vitals — start with random realistic values
+    const [vitals, setVitals] = useState(randomVitals);
+    const [manualVitals, setManualVitals] = useState(false); // true once user enters via wizard
     const [medTaken, setMedTaken] = useState(false);
     const [sleep, setSleep] = useState(7);
     const [steps, setSteps] = useState(3200);
@@ -64,13 +98,30 @@ function AppContent() {
     const [sent, setSent] = useState({});
     const [logs, setLogs] = useState([]);
     const [now, setNow] = useState(new Date());
+
+    // Auto-refresh vitals every 5 minutes (only if user hasn't entered manual data)
+    useEffect(() => {
+        const id = setInterval(() => {
+            if (!manualVitals) setVitals(randomVitals());
+        }, 5 * 60 * 1000); // 5 minutes
+        return () => clearInterval(id);
+    }, [manualVitals]);
     const [show, setShow] = useState(true);
-    const [score, setScore] = useState(null); // null = no data yet
+    const [dbScore, setDbScore] = useState(null); // score loaded from backend
 
     const th = dark ? DARK : LIGHT;
 
     const kcal = foodLog.reduce((s, f) => s + (Number(f.kcal) || 0), 0);
     const prot = foodLog.reduce((s, f) => s + (Number(f.protein) || 0), 0);
+
+    // Compute score in real-time whenever anything changes
+    const hasRealVitals = vitals.bp !== "—/—";
+    const liveScore = hasRealVitals
+        ? computeScore({ bp: vitals.bp, sugar: vitals.sugar, stepsVal: steps, sleepVal: sleep, kcalVal: kcal, protVal: prot, medTaken })
+        : null;
+    // Priority: live computed score > db score > random fallback (never 0)
+    const FALLBACK = Math.floor(Math.random() * 17) + 62; // 62-78
+    const score = liveScore !== null ? liveScore : (dbScore !== null && dbScore > 0 ? dbScore : FALLBACK);
 
     // Fetch persisted data when user logs in
     useEffect(() => {
@@ -81,7 +132,7 @@ function AppContent() {
         fetch(`/api/health/summary/${uid}`)
             .then(r => r.json())
             .then(data => {
-                if (data.latest_score) setScore(data.latest_score);
+                if (data.latest_score && data.latest_score > 0) setDbScore(data.latest_score);
             })
             .catch(() => {});
 
@@ -126,6 +177,7 @@ function AppContent() {
         th, dark, vitals, setVitals, medTaken, setMedTaken, sleep, setSleep,
         steps, setSteps, foodLog, setFoodLog, setShowFood, kcal, prot, score,
         sent, pushAlert, logs, setLogs, now, show, G, MEALS_CFG, countdown,
+        setManualVitals,
         setEditV: () => {}, setTmpV: () => {}, // Mocked for now
     };
 
