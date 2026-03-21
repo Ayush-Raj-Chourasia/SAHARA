@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Shield, Pulse, Drop, Heart, Fork, Pill, Moon, Steps, Bell, Send, Trash, Edit, Plus, Info, Check, MessageSquare, ArrowLeft, ArrowRight } from '../components/Icons';
+import { Shield, Pulse, Drop, Heart, Fork, Pill, Moon, Steps, Bell, Send, Trash, Edit, Plus, Info, Check, MessageSquare, ArrowLeft, ArrowRight, Activity, Mic } from '../components/Icons';
 import VitalsWizard from '../components/VitalsWizard';
+import NutritionVoice from '../components/NutritionVoice';
+import { MedicationCompliance, AnaemiaRiskCard } from '../components/ClinicalComponents';
 
 // Sub-components used across the dashboard
 const Card = ({ children, th, full, d, show }) => (
@@ -65,6 +66,7 @@ const AlertRow = ({ sev, title, desc, th, dark, G }) => {
 const SeniorDashboard = (props) => {
   const { th, dark, vitals, setVitals, kcal, prot, score, G, show } = props;
   const [showWizard, setShowWizard] = useState(false);
+  const [showVoice, setShowVoice] = useState(false);
 
   const handleVitalsComplete = (newData) => {
     setVitals({
@@ -84,6 +86,7 @@ const SeniorDashboard = (props) => {
   return (
     <main style={{ maxWidth: 1120, margin: "0 auto", padding: "24px 18px 180px" }}>
       {showWizard && <VitalsWizard th={th} onClose={() => setShowWizard(false)} onComplete={handleVitalsComplete} />}
+      {showVoice && <NutritionVoice th={th} dark={dark} onClose={() => setShowVoice(false)} onAdd={(f) => props.setFoodLog([...props.foodLog, f])} />}
       
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,480px),1fr))", gap: 18 }}>
       {/* Score */}
@@ -123,8 +126,8 @@ const SeniorDashboard = (props) => {
             <button onClick={() => window.location.href='/chat'} style={{ background: th.s3, color: th.text, border: "none", borderRadius: 24, padding: "20px", fontSize: 16, fontWeight: 800, cursor: "pointer", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 8 }}>
                <MessageSquare size={20} color={th.accent} /> AI Chat
             </button>
-            <button onClick={() => props.setShowFood(true)} style={{ background: th.s3, color: th.text, border: "none", borderRadius: 24, padding: "20px", fontSize: 16, fontWeight: 800, cursor: "pointer", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 8 }}>
-               <Fork size={20} color={G.amber} /> Food Diary
+            <button onClick={() => setShowVoice(true)} style={{ background: th.s3, color: th.text, border: "none", borderRadius: 24, padding: "20px", fontSize: 16, fontWeight: 800, cursor: "pointer", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 8 }}>
+               <Mic size={20} color={G.orange} /> Nutrition AI
             </button>
         </div>
       </Card>
