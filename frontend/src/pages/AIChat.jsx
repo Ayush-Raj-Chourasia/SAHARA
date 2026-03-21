@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Send, Mic, Bot, User, Sparkles } from 'lucide-react';
 
 const AIChat = ({ onBack, th, G }) => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState([
-    { id: 1, text: "Namaste! I am SAHARA AI. How can I help you with your health today?", sender: "bot" }
+    { id: 1, text: `Namaste ${user?.name || ''}! I am SAHARA AI. How can I help you with your health today?`, sender: "bot" }
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -26,7 +27,7 @@ const AIChat = ({ onBack, th, G }) => {
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input, user_id: "mock_user_123" })
+        body: JSON.stringify({ message: input, user_id: user?.id })
       });
       const data = await response.json();
       setMessages(prev => [...prev, { id: Date.now() + 1, text: data.response, sender: "bot" }]);
