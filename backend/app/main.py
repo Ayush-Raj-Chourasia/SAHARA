@@ -1,18 +1,26 @@
+import os
+import traceback
 from fastapi import FastAPI
 from fastapi import Request
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.routes import auth, health, nutrition, emergency, ai_chat
 from app.database import client as db_client
 import uvicorn
-import traceback
 
 app = FastAPI(title="SAHARA API", version="1.0.0")
+
+raw_origins = os.getenv(
+    "CORS_ORIGINS",
+    "https://sahara-flax.vercel.app,https://frontend-nine-mu-mtbg6zpr7c.vercel.app,http://localhost:5173,http://localhost:3000",
+)
+allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
 
 # Enable CORS - must be added before routers
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,20 +28,21 @@ app.add_middleware(
     max_age=3600,
 )
 
-# Global error handler for debugging
-@app.middleware("http")
-async def error_handler_middleware(request: Request, call_next):
-    try:
-        response = await call_next(request)
-        return response
-    except Exception as e:
-        print(f"[ERROR] {request.method} {request.url.path}")
-        print(f"[ERROR] {str(e)}")
-        print(f"[ERROR] {traceback.format_exc()}")
-        return JSONResponse(
-            status_code=500,
-            content={"detail": f"Error: {str(e)}", "type": type(e).__name__}
-        )
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    print(f"[HTTP_ERROR] {request.method} {request.url.path} -> {exc.status_code}: {exc.detail}")
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    print(f"[ERROR] {request.method} {request.url.path}")
+    print(f"[ERROR] {str(exc)}")
+    print(f"[ERROR] {traceback.format_exc()}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error", "type": type(exc).__name__},
+    )
 
 # Include Routers (added after CORS middleware)
 app.include_router(auth.router)

@@ -232,59 +232,73 @@ async def login(user_login: dict):
 
 @router.post("/google")
 async def google_login(payload: GoogleAuthRequest):
-    print(f"[AUTH] Google login starting for email: {payload.email}")
-    email = payload.email.strip().lower()
-    role = payload.role if payload.role in ["senior", "family"] else "senior"
-    print(f"[AUTH] Email normalized: {email}, Role: {role}")
+    try:
+        print(f"[AUTH] Google login starting for email: {payload.email}")
+        email = payload.email.strip().lower()
+        role = payload.role if payload.role in ["senior", "family"] else "senior"
+        print(f"[AUTH] Email normalized: {email}, Role: {role}")
 
-    user = await users_collection.find_one({"email": email})
-    is_new = False
-    print(f"[AUTH] User lookup complete. Is new: {not user}")
+        user = await users_collection.find_one({"email": email})
+        is_new = False
+        print(f"[AUTH] User lookup complete. Is new: {not user}")
 
-    if not user:
-        is_new = True
-        user_doc = {
-            "name": payload.name,
-            "email": email,
-            "role": role,
-            "phone": "",
-            "age": None,
-            "gender": None,
-            "weight_kg": None,
-            "conditions": [],
-            "auth_provider": "firebase_google",
-            "google_uid": payload.google_uid,
-            "photo_url": payload.photo_url,
-            "created_at": datetime.utcnow(),
-            "onboarded": False,
-            "linked_senior_ids": [],
-            "linked_family_ids": [],
+        if not user:
+            is_new = True
+            user_doc = {
+                "name": payload.name,
+                "email": email,
+                "role": role,
+                "phone": "",
+                "age": None,
+                "gender": None,
+                "weight_kg": None,
+                "conditions": [],
+                "auth_provider": "firebase_google",
+                "google_uid": payload.google_uid,
+                "photo_url": payload.photo_url,
+                "created_at": datetime.utcnow(),
+                "onboarded": False,
+                "linked_senior_ids": [],
+                "linked_family_ids": [],
+            }
+            if role == "senior":
+                user_doc["invite_code"] = create_invite_code()
+            insert_result = await users_collection.insert_one(user_doc)
+            user = await users_collection.find_one({"_id": insert_result.inserted_id})
+            print(f"[AUTH] New user created: {email}")
+        else:
+            update_data = {
+                "name": payload.name or user.get("name"),
+                "google_uid": payload.google_uid or user.get("google_uid"),
+                "photo_url": payload.photo_url or user.get("photo_url"),
+            }
+            if not user.get("invite_code") and user.get("role") == "senior":
+                update_data["invite_code"] = create_invite_code()
+            await users_collection.update_one({"_id": user["_id"]}, {"$set": update_data})
+            user = await users_collection.find_one({"_id": user["_id"]})
+            print(f"[AUTH] Existing user updated: {email}")
+
+        access_token = create_access_token(data={"sub": email})
+        print(f"[AUTH] Token created, returning success")
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": serialize_user(user),
+            "is_new": is_new,
         }
-        if role == "senior":
-            user_doc["invite_code"] = create_invite_code()
-        insert_result = await users_collection.insert_one(user_doc)
-        user = await users_collection.find_one({"_id": insert_result.inserted_id})
-        print(f"[AUTH] New user created: {email}")
-    else:
-        update_data = {
-            "name": payload.name or user.get("name"),
-            "google_uid": payload.google_uid or user.get("google_uid"),
-            "photo_url": payload.photo_url or user.get("photo_url"),
-        }
-        if not user.get("invite_code") and user.get("role") == "senior":
-            update_data["invite_code"] = create_invite_code()
-        await users_collection.update_one({"_id": user["_id"]}, {"$set": update_data})
-        user = await users_collection.find_one({"_id": user["_id"]})
-        print(f"[AUTH] Existing user updated: {email}")
-
-    access_token = create_access_token(data={"sub": email})
-    print(f"[AUTH] Token created, returning success")
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user": serialize_user(user),
-        "is_new": is_new,
-    }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[AUTH] Google login failed: {str(e)}")
+        if "authentication failed" in str(e).lower() or "atlaserror" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Database authentication failed. Check Railway MongoDB credentials.",
+            )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Google login failed: {str(e)}",
+        )
 
 
 @router.post("/complete-profile")
