@@ -33,6 +33,12 @@ export function CH({ th, icon, title, children }) {
     );
 }
 
+export function Label({ children }) {
+    return (
+        <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "inherit", opacity: 0.6 }}>{children}</p>
+    );
+}
+
 export function Sheet({ th, title, onClose, children, wide }) {
     return (
         <div style={{ position: "fixed", inset: 0, background: th.modalBg, zIndex: 100, display: "flex", alignItems: "flex-end", justifyContent: "center", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}

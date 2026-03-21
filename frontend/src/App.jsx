@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import * as Ic from './components/Icons';
@@ -94,21 +95,17 @@ function AppContent() {
                 <Route path="/onboarding" element={user ? <OnboardingPage /> : <Navigate to="/login" />} />
                 
                 <Route path="/senior" element={
-                    user?.onboarded && user.role === 'senior' ? (
-                        <>
-                            <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
-                            <SeniorDashboard {...sharedProps} />
-                        </>
-                    ) : <Navigate to={user ? "/onboarding" : "/login"} />
+                    <>
+                        <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
+                        <SeniorDashboard {...sharedProps} />
+                    </>
                 } />
                 
                 <Route path="/family" element={
-                    user?.onboarded && user.role === 'family' ? (
-                        <>
-                            <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
-                            <FamilyDashboard {...sharedProps} />
-                        </>
-                    ) : <Navigate to={user ? "/onboarding" : "/login"} />
+                    <>
+                        <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
+                        <FamilyDashboard {...sharedProps} />
+                    </>
                 } />
                 <Route path="/chat" element={user?.role === 'senior' ? <AIChat onBack={() => navigate('/senior')} th={th} G={G} /> : <Navigate to="/" />} />
             </Routes>
@@ -123,7 +120,12 @@ function Header({ dark, setDark, th, logs, setLogs, navigate }) {
     return (
         <header style={{ background: th.hdr, backdropFilter: "blur(18px)", borderBottom: `1px solid ${th.border}`, position: "sticky", top: 0, zIndex: 50, padding: "14px 20px" }}>
             <div style={{ maxWidth: 1120, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: 'pointer' }} onClick={() => navigate('/')}>
+                <div 
+                    style={{ display: "flex", alignItems: "center", gap: 12, cursor: 'pointer', transition: 'opacity 0.2s', ':hover': { opacity: 0.8 } }} 
+                    onClick={() => navigate('/')}
+                    onMouseEnter={e => e.currentTarget.style.opacity = '0.7'}
+                    onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                >
                     <div style={{ width: 40, height: 40, borderRadius: 12, background: th.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                          <Ic.Shield w={20} style={{ color: th.atext }} />
                     </div>

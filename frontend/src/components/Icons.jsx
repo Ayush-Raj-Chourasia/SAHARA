@@ -30,3 +30,14 @@ export const Wa = (p) => <svg viewBox="0 0 24 24" fill="currentColor" style={{ d
 export const Steps = (p) => <Svg {...p}><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5c0 1.1-.1 2-.1 3.5 0 1.71.49 2.5 2.1 2.5h2c1.2 0 1.99.5 2.5 1.5" /><path d="M12 22v-5" /></Svg>;
 export const Mic = (p) => <Svg {...p}><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" /></Svg>;
 export const Camera = (p) => <Svg {...p}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></Svg>;
+export const Info = (p) => <Svg {...p}><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></Svg>;
+export const AlertTriangle = (p) => <Svg {...p}><path d="M10.86 5.38A2 2 0 0 1 13.14 5.38L20.5 18a2 2 0 0 1-1.68 3H5.18a2 2 0 0 1-1.68-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></Svg>;
+export const Sparkles = (p) => <Svg {...p}><path d="M9.26 5a2 2 0 0 0-2.72 2.12c-.38 2.746 1.485 5.369 3.851 5.89a2 2 0 0 0 1.82-3.18A2 2 0 0 0 9.26 5" /><path d="M16.18 3.3a2 2 0 0 0-2.04 3.45 2 2 0 0 0 1.82 3.18c2.366-.52 4.231-3.144 3.851-5.89A2 2 0 0 0 16.18 3.3" /><path d="M7.5 16.5a2 2 0 0 0-1.933 2.671l1.158 4.634a2 2 0 0 0 3.87.147l1.158-4.634A2 2 0 0 0 7.5 16.5" /><circle cx="12" cy="12" r="2" /></Svg>;
+export const MapPin = (p) => <Svg {...p}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></Svg>;
+export const Calendar = (p) => <Svg {...p}><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></Svg>;
+export const CheckCircle = (p) => <Svg {...p}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></Svg>;
+export const AlertCircle = (p) => <Svg {...p}><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></Svg>;
+export const Clock = (p) => <Svg {...p}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></Svg>;
+export const Volume2 = (p) => <Svg {...p}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 5.54a9 9 0 0 1 0 12.92M19.07 4a16 16 0 0 1 0 16" /></Svg>;
+export const ArrowUp = (p) => <Svg {...p}><line x1="12" y1="19" x2="12" y2="5" /><polyline points="5 12 12 5 19 12" /></Svg>;
+export const ArrowDown = (p) => <Svg {...p}><line x1="12" y1="5" x2="12" y2="19" /><polyline points="19 12 12 19 5 12" /></Svg>;

@@ -31,7 +31,6 @@ export const AIWeeklySummary = ({ th, dark }) => {
 };
 
 export const SOSHistory = ({ th, events = [] }) => {
-    // Mock events if empty
     const mockEvents = [
         { id: 1, time: '2 hours ago', loc: 'Saheed Nagar, BBSR', status: 'Resolved', coord: '20.2961,85.8245' },
         { id: 2, time: '3 days ago', loc: 'Nayapalli, BBSR', status: 'False Alarm', coord: '20.3012,85.8189' }

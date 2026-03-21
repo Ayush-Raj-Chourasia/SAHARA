@@ -68,7 +68,7 @@ const LoginPage = ({ onBack }) => {
         </div>
 
         <button onClick={handleGoogle} disabled={loading} className="w-full py-4 bg-white border-2 border-[#E4E2DB] text-[#111827] rounded-[24px] text-base font-black flex items-center justify-center gap-3 hover:bg-gray-50 transition-all">
-          <img src="/google_icon.png" alt="Google" style={{ width: 24, height: 24 }} />
+          <span style={{ fontSize: 20 }}>🔐</span>
           Sign in with Google
         </button>
 
