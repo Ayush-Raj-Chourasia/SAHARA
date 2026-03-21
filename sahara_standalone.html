@@ -239,7 +239,8 @@ function SAHARA() {
         
         // 🧪 Lab Parameters (ICMR specific)
         const hbVal = Number(vitals.hb);
-        if (hbVal < 11) s -= 15; // Anaemia threshold
+        if (hbVal < 9) s -= 30; // 🚨 CRITICAL Anaemia
+        else if (hbVal < 11) s -= 15; 
         else if (hbVal < 13) s -= 5;
         if (vitals.fatigue === "high") s -= 10;
         
@@ -273,12 +274,13 @@ function SAHARA() {
         `*SAHARA Health Report* 🏥
 👤 Raj Kumar | Age 68 | ${now.toLocaleDateString("en-IN")}
 
-📊 *Health Score:* ${score}/100 — Good Condition
+📊 *Health Score:* ${score}/100 — ${score >= 80 ? "Good" : score >= 60 ? "Monitor" : "Needs Attention"}
 
 ❤️ *Vitals*
 • BP: ${vitals.bp} mmHg
 • Sugar: ${vitals.sugar} mg/dL
-• Heart Rate: ${vitals.heart} bpm
+• HR: ${vitals.heart} bpm
+• Hb: ${vitals.hb} g/dL (Iron)
 
 🍽️ *Nutrition*
 • Calories: ${kcal} / 1800 kcal
@@ -740,7 +742,8 @@ function SeniorView({ th, dark, vitals, setVitals, vMode, setVMode, setEditV, se
             <Card th={th} d={5} show={show}>
                 <CH th={th} icon={<Ic.Bell w={20} />} title="Health Alerts" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 11, marginTop: 15 }}>
-                    {Number(vitals.hb) < 12 && <AlertRow th={th} dark={dark} sev="warn" title="Anaemia Risk Detected" desc="HB levels are low. Consider iron-rich foods like spinach, lentils, and dates. Consult your doctor." />}
+                    {Number(vitals.hb) < 9 && <AlertRow th={th} dark={dark} sev="crit" title="CRITICAL Anaemia Danger" desc="HB levels are dangerously low (<9.0). Please seek immediate clinical attention or contact your doctor now." />}
+                    {Number(vitals.hb) >= 9 && Number(vitals.hb) < 12 && <AlertRow th={th} dark={dark} sev="warn" title="Anaemia Risk Detected" desc="HB levels are low. Consider iron-rich foods like spinach, lentils, and dates. Consult your doctor." />}
                     {Number(vitals.sugar) > 160 && <AlertRow th={th} dark={dark} sev="crit" title="High Blood Sugar" desc="Sugar is above safe threshold. Check if medication was missed or consult a specialist." />}
                     {steps < 2000 && <AlertRow th={th} dark={dark} sev="info" title="Very Low Activity" desc="Try a 5-minute walk inside the house to keep circulation healthy." />}
                     <AlertRow th={th} dark={dark} sev="info" title="Metric Sync Active" desc="All parameters are currently being monitored and synced to your family dashboard." />
@@ -927,11 +930,19 @@ function FoodModal({ th, dark, onClose, onAdd }) {
             const text = e.results[0][0].transcript; 
             setVt(text); setLoading(true);
             try {
-                const pr = `Extract food items from: '${text}'. Reply ONLY with valid JSON array, e.g. [{"name": "Idli", "kcal": 140, "protein": 5}]. No extra text.`;
+                const pr = `Detect food items from: '${text}'. Reply ONLY with valid JSON array, e.g. [{"name": "Idli", "kcal": 140, "protein": 5}]. No extra text. If no food found, return []. Focus on Indian cuisine.`;
                 const resp = await puter.ai.chat(pr);
-                const s = resp.substring(resp.indexOf('['), resp.lastIndexOf(']') + 1);
-                const results = JSON.parse(s);
-                setVe(Array.isArray(results) ? results : [results]);
+                const results = JSON.parse(resp.substring(resp.indexOf('['), resp.lastIndexOf(']') + 1));
+                if (Array.isArray(results) && results.length > 0) {
+                    // 🚀 AUTO-ADD logic: Adds and closes modal with feedback
+                    setVe(results);
+                    setTimeout(() => {
+                        results.forEach(it => onAdd({ ...it, meal, time: nowT(), type: "voice" }));
+                        onClose(); 
+                    }, 1200);
+                } else if (results.length === 0) {
+                    setVe([{ name: "No food detected. Please try again.", kcal: 0, protein: 0 }]);
+                }
             } catch(err) { console.error("Voice AI Error:", err); }
             setLoading(false);
         };
@@ -1053,8 +1064,9 @@ function FoodModal({ th, dark, onClose, onAdd }) {
                             {loading && <p style={{ color: th.accent, fontSize: 15, marginTop: 4, fontWeight: 600 }}>✨ AI is analyzing items...</p>}
                             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
                                 {vEntries.map((e, i) => (
-                                    <div key={i} style={{ padding: "8px 12px", background: dark ? G.gBgD : G.gBg, borderRadius: 9, border: `1px solid ${dark ? G.gBdD : G.gBd}`, color: G.green, fontSize: 14, fontWeight: 700 }}>
-                                        ✓ {e.name} ({e.kcal} kcal)
+                                    <div key={i} className="nd" style={{ padding: "8px 12px", background: dark ? G.gBgD : G.gBg, borderRadius: 9, border: `1.5px solid ${G.green}`, color: G.green, fontSize: 14, fontWeight: 800, display: "flex", justifyContent: "space-between" }}>
+                                        <span>✓ {e.name}</span>
+                                        <span>Added!</span>
                                     </div>
                                 ))}
                             </div>
