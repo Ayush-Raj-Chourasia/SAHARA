@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { Shield, Pulse, Drop, Pill, Bell, MessageSquare, Activity, Mic } from '../components/Icons';
 import VitalsWizard from '../components/VitalsWizard';
 import NutritionVoice from '../components/NutritionVoice';
@@ -16,6 +16,8 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
   const [history, setHistory] = useState([]);
   const [nutritionSummary, setNutritionSummary] = useState({ kcal: 0, protein: 0, logs: [], meal_status: [] });
   const [refreshTick, setRefreshTick] = useState(0);
+  const [isSOSActive, setIsSOSActive] = useState(false);
+  const sosIntervalRef = useRef(null);
 
   const score = latestLog?.score ?? 0;
   const col = score >= 80 ? G.green : score >= 60 ? G.amber : G.red;
@@ -90,6 +92,7 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
     return () => {
       active = false;
       clearInterval(id);
+      if (sosIntervalRef.current) clearInterval(sosIntervalRef.current);
     };
   }, [user?.id, refreshTick]);
 
@@ -112,35 +115,62 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
     }
   };
 
-  const triggerSOS = async () => {
-    if (!window.confirm('TRIGGER SOS ALERT? Your family will be notified immediately.')) return;
+  const startSOSLoop = () => {
+    if (!window.confirm('TRIGGER CONTINUOUS SOS ALERT? Your family will be notified immediately and repeatedly.')) return;
+    
+    setIsSOSActive(true);
 
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        try {
-          const token = localStorage.getItem('sahara_token');
-          const res = await apiFetch('/api/emergency/sos', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ user_id: user?.id, latitude, longitude }),
-          });
-          if (res.ok) alert('SOS SENT! Your location has been shared with your family.');
-          else alert('SOS failed. Please call emergency contact directly.');
-        } catch (err) {
-          console.error('SOS Error:', err);
-          alert('SOS trigger failed. Please call emergency contact directly.');
-        }
-      },
-      () => alert('Location unavailable. Please enable GPS and retry SOS.')
-    );
+    const sendAlert = () => {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          try {
+            const token = localStorage.getItem('sahara_token');
+            const res = await apiFetch('/api/emergency/sos', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ user_id: user?.id, latitude, longitude }),
+            });
+            if (!res.ok) console.warn('SOS iteration failed');
+          } catch (err) {
+            console.error('SOS Error:', err);
+          }
+        },
+        () => console.warn('Location unavailable for SOS')
+      );
+    };
+
+    sendAlert(); // Initial burst
+    alert('SOS SENT! Your location is being shared with your family continuously.');
+
+    sosIntervalRef.current = setInterval(sendAlert, 60000); // Pulse every 1 min to respect Twilio limits
+  };
+
+  const stopSOSLoop = () => {
+    setIsSOSActive(false);
+    if (sosIntervalRef.current) {
+      clearInterval(sosIntervalRef.current);
+      sosIntervalRef.current = null;
+    }
+    alert('SOS alerts stopped.');
+  };
+
+  const toggleSOS = () => {
+    if (isSOSActive) stopSOSLoop();
+    else startSOSLoop();
   };
 
   return (
     <main style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 18px 150px' }}>
+      {isSOSActive && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 998, pointerEvents: 'none', animation: 'sosPulse 1.5s infinite alternate' }} />
+      )}
+      <style>{`
+        @keyframes sosPulse {
+          0% { background: rgba(220,38,38,0.1); }
+          100% { background: rgba(185,28,28,0.55); }
+        }
+      `}</style>
       {showWizard && <VitalsWizard th={th} onClose={() => setShowWizard(false)} onComplete={() => { setShowWizard(false); setRefreshTick((v) => v + 1); }} />}
       {showVoice && <NutritionVoice th={th} dark={dark} onClose={() => setShowVoice(false)} onAdd={(f) => { setFoodLog([...(foodLog || []), f]); setRefreshTick((v) => v + 1); }} />}
 
@@ -280,7 +310,7 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
       </div>
 
       <button
-        onClick={triggerSOS}
+        onClick={toggleSOS}
         style={{
           position: 'fixed',
           bottom: 24,
@@ -297,11 +327,12 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 16px 36px rgba(220,38,38,0.45)',
+          boxShadow: isSOSActive ? '0 0 50px rgba(220,38,38,0.9)' : '0 16px 36px rgba(220,38,38,0.45)',
+          animation: isSOSActive ? 'pulse 1s infinite' : 'none',
         }}
       >
         <Shield size={28} />
-        <span style={{ fontSize: 20, fontWeight: 900, marginTop: 2 }}>SOS</span>
+        <span style={{ fontSize: isSOSActive ? 14 : 20, fontWeight: 900, marginTop: 2 }}>{isSOSActive ? 'STOP SOS' : 'SOS'}</span>
       </button>
     </main>
   );

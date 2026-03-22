@@ -8,6 +8,7 @@ export const G = {
     red: "#dc2626", rBg: "#fff1f2", rBd: "#fecada", rBgD: "#1c0404", rBdD: "#991b1b",
     blue: "#2563eb", bBg: "#eff6ff", bBd: "#bfdbfe", bBgD: "#0a1628", bBdD: "#1d4ed8",
     wa: "#25D366",
+    orange: "#ea580c",
 };
 
 export function Card({ th, children, style = {}, full, d = 0, show }) {
