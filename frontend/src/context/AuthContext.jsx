@@ -45,9 +45,13 @@ export const AuthProvider = ({ children }) => {
                 } else {
                     localStorage.removeItem('sahara_token');
                     localStorage.removeItem('sahara_user');
+                    persistUser(null);
                 }
             } catch (err) {
                 console.error("Auth check failed", err);
+                localStorage.removeItem('sahara_token');
+                localStorage.removeItem('sahara_user');
+                persistUser(null);
             }
             setLoading(false);
         };

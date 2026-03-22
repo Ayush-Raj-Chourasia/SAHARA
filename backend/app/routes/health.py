@@ -37,17 +37,18 @@ def detect_anomaly(historical_values: List[float], new_value: float, param: str)
     if len(historical_values) < 3:
         return {"anomaly": False}
 
-    mean = np.mean(historical_values)
-    std = np.std(historical_values)
+    mean = float(np.mean(historical_values))
+    std = float(np.std(historical_values))
     if std == 0:
         return {"anomaly": False}
 
-    z_score = abs(new_value - mean) / std
+    z_score = float(abs(new_value - mean) / std)
     direction = "high" if new_value > mean else "low"
+    is_anomaly = bool(z_score > 2.0)
 
     return {
-        "anomaly": z_score > 2.0,
-        "z_score": round(z_score, 2),
+        "anomaly": is_anomaly,
+        "z_score": float(round(z_score, 2)),
         "direction": direction,
         "param": param,
         "message": f"{param} is unusually {direction} today compared to your recent readings"
