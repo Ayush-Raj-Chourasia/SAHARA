@@ -1,7 +1,5 @@
 const CACHE_NAME = 'sahara-v3';
 const urlsToCache = [
-  '/',
-  '/index.html',
   '/google_icon.png',
   '/favicon.ico'
 ];
@@ -26,6 +24,13 @@ self.addEventListener('fetch', event => {
   const isSameOrigin = reqUrl.origin === self.location.origin;
   const isGet = event.request.method === 'GET';
   const isApiRequest = reqUrl.pathname.startsWith('/api/') || reqUrl.origin.includes('railway.app');
+  const isNavigation = event.request.mode === 'navigate';
+
+  // Never cache app shell html/navigation; always go network-first to avoid stale JS bundle.
+  if (isNavigation) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   // Only cache same-origin GET assets. Let API calls and cross-origin requests bypass SW.
   if (!isSameOrigin || !isGet || isApiRequest) {

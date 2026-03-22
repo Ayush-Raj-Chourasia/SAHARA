@@ -101,17 +101,26 @@ async def log_health(log: HealthLogCreate):
     log_dict["timestamp"] = datetime.utcnow()
     log_dict["anomalies"] = anomalies
 
-    user = await users_collection.find_one({"_id": log.user_id})
-    if not user and ObjectId.is_valid(log.user_id):
-        user = await users_collection.find_one({"_id": ObjectId(log.user_id)})
-        
+    user = None
     anaemia_risk = None
+    try:
+        user = await users_collection.find_one({"_id": log.user_id})
+        if not user and ObjectId.is_valid(log.user_id):
+            user = await users_collection.find_one({"_id": ObjectId(log.user_id)})
+    except Exception as e:
+        # Keep health logging resilient even if profile lookup fails.
+        print(f"⚠ User lookup failed during health log: {e}")
+
     if user and log.haemoglobin is not None:
-        gender = user.get("gender", "male")
-        age = user.get("age", 65)
-        risk_data = await calculate_anaemia_risk(float(log.haemoglobin), gender, age, log.fatigue or 0, history)
-        anaemia_risk = risk_data.get("risk_level", "LOW")
-        log_dict["anaemia_risk"] = anaemia_risk
+        try:
+            gender = user.get("gender", "male")
+            age = user.get("age", 65)
+            risk_data = await calculate_anaemia_risk(float(log.haemoglobin), gender, age, log.fatigue or 0, history)
+            anaemia_risk = risk_data.get("risk_level", "LOW")
+            log_dict["anaemia_risk"] = anaemia_risk
+        except Exception as e:
+            # Do not block vitals write if AI risk computation fails.
+            print(f"⚠ Anaemia risk calculation failed: {e}")
     
     try:
         result = await health_logs_collection.insert_one(log_dict)
