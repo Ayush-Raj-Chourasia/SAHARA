@@ -173,7 +173,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.get("/me")
 async def read_users_me(current_user: dict = Depends(get_current_user)):
-    return current_user
+    return serialize_user(current_user)
 
 @router.post("/register")
 async def register(user: UserCreate):
