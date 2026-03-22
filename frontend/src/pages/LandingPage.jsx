@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+// Force refresh
+
 
 const LandingIcons = {
   Shield: ({ w = 24, ...p }) => (
@@ -100,11 +104,39 @@ const LandingPage = ({ onStart, onLogin }) => {
         </div>
       </section>
       <div className="py-20 text-center px-6"><p className="text-2xl md:text-4xl font-black tracking-tight text-[#111827]/40 max-w-4xl mx-auto italic">“Most healthcare apps react after the problem. <br className="hidden md:block"/><span className="text-[#EA580C] underline decoration-4 underline-offset-8">SAHARA prevents it.</span>”</p></div>
-      <section className="py-32 px-6 mx-auto max-w-7xl">
-        <h2 className="text-4xl md:text-6xl font-black text-center mb-20 tracking-tight">How it works.</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 relative">
-          {[{ step: "01", icon: <LandingIcons.Mic />, label: "Log food via Voice", color: "border-orange-500" },{ step: "02", icon: <LandingIcons.Activity />, label: "AI Analyzes Nutrition", color: "border-green-500" },{ step: "03", icon: <LandingIcons.Check />, label: "Score Updates", color: "border-[#111827]" },{ step: "04", icon: <LandingIcons.AlertTriangle />, label: "Risk Detected", color: "border-red-500" },{ step: "05", icon: <LandingIcons.Shield />, label: "Family Notified", color: "border-blue-500" },{ step: "06", icon: <LandingIcons.Activity />, label: "Care Provided", color: "border-amber-500" }].map((item, i) => (
-            <div key={i} className={`p-6 rounded-3xl border-2 ${item.color} bg-white group hover:-translate-y-2 transition-all`}><span className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4 block">{item.step}</span><div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">{React.cloneElement(item.icon, { w: 20 })}</div><p className="font-bold leading-tight">{item.label}</p></div>
+      <section className="py-32 px-6 mx-auto max-w-7xl relative overflow-hidden">
+        <h2 className="text-4xl md:text-6xl font-black text-center mb-24 tracking-tight">How it works.</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 relative z-10">
+          {[
+            { step: "01", icon: <LandingIcons.Mic />, label: "Log food via Voice", color: "from-orange-500 to-orange-600", bg: "bg-orange-50" },
+            { step: "02", icon: <LandingIcons.Activity />, label: "AI Analyzes Nutrition", color: "from-green-500 to-green-600", bg: "bg-green-50" },
+            { step: "03", icon: <LandingIcons.Check />, label: "Score Updates", color: "from-gray-700 to-gray-900", bg: "bg-gray-50" },
+            { step: "04", icon: <LandingIcons.AlertTriangle />, label: "Risk Detected", color: "from-red-500 to-red-600", bg: "bg-red-50" },
+            { step: "05", icon: <LandingIcons.Shield />, label: "Family Notified", color: "from-blue-500 to-blue-600", bg: "bg-blue-50" },
+            { step: "06", icon: <LandingIcons.Activity />, label: "Care Provided", color: "from-amber-500 to-amber-600", bg: "bg-amber-50" }
+          ].map((item, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.8, ease: "easeOut" }}
+              className="group relative"
+            >
+              <div className="p-8 rounded-[40px] bg-white border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.03)] group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] group-hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center h-full">
+                <div className={`w-20 h-20 rounded-[30px] ${item.bg} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 relative`}>
+                   <div className={`absolute -top-3 -right-3 w-9 h-9 rounded-full bg-gradient-to-br ${item.color} text-white text-xs font-black flex items-center justify-center shadow-lg border-4 border-white`}>
+                     {item.step}
+                   </div>
+                   {React.cloneElement(item.icon, { w: 32, className: "group-hover:rotate-12 transition-transform duration-500" })}
+                </div>
+                <p className="font-bold text-lg leading-tight text-[#111827] mb-2">{item.label}</p>
+                <div className={`mt-auto w-10 h-1 rounded-full bg-gradient-to-r ${item.color} opacity-20 group-hover:opacity-100 transition-all duration-500`} />
+              </div>
+              {i < 5 && (
+                <div className="hidden lg:block absolute top-1/2 -right-6 w-12 h-0.5 bg-gradient-to-r from-gray-100 to-transparent -translate-y-12 opacity-50" />
+              )}
+            </motion.div>
           ))}
         </div>
       </section>
