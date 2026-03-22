@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sahara-v2';
+const CACHE_NAME = 'sahara-v3';
 const urlsToCache = [
   '/',
   '/index.html',

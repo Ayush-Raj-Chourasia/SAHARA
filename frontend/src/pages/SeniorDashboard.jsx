@@ -11,6 +11,7 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
   const { user } = useAuth();
   const [showWizard, setShowWizard] = useState(false);
   const [showVoice, setShowVoice] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [latestLog, setLatestLog] = useState(null);
   const [history, setHistory] = useState([]);
   const [nutritionSummary, setNutritionSummary] = useState({ kcal: 0, protein: 0, logs: [], meal_status: [] });
