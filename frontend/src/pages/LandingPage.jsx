@@ -50,14 +50,22 @@ const LandingPage = ({ onStart, onLogin }) => {
           </div>
         </div>
         <div className={`relative mt-20 transition-all duration-1000 delay-500 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
-          <div className="relative mx-auto max-w-md bg-white p-8 rounded-[32px] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.12)] border border-gray-100 rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
-            <div className="flex justify-between items-start mb-10">
-              <div className="text-left"><span className="text-xs font-black uppercase tracking-widest text-gray-400">Health Score</span><div className="flex items-baseline gap-2 mt-1"><span className="text-5xl font-black text-[#16A34A]">82</span><span className="text-lg font-bold text-gray-300">/100</span></div></div>
-              <div className="p-3 bg-[#16A34A]/10 text-[#16A34A] rounded-2xl"><LandingIcons.Activity w={32} /></div>
+          <div className="absolute inset-0 max-w-4xl mx-auto -translate-y-12 opacity-20 blur-3xl pointer-events-none">
+            <img src="/images/hero.png" alt="" className="w-full h-full object-cover rounded-full" />
+          </div>
+          <div className="relative mx-auto max-w-md bg-white p-8 rounded-[32px] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.12)] border border-gray-100 rotate-[-2deg] hover:rotate-0 transition-all duration-500 group overflow-hidden">
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700">
+               <img src="/images/hero.png" alt="Hero" className="w-full h-full object-cover scale-150" />
             </div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl"><span className="font-bold text-gray-500">Last BP</span><span className="font-black">128/84</span></div>
-              <div className="flex justify-between items-center p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100"><div className="flex items-center gap-2"><LandingIcons.AlertTriangle w={18} /><span className="font-bold">Anaemia Risk</span></div><span className="font-black uppercase text-xs">Medium</span></div>
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-10">
+                <div className="text-left"><span className="text-xs font-black uppercase tracking-widest text-gray-400">Health Score</span><div className="flex items-baseline gap-2 mt-1"><span className="text-5xl font-black text-[#16A34A]">82</span><span className="text-lg font-bold text-gray-300">/100</span></div></div>
+                <div className="p-3 bg-[#16A34A]/10 text-[#16A34A] rounded-2xl"><LandingIcons.Activity w={32} /></div>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl"><span className="font-bold text-gray-500">Last BP</span><span className="font-black">128/84</span></div>
+                <div className="flex justify-between items-center p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100"><div className="flex items-center gap-2"><LandingIcons.AlertTriangle w={18} /><span className="font-bold">Anaemia Risk</span></div><span className="font-black uppercase text-xs">Medium</span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -75,8 +83,17 @@ const LandingPage = ({ onStart, onLogin }) => {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {[{ label: "Missed health warning", color: "bg-red-500", rotation: "-rotate-6" },{ label: "Didn't know Hb was dropping", color: "bg-orange-500", rotation: "rotate-3" },{ label: "No one tracking meals", color: "bg-[#16A34A]", rotation: "rotate-6" },{ label: "Emergency came too late", color: "bg-[#111827] border border-white/20", rotation: "-rotate-3" }].map((card, i) => (
-                <div key={i} className={`p-6 rounded-3xl aspect-square flex flex-col justify-end ${card.color} ${card.rotation}`}><span className="text-lg font-black leading-tight">{card.label}</span></div>
+              {[
+                { label: "Missed health warning", image: "/images/missed_health.png", rotation: "-rotate-6" },
+                { label: "Didn't know Hb was dropping", image: "/images/hb_dropping.png", rotation: "rotate-3" },
+                { label: "No one tracking meals", image: "/images/no_meal.png", rotation: "rotate-6" },
+                { label: "Emergency came too late", image: "/images/emergency.png", rotation: "-rotate-3" }
+              ].map((card, i) => (
+                <div key={i} className={`relative p-6 rounded-3xl aspect-square flex flex-col justify-end overflow-hidden ${card.rotation} group hover:rotate-0 transition-all duration-500 shadow-2xl border border-white/10`}>
+                  <img src={card.image} alt={card.label} className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent opacity-80" />
+                  <span className="relative z-10 text-lg font-black leading-tight text-white drop-shadow-md">{card.label}</span>
+                </div>
               ))}
             </div>
           </div>

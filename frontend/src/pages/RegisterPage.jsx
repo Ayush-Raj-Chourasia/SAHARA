@@ -62,12 +62,16 @@ const RegisterPage = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F4F0] text-[#111827] font-['Outfit',sans-serif] flex flex-col items-center justify-center p-6">
-      <button onClick={onBack} className="absolute top-10 left-10 p-2 hover:bg-white rounded-full transition-colors flex items-center gap-2 font-bold text-sm">
+    <div className="min-h-screen bg-[#F5F4F0] text-[#111827] font-['Outfit',sans-serif] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <img src="/images/auth_bg.png" alt="" className="w-full h-full object-cover opacity-30 grayscale" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F5F4F0]/80 to-[#F5F4F0]/40" />
+      </div>
+      <button onClick={onBack} className="absolute top-10 left-10 p-2 hover:bg-white rounded-full transition-colors flex items-center gap-2 font-bold text-sm z-10">
         <ArrowLeft w={20} /> Back
       </button>
 
-      <div className="w-full max-w-md bg-white p-10 rounded-[40px] shadow-xl border border-[#E4E2DB]">
+      <div className="relative z-10 w-full max-w-md bg-white/90 backdrop-blur-md p-10 rounded-[40px] shadow-2xl border border-[#E4E2DB]">
         <div className="flex flex-col items-center mb-10">
           <div className="p-4 rounded-[20px] bg-[#EA580C] text-white shadow-lg mb-6">
             <Shield w={40} />
