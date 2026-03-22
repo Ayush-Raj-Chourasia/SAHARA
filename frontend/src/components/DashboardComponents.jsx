@@ -10,6 +10,7 @@ export const G = {
     orange: "#ea580c", oBg: "#fff7ed", oBd: "#fed7aa", oBgD: "#1c0a00", oBdD: "#9a3412",
     purple: "#7c3aed", pBg: "#faf5ff", pBd: "#ddd6fe",
     wa: "#25D366",
+    orange: "#ea580c",
 };
 
 export function Card({ th, children, style = {}, full, d = 0, show }) {

@@ -70,6 +70,8 @@ MEAL_WINDOWS = {
 }
 
 
+
+
 def normalize_meal_type(meal_type: str) -> str:
     mt = (meal_type or "").strip().lower()
     if mt == "snack":
@@ -78,10 +80,46 @@ def normalize_meal_type(meal_type: str) -> str:
         return "snacks"
     return mt
 
+
+def detect_meal_type(text: str, fallback: str = "snacks") -> str:
+    t = (text or "").lower()
+    if any(k in t for k in ["breakfast", "morning", "nashta"]):
+        return "breakfast"
+    if any(k in t for k in ["lunch", "afternoon"]):
+        return "lunch"
+    if any(k in t for k in ["dinner", "night", "supper"]):
+        return "dinner"
+    if any(k in t for k in ["snack", "snacks", "evening"]):
+        return "snacks"
+    return normalize_meal_type(fallback)
+
+
+def sanitize_ai_meals(meals: list, meal_text: str, meal_type: str) -> list:
+    safe = []
+    for m in meals or []:
+        name = str(m.get("name", "")).strip()
+        if not name:
+            continue
+        kcal = int(float(m.get("kcal", 0) or 0))
+        protein = float(m.get("protein_g", m.get("protein", 0)) or 0)
+        iron = float(m.get("iron_mg", 0) or 0)
+        if kcal <= 0 and protein <= 0 and iron <= 0:
+            continue
+        safe.append({
+            "name": name,
+            "kcal": kcal,
+            "protein_g": round(protein, 1),
+            "iron_mg": round(iron, 1),
+            "meal_type": normalize_meal_type(meal_type),
+        })
+    return safe
+
 @router.post("/analyze")
 async def analyze_food(req: dict):
     meal_text = req.get("prompt", "").strip()
     image_data = req.get("image")
+    requested_meal_type = normalize_meal_type(req.get("meal_type", "snacks"))
+    inferred_meal_type = detect_meal_type(meal_text, requested_meal_type)
     
     if not meal_text:
         return {"results": []}
@@ -89,7 +127,14 @@ async def analyze_food(req: dict):
     # System prompt for structured nutrition analysis
     system_message = """You are a clinical nutritionist specializing in elderly Indian nutrition (60-85 years old).
 
-Analyze the meal(s) described and return ONLY valid JSON in this exact format:
+Analyze the speech/text described. 
+IMPORTANT: 
+1. Determine if the text describes an edible food, meal, or beverage.
+2. If it DOES NOT describe any edible item (e.g. general conversation, greetings, random words), return exactly:
+{
+  "meals": []
+}
+3. If it DOES describe an edible item, return ONLY valid JSON in this exact format, with nutrition values based on typical Indian serving sizes:
 {
   "meals": [
     {
@@ -103,12 +148,7 @@ Analyze the meal(s) described and return ONLY valid JSON in this exact format:
   ]
 }
 
-IMPORTANT:
-- Return ONLY valid JSON, no markdown, no explanation
-- Include nutrition values based on typical Indian serving sizes
-- For Hindi meal names, translate to English in the 'name' field
-- If multiple foods mentioned, list them separately in meals array
-- Include key nutrients: calories, protein, iron, carbs, calcium"""
+Return ONLY valid JSON, no Markdown, no explanation."""
     
     content = [system_message, f"Meal description: {meal_text}"]
     
@@ -130,10 +170,22 @@ IMPORTANT:
             text = response.text.strip()
             print(f"✅ Gemini raw response: {text[:150]}...")
             result = parse_ai_json(text)
+            
+            if "meals" in result and not result.get("meals"):
+                # AI explicitly detected no food
+                return {
+                    "results": [],
+                    "source": "gemini",
+                    "status": "no_food_detected",
+                    "note": "No edible item detected in speech.",
+                }
+
             if result.get("meals"):
-                print(f"✅ Gemini parsed {len(result['meals'])} meals successfully")
-                # Add dynamic care tips based on actual meals
-                meals_with_tips = add_dynamic_care_tips(result.get("meals"), meal_text)
+                meals = sanitize_ai_meals(result.get("meals"), meal_text, inferred_meal_type)
+                if not meals:
+                    raise ValueError("AI output did not include safe edible items")
+                print(f"✅ Gemini parsed {len(meals)} meals successfully")
+                meals_with_tips = add_dynamic_care_tips(meals, meal_text)
                 return {"results": meals_with_tips, "source": "gemini", "status": "success"}
         except Exception as e:
             print(f"❌ Gemini Error: {type(e).__name__}: {str(e)[:150]}")
@@ -152,10 +204,22 @@ IMPORTANT:
             text = chat_completion.choices[0].message.content
             print(f"✅ Groq raw response: {text[:150]}...")
             result = parse_ai_json(text)
+            
+            if "meals" in result and not result.get("meals"):
+                # AI explicitly detected no food
+                return {
+                    "results": [],
+                    "source": "groq",
+                    "status": "no_food_detected",
+                    "note": "No edible item detected in speech.",
+                }
+
             if result.get("meals"):
-                print(f"✅ Groq parsed {len(result['meals'])} meals successfully")
-                # Add dynamic care tips based on actual meals
-                meals_with_tips = add_dynamic_care_tips(result.get("meals"), meal_text)
+                meals = sanitize_ai_meals(result.get("meals"), meal_text, inferred_meal_type)
+                if not meals:
+                    raise ValueError("AI output did not include safe edible items")
+                print(f"✅ Groq parsed {len(meals)} meals successfully")
+                meals_with_tips = add_dynamic_care_tips(meals, meal_text)
                 return {"results": meals_with_tips, "source": "groq", "status": "success"}
         except Exception as ge:
             print(f"❌ Groq Error: {type(ge).__name__}: {str(ge)[:150]}")
@@ -166,22 +230,16 @@ IMPORTANT:
     for key, meal in COMMON_INDIAN_MEALS.items():
         if key in meal_text_lower:
             print(f"✅ Using fallback database for: {key}")
-            return {"results": [meal], "source": "database", "status": "ai_failed_using_fallback"}
-    
-    # ULTIMATE FALLBACK: Return generic meal estimation
-    print(f"⚠️ Could not find in database, using estimation for: {meal_text}")
+            meal_with_type = dict(meal)
+            meal_with_type["meal_type"] = inferred_meal_type
+            return {"results": [meal_with_type], "source": "database", "status": "ai_failed_using_fallback"}
+
+    print(f"⚠️ Could not validate edible item in fallback database for: {meal_text}")
     return {
-        "results": [{
-            "name": meal_text.title(),
-            "kcal": 400,
-            "protein_g": 12,
-            "iron_mg": 3.5,
-            "carbs_g": 60,
-            "calcium_mg": 150
-        }],
-        "source": "estimated",
-        "status": "all_services_failed",
-        "note": "AI services unavailable - using standard estimation"
+        "results": [],
+        "source": "validator",
+        "status": "no_food_detected",
+        "note": "Could not identify an edible item from speech.",
     }
 
 def parse_ai_json(text: str):

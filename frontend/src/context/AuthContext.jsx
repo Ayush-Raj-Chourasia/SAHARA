@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
                 if (res.ok) {
                     const userData = await res.json();
                     const normalizedUser = {
-                        id: userData._id,
+                        id: userData._id || userData.id,
                         email: userData.email,
                         name: userData.name,
                         role: userData.role,
@@ -43,11 +43,15 @@ export const AuthProvider = ({ children }) => {
                     };
                     persistUser(normalizedUser);
                 } else {
-                    localStorage.removeItem('sahara_token');
-                    localStorage.removeItem('sahara_user');
+                    if (res.status === 401 || res.status === 403) {
+                        localStorage.removeItem('sahara_token');
+                        localStorage.removeItem('sahara_user');
+                        persistUser(null);
+                    }
                 }
             } catch (err) {
                 console.error("Auth check failed", err);
+                // Keep existing local session on transient network/backend failures.
             }
             setLoading(false);
         };

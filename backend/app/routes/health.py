@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List
 import random
 from bson import ObjectId
+from app.utils.anaemia import calculate_anaemia_risk
 
 router = APIRouter(prefix="/api/health", tags=["health"])
 
@@ -36,17 +37,18 @@ def detect_anomaly(historical_values: List[float], new_value: float, param: str)
     if len(historical_values) < 3:
         return {"anomaly": False}
 
-    mean = np.mean(historical_values)
-    std = np.std(historical_values)
+    mean = float(np.mean(historical_values))
+    std = float(np.std(historical_values))
     if std == 0:
         return {"anomaly": False}
 
-    z_score = abs(new_value - mean) / std
+    z_score = float(abs(new_value - mean) / std)
     direction = "high" if new_value > mean else "low"
+    is_anomaly = bool(z_score > 2.0)
 
     return {
-        "anomaly": z_score > 2.0,
-        "z_score": round(z_score, 2),
+        "anomaly": is_anomaly,
+        "z_score": float(round(z_score, 2)),
         "direction": direction,
         "param": param,
         "message": f"{param} is unusually {direction} today compared to your recent readings"
@@ -99,6 +101,27 @@ async def log_health(log: HealthLogCreate):
     log_dict["score"] = score
     log_dict["timestamp"] = datetime.utcnow()
     log_dict["anomalies"] = anomalies
+
+    user = None
+    anaemia_risk = None
+    try:
+        user = await users_collection.find_one({"_id": log.user_id})
+        if not user and ObjectId.is_valid(log.user_id):
+            user = await users_collection.find_one({"_id": ObjectId(log.user_id)})
+    except Exception as e:
+        # Keep health logging resilient even if profile lookup fails.
+        print(f"⚠ User lookup failed during health log: {e}")
+
+    if user and log.haemoglobin is not None:
+        try:
+            gender = user.get("gender", "male")
+            age = user.get("age", 65)
+            risk_data = await calculate_anaemia_risk(float(log.haemoglobin), gender, age, log.fatigue or 0, history)
+            anaemia_risk = risk_data.get("risk_level", "LOW")
+            log_dict["anaemia_risk"] = anaemia_risk
+        except Exception as e:
+            # Do not block vitals write if AI risk computation fails.
+            print(f"⚠ Anaemia risk calculation failed: {e}")
     
     try:
         result = await health_logs_collection.insert_one(log_dict)

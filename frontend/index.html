@@ -21,7 +21,14 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
+        // Stability-first mode: unregister old service workers to prevent stale bundle/API behavior.
+        navigator.serviceWorker.getRegistrations()
+          .then((regs) => Promise.all(regs.map((r) => r.unregister())))
+          .catch(() => {});
+
+        if (window.caches && caches.keys) {
+          caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).catch(() => {});
+        }
       });
     }
   </script>
