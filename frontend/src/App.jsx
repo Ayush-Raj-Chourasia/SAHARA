@@ -90,10 +90,38 @@ function AppContent() {
         <div style={{ background: th.bg, minHeight: "100vh", color: th.text, transition: "background .35s" }}>
             <Routes>
                 <Route path="/" element={<LandingPage onStart={() => navigate('/register/senior')} onLogin={() => navigate('/login')} />} />
-                <Route path="/login" element={<LoginPage onBack={() => navigate('/')} />} />
-                <Route path="/register" element={<RegisterPage onBack={() => navigate('/')} />} />
-                <Route path="/register/:role" element={<RegisterPage onBack={() => navigate('/')} />} />
-                <Route path="/signup/:role" element={<RegisterPage onBack={() => navigate('/')} />} />
+                <Route
+                    path="/login"
+                    element={
+                        user
+                            ? <Navigate to={user.role === 'senior' ? '/senior' : '/family'} replace />
+                            : <LoginPage onBack={() => navigate('/')} />
+                    }
+                />
+                <Route
+                    path="/register"
+                    element={
+                        user
+                            ? <Navigate to={user.role === 'senior' ? '/senior' : '/family'} replace />
+                            : <RegisterPage onBack={() => navigate('/')} />
+                    }
+                />
+                <Route
+                    path="/register/:role"
+                    element={
+                        user
+                            ? <Navigate to={user.role === 'senior' ? '/senior' : '/family'} replace />
+                            : <RegisterPage onBack={() => navigate('/')} />
+                    }
+                />
+                <Route
+                    path="/signup/:role"
+                    element={
+                        user
+                            ? <Navigate to={user.role === 'senior' ? '/senior' : '/family'} replace />
+                            : <RegisterPage onBack={() => navigate('/')} />
+                    }
+                />
                 <Route
                     path="/onboarding"
                     element={
@@ -106,17 +134,29 @@ function AppContent() {
                 />
                 
                 <Route path="/senior" element={
-                    <>
-                        <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
-                        <SeniorDashboard {...sharedProps} />
-                    </>
+                    !user
+                        ? <Navigate to="/login" replace />
+                        : user.role !== 'senior'
+                            ? <Navigate to="/family" replace />
+                            : (
+                                <>
+                                    <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
+                                    <SeniorDashboard {...sharedProps} />
+                                </>
+                            )
                 } />
                 
                 <Route path="/family" element={
-                    <>
-                        <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
-                        <FamilyDashboard {...sharedProps} />
-                    </>
+                    !user
+                        ? <Navigate to="/login" replace />
+                        : user.role !== 'family'
+                            ? <Navigate to="/senior" replace />
+                            : (
+                                <>
+                                    <Header dark={dark} setDark={setDark} th={th} logs={logs} setLogs={setLogs} navigate={navigate} />
+                                    <FamilyDashboard {...sharedProps} />
+                                </>
+                            )
                 } />
                 <Route path="/chat" element={user?.role === 'senior' ? <AIChat onBack={() => navigate('/senior')} th={th} G={G} /> : <Navigate to="/" />} />
             </Routes>

@@ -25,12 +25,17 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
   const lbl = score >= 80 ? 'Good Condition' : score >= 60 ? 'Monitor Closely' : 'Needs Attention';
   const circ = 2 * Math.PI * 50;
 
+  const latestHbFromHistory = useMemo(() => {
+    const row = (history || []).find((h) => h?.haemoglobin !== undefined && h?.haemoglobin !== null);
+    return row?.haemoglobin ?? '--';
+  }, [history]);
+
   const vitals = useMemo(() => ({
     bp: latestLog ? `${latestLog.bp_sys}/${latestLog.bp_dia}` : '--/--',
     sugar: latestLog?.sugar ?? '--',
     hr: latestLog?.heart_rate ?? '--',
-    hb: latestLog?.haemoglobin ?? '--',
-  }), [latestLog]);
+    hb: latestLog?.haemoglobin ?? latestHbFromHistory,
+  }), [latestLog, latestHbFromHistory]);
 
   const missedMeals = useMemo(
     () => (nutritionSummary?.meal_status || []).filter((m) => m.missed),
@@ -89,10 +94,18 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
     };
 
     loadData();
-    const id = setInterval(loadData, 15000);
+    const id = setInterval(loadData, 2000);
+    const onFocus = () => loadData();
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') loadData();
+    };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
     return () => {
       active = false;
       clearInterval(id);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
       if (sosIntervalRef.current) clearInterval(sosIntervalRef.current);
     };
   }, [user?.id, refreshTick]);
