@@ -41,3 +41,4 @@ export const Clock = (p) => <Svg {...p}><circle cx="12" cy="12" r="10" /><polyli
 export const Volume2 = (p) => <Svg {...p}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 5.54a9 9 0 0 1 0 12.92M19.07 4a16 16 0 0 1 0 16" /></Svg>;
 export const ArrowUp = (p) => <Svg {...p}><line x1="12" y1="19" x2="12" y2="5" /><polyline points="5 12 12 5 19 12" /></Svg>;
 export const ArrowDown = (p) => <Svg {...p}><line x1="12" y1="5" x2="12" y2="19" /><polyline points="19 12 12 19 5 12" /></Svg>;
+export const LogOut = (p) => <Svg {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></Svg>;

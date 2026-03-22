@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
-import { Shield, Pulse, Drop, Pill, Bell, MessageSquare, Activity, Mic } from '../components/Icons';
+import { Shield, Pulse, Drop, Pill, Bell, MessageSquare, Activity, Mic, Camera } from '../components/Icons';
 import VitalsWizard from '../components/VitalsWizard';
 import NutritionVoice from '../components/NutritionVoice';
 import { MedicationCompliance } from '../components/ClinicalComponents';
@@ -11,13 +11,13 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
   const { user } = useAuth();
   const [showWizard, setShowWizard] = useState(false);
   const [showVoice, setShowVoice] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [latestLog, setLatestLog] = useState(null);
   const [history, setHistory] = useState([]);
   const [nutritionSummary, setNutritionSummary] = useState({ kcal: 0, protein: 0, logs: [], meal_status: [] });
   const [refreshTick, setRefreshTick] = useState(0);
   const [isSOSActive, setIsSOSActive] = useState(false);
   const sosIntervalRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const score = latestLog?.score ?? 0;
   const col = score >= 80 ? G.green : score >= 60 ? G.amber : G.red;
@@ -96,6 +96,43 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
     };
   }, [user?.id, refreshTick]);
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+       const base64Str = ev.target.result;
+       try {
+         alert('Processing food image... Please wait.');
+         const token = localStorage.getItem('sahara_token');
+         const res = await apiFetch(`/api/nutrition/analyze`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ prompt: "Analyze this Indian food visually", image: base64Str, meal_type: "snacks" })
+         });
+         const data = await res.json();
+         if (data.results && data.results.length > 0) {
+            for (let m of data.results) {
+               await apiFetch(`/api/nutrition/log`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                  body: JSON.stringify({ user_id: user.id, ...m })
+               });
+            }
+            alert(`✅ Visual AI Logged: ${data.results.map(r => r.name).join(', ')}`);
+            setRefreshTick(v => v + 1);
+         } else {
+            alert('AI could not recognize any edible food in this image.');
+         }
+       } catch (err) {
+         console.error(err);
+         alert('Visual processing failed. Try again.');
+       }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const autoAddMeal = async (mealType) => {
     try {
       const token = localStorage.getItem('sahara_token');
@@ -116,8 +153,6 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
   };
 
   const startSOSLoop = () => {
-    if (!window.confirm('TRIGGER CONTINUOUS SOS ALERT? Your family will be notified immediately and repeatedly.')) return;
-    
     setIsSOSActive(true);
 
     const sendAlert = () => {
@@ -163,14 +198,25 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
   return (
     <main style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 18px 150px' }}>
       {isSOSActive && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 998, pointerEvents: 'none', animation: 'sosPulse 1.5s infinite alternate' }} />
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1001, background: '#dc2626', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+          <h2 style={{ fontSize: 40, fontWeight: 900, marginBottom: 16, textAlign: 'center' }}>EMERGENCY ALARM ACTIVATED</h2>
+          <p style={{ fontSize: 20, marginBottom: 40, textAlign: 'center', maxWidth: 600 }}>Your location is being transmitted to your emergency contacts continuously. Help is on the way.</p>
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={stopSOSLoop}
+              style={{ padding: '24px 48px', fontSize: 24, fontWeight: 900, background: '#fff', color: '#dc2626', border: 'none', borderRadius: 48, cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}
+            >
+              STOP SOS
+            </button>
+            <button
+              onClick={() => window.location.href = 'tel:108'}
+              style={{ padding: '24px 48px', fontSize: 24, fontWeight: 900, background: '#000', color: '#fff', border: 'none', borderRadius: 48, cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}
+            >
+              CALL 108 (AMBULANCE)
+            </button>
+          </div>
+        </div>
       )}
-      <style>{`
-        @keyframes sosPulse {
-          0% { background: rgba(220,38,38,0.1); }
-          100% { background: rgba(185,28,28,0.55); }
-        }
-      `}</style>
       {showWizard && <VitalsWizard th={th} onClose={() => setShowWizard(false)} onComplete={() => { setShowWizard(false); setRefreshTick((v) => v + 1); }} />}
       {showVoice && <NutritionVoice th={th} dark={dark} onClose={() => setShowVoice(false)} onAdd={(f) => { setFoodLog([...(foodLog || []), f]); setRefreshTick((v) => v + 1); }} />}
 
@@ -217,9 +263,13 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
         </Card>
 
         <Card th={th} full d={0.5} show={show}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <button onClick={() => setShowWizard(true)} style={{ background: G.orange, color: '#fff', border: 'none', borderRadius: 24, padding: '24px 20px', fontSize: 20, fontWeight: 900, cursor: 'pointer', gridColumn: 'span 2', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, boxShadow: '0 10px 30px rgba(234,88,12,0.3)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+            <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={handleImageUpload} />
+            <button onClick={() => setShowWizard(true)} style={{ background: G.orange, color: '#fff', border: 'none', borderRadius: 24, padding: '24px 20px', fontSize: 20, fontWeight: 900, cursor: 'pointer', gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, boxShadow: '0 10px 30px rgba(234,88,12,0.3)' }}>
               <Activity size={24} /> Log My Health
+            </button>
+            <button onClick={() => fileInputRef.current?.click()} style={{ background: th.s2, color: th.text, border: `1.5px solid ${th.border}`, borderRadius: 20, padding: '18px', fontSize: 16, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <Camera size={20} color={G.green} /> Snap Food
             </button>
             <button onClick={() => setShowVoice(true)} style={{ background: th.s2, color: th.text, border: `1.5px solid ${th.border}`, borderRadius: 20, padding: '18px', fontSize: 16, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
               <Mic size={20} color={G.orange} /> Nutrition AI
@@ -254,6 +304,21 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
           <p style={{ marginTop: 12, fontSize: 12, color: th.muted }}>
             Backend logs loaded: {history.length}
           </p>
+        </Card>
+
+        <Card th={th} d={1.2} show={show}>
+          <CH th={th} icon={<Drop color={G.red} />} title="Anaemia Risk Analysis" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, background: latestLog?.anaemia_risk === 'HIGH' ? '#fef2f2' : latestLog?.anaemia_risk === 'MEDIUM' ? '#fffbeb' : '#f0fdf4', border: `1px solid ${latestLog?.anaemia_risk === 'HIGH' ? '#fecaca' : latestLog?.anaemia_risk === 'MEDIUM' ? '#fde68a' : '#bbf7d0'}`, padding: 20, borderRadius: 16 }}>
+            <div style={{ width: 60, height: 60, borderRadius: 30, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 900, color: latestLog?.anaemia_risk === 'HIGH' ? G.red : latestLog?.anaemia_risk === 'MEDIUM' ? G.amber : G.green, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              {latestLog?.anaemia_risk || 'N/A'}
+            </div>
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 800, color: th.text }}>WHO Standard Assessment</h3>
+              <p style={{ fontSize: 13, color: th.sub, marginTop: 4 }}>
+                {latestLog?.anaemia_risk === 'HIGH' ? 'Critical anaemia risk detected. Please consult a doctor and increase iron intake instantly.' : latestLog?.anaemia_risk === 'MEDIUM' ? 'Moderate risk. Include more iron-rich foods like spinach and legumes.' : latestLog?.anaemia_risk === 'LOW' ? 'Your haemoglobin levels are looking healthy.' : 'Log your vitals to calculate risk.'}
+              </p>
+            </div>
+          </div>
         </Card>
 
         <Card th={th} d={1.5} show={show}>

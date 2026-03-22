@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List
 import random
 from bson import ObjectId
+from app.utils.anaemia import calculate_anaemia_risk
 
 router = APIRouter(prefix="/api/health", tags=["health"])
 
@@ -99,6 +100,18 @@ async def log_health(log: HealthLogCreate):
     log_dict["score"] = score
     log_dict["timestamp"] = datetime.utcnow()
     log_dict["anomalies"] = anomalies
+
+    user = await users_collection.find_one({"_id": log.user_id})
+    if not user and ObjectId.is_valid(log.user_id):
+        user = await users_collection.find_one({"_id": ObjectId(log.user_id)})
+        
+    anaemia_risk = None
+    if user and log.haemoglobin is not None:
+        gender = user.get("gender", "male")
+        age = user.get("age", 65)
+        risk_data = await calculate_anaemia_risk(float(log.haemoglobin), gender, age, log.fatigue or 0, history)
+        anaemia_risk = risk_data.get("risk_level", "LOW")
+        log_dict["anaemia_risk"] = anaemia_risk
     
     try:
         result = await health_logs_collection.insert_one(log_dict)

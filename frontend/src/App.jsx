@@ -127,7 +127,7 @@ function AppContent() {
 }
 
 function Header({ dark, setDark, th, logs, setLogs, navigate }) {
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
     return (
         <header style={{ background: th.hdr, backdropFilter: "blur(18px)", borderBottom: `1px solid ${th.border}`, position: "sticky", top: 0, zIndex: 50, padding: "14px 20px" }}>
             <div style={{ maxWidth: 1120, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -142,12 +142,18 @@ function Header({ dark, setDark, th, logs, setLogs, navigate }) {
                     </div>
                     <h1 style={{ fontSize: 24, fontWeight: 800 }}>SAHARA</h1>
                 </div>
-                <div style={{ display: "flex", gap: 10 }}>
-                    <button onClick={() => setDark(!dark)} style={{ width: 40, height: 40, borderRadius: 12, background: th.s2, border: 'none', cursor: 'pointer' }}>
-                        {dark ? <Ic.Sun w={20} /> : <Ic.Moon w={20} />}
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                    {user?.name && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: th.s2, padding: '6px 16px', borderRadius: 20, border: `1px solid ${th.border}` }}>
+                            <Ic.User w={16} style={{ color: th.sub }} />
+                            <span style={{ fontSize: 14, fontWeight: 700, color: th.text }}>{user.name}</span>
+                        </div>
+                    )}
+                    <button onClick={() => setDark(!dark)} style={{ width: 40, height: 40, borderRadius: 12, background: th.s2, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {dark ? <Ic.Sun w={20} style={{ color: th.text }} /> : <Ic.Moon w={20} style={{ color: th.text }} />}
                     </button>
-                    <button onClick={() => { logout(); navigate('/'); }} style={{ width: 40, height: 40, borderRadius: 12, background: th.accent, border: 'none', cursor: 'pointer', color: th.atext }}>
-                        <Ic.User w={20} />
+                    <button onClick={() => { logout(); navigate('/'); }} style={{ padding: '0 16px', height: 40, borderRadius: 12, background: '#ef4444', border: 'none', cursor: 'pointer', color: '#fff', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Ic.LogOut w={16} /> Logout
                     </button>
                 </div>
             </div>
