@@ -1,8 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-
-// Force refresh
-
 
 const LandingIcons = {
   Shield: ({ w = 24, ...p }) => (
@@ -54,22 +50,14 @@ const LandingPage = ({ onStart, onLogin }) => {
           </div>
         </div>
         <div className={`relative mt-20 transition-all duration-1000 delay-500 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
-          <div className="absolute inset-0 max-w-4xl mx-auto -translate-y-12 opacity-20 blur-3xl pointer-events-none">
-            <img src="/images/hero.png" alt="" className="w-full h-full object-cover rounded-full" />
-          </div>
-          <div className="relative mx-auto max-w-md bg-white p-8 rounded-[32px] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.12)] border border-gray-100 rotate-[-2deg] hover:rotate-0 transition-all duration-500 group overflow-hidden">
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700">
-               <img src="/images/hero.png" alt="Hero" className="w-full h-full object-cover scale-150" />
+          <div className="relative mx-auto max-w-md bg-white p-8 rounded-[32px] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.12)] border border-gray-100 rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+            <div className="flex justify-between items-start mb-10">
+              <div className="text-left"><span className="text-xs font-black uppercase tracking-widest text-gray-400">Health Score</span><div className="flex items-baseline gap-2 mt-1"><span className="text-5xl font-black text-[#16A34A]">82</span><span className="text-lg font-bold text-gray-300">/100</span></div></div>
+              <div className="p-3 bg-[#16A34A]/10 text-[#16A34A] rounded-2xl"><LandingIcons.Activity w={32} /></div>
             </div>
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-10">
-                <div className="text-left"><span className="text-xs font-black uppercase tracking-widest text-gray-400">Health Score</span><div className="flex items-baseline gap-2 mt-1"><span className="text-5xl font-black text-[#16A34A]">82</span><span className="text-lg font-bold text-gray-300">/100</span></div></div>
-                <div className="p-3 bg-[#16A34A]/10 text-[#16A34A] rounded-2xl"><LandingIcons.Activity w={32} /></div>
-              </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl"><span className="font-bold text-gray-500">Last BP</span><span className="font-black">128/84</span></div>
-                <div className="flex justify-between items-center p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100"><div className="flex items-center gap-2"><LandingIcons.AlertTriangle w={18} /><span className="font-bold">Anaemia Risk</span></div><span className="font-black uppercase text-xs">Medium</span></div>
-              </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl"><span className="font-bold text-gray-500">Last BP</span><span className="font-black">128/84</span></div>
+              <div className="flex justify-between items-center p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100"><div className="flex items-center gap-2"><LandingIcons.AlertTriangle w={18} /><span className="font-bold">Anaemia Risk</span></div><span className="font-black uppercase text-xs">Medium</span></div>
             </div>
           </div>
         </div>
@@ -87,56 +75,19 @@ const LandingPage = ({ onStart, onLogin }) => {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {[
-                { label: "Missed health warning", image: "/images/missed_health.png", rotation: "-rotate-6" },
-                { label: "Didn't know Hb was dropping", image: "/images/hb_dropping.png", rotation: "rotate-3" },
-                { label: "No one tracking meals", image: "/images/no_meal.png", rotation: "rotate-6" },
-                { label: "Emergency came too late", image: "/images/emergency.png", rotation: "-rotate-3" }
-              ].map((card, i) => (
-                <div key={i} className={`relative p-6 rounded-3xl aspect-square flex flex-col justify-end overflow-hidden ${card.rotation} group hover:rotate-0 transition-all duration-500 shadow-2xl border border-white/10`}>
-                  <img src={card.image} alt={card.label} className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent opacity-80" />
-                  <span className="relative z-10 text-lg font-black leading-tight text-white drop-shadow-md">{card.label}</span>
-                </div>
+              {[{ label: "Missed health warning", color: "bg-red-500", rotation: "-rotate-6" },{ label: "Didn't know Hb was dropping", color: "bg-orange-500", rotation: "rotate-3" },{ label: "No one tracking meals", color: "bg-[#16A34A]", rotation: "rotate-6" },{ label: "Emergency came too late", color: "bg-[#111827] border border-white/20", rotation: "-rotate-3" }].map((card, i) => (
+                <div key={i} className={`p-6 rounded-3xl aspect-square flex flex-col justify-end ${card.color} ${card.rotation}`}><span className="text-lg font-black leading-tight">{card.label}</span></div>
               ))}
             </div>
           </div>
         </div>
       </section>
       <div className="py-20 text-center px-6"><p className="text-2xl md:text-4xl font-black tracking-tight text-[#111827]/40 max-w-4xl mx-auto italic">“Most healthcare apps react after the problem. <br className="hidden md:block"/><span className="text-[#EA580C] underline decoration-4 underline-offset-8">SAHARA prevents it.</span>”</p></div>
-      <section className="py-32 px-6 mx-auto max-w-7xl relative overflow-hidden">
-        <h2 className="text-4xl md:text-6xl font-black text-center mb-24 tracking-tight">How it works.</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 relative z-10">
-          {[
-            { step: "01", icon: <LandingIcons.Mic />, label: "Log food via Voice", color: "from-orange-500 to-orange-600", bg: "bg-orange-50" },
-            { step: "02", icon: <LandingIcons.Activity />, label: "AI Analyzes Nutrition", color: "from-green-500 to-green-600", bg: "bg-green-50" },
-            { step: "03", icon: <LandingIcons.Check />, label: "Score Updates", color: "from-gray-700 to-gray-900", bg: "bg-gray-50" },
-            { step: "04", icon: <LandingIcons.AlertTriangle />, label: "Risk Detected", color: "from-red-500 to-red-600", bg: "bg-red-50" },
-            { step: "05", icon: <LandingIcons.Shield />, label: "Family Notified", color: "from-blue-500 to-blue-600", bg: "bg-blue-50" },
-            { step: "06", icon: <LandingIcons.Activity />, label: "Care Provided", color: "from-amber-500 to-amber-600", bg: "bg-amber-50" }
-          ].map((item, i) => (
-            <motion.div 
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.8, ease: "easeOut" }}
-              className="group relative"
-            >
-              <div className="p-8 rounded-[40px] bg-white border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.03)] group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] group-hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center h-full">
-                <div className={`w-20 h-20 rounded-[30px] ${item.bg} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 relative`}>
-                   <div className={`absolute -top-3 -right-3 w-9 h-9 rounded-full bg-gradient-to-br ${item.color} text-white text-xs font-black flex items-center justify-center shadow-lg border-4 border-white`}>
-                     {item.step}
-                   </div>
-                   {React.cloneElement(item.icon, { w: 32, className: "group-hover:rotate-12 transition-transform duration-500" })}
-                </div>
-                <p className="font-bold text-lg leading-tight text-[#111827] mb-2">{item.label}</p>
-                <div className={`mt-auto w-10 h-1 rounded-full bg-gradient-to-r ${item.color} opacity-20 group-hover:opacity-100 transition-all duration-500`} />
-              </div>
-              {i < 5 && (
-                <div className="hidden lg:block absolute top-1/2 -right-6 w-12 h-0.5 bg-gradient-to-r from-gray-100 to-transparent -translate-y-12 opacity-50" />
-              )}
-            </motion.div>
+      <section className="py-32 px-6 mx-auto max-w-7xl">
+        <h2 className="text-4xl md:text-6xl font-black text-center mb-20 tracking-tight">How it works.</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 relative">
+          {[{ step: "01", icon: <LandingIcons.Mic />, label: "Log food via Voice", color: "border-orange-500" },{ step: "02", icon: <LandingIcons.Activity />, label: "AI Analyzes Nutrition", color: "border-green-500" },{ step: "03", icon: <LandingIcons.Check />, label: "Score Updates", color: "border-[#111827]" },{ step: "04", icon: <LandingIcons.AlertTriangle />, label: "Risk Detected", color: "border-red-500" },{ step: "05", icon: <LandingIcons.Shield />, label: "Family Notified", color: "border-blue-500" },{ step: "06", icon: <LandingIcons.Activity />, label: "Care Provided", color: "border-amber-500" }].map((item, i) => (
+            <div key={i} className={`p-6 rounded-3xl border-2 ${item.color} bg-white group hover:-translate-y-2 transition-all`}><span className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4 block">{item.step}</span><div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">{React.cloneElement(item.icon, { w: 20 })}</div><p className="font-bold leading-tight">{item.label}</p></div>
           ))}
         </div>
       </section>

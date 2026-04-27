@@ -394,24 +394,25 @@ const SeniorDashboard = ({ th, dark, show, foodLog, setFoodLog }) => {
           position: 'fixed',
           bottom: 24,
           right: 24,
-          width: 96,
-          height: 96,
-          borderRadius: '50%',
+          width: 140,
+          height: 60,
+          borderRadius: 20,
           background: G.red,
           color: '#FFF',
-          border: '8px solid rgba(255,255,255,0.2)',
+          border: '4px solid rgba(255,255,255,0.2)',
           cursor: 'pointer',
           zIndex: 1000,
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
+          gap: 6,
           boxShadow: isSOSActive ? '0 0 50px rgba(220,38,38,0.9)' : '0 16px 36px rgba(220,38,38,0.45)',
           animation: isSOSActive ? 'pulse 1s infinite' : 'none',
         }}
       >
-        <Shield size={28} />
-        <span style={{ fontSize: isSOSActive ? 14 : 20, fontWeight: 900, marginTop: 2 }}>{isSOSActive ? 'STOP SOS' : 'SOS'}</span>
+        <Shield size={24} />
+        <span style={{ fontSize: isSOSActive ? 14 : 20, fontWeight: 900 }}>{isSOSActive ? 'STOP SOS' : 'SOS'}</span>
       </button>
     </main>
   );
