@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.DS_Store
+*.standalone.html
+Deploy/
+.gemini/
+build/
+.vercel
+.env*.local

@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+google-generativeai
+python-dotenv
+pydantic
+python-multipart
+motor
+groq
+twilio
+numpy
+python-jose[cryptography]
+passlib[bcrypt]
+email-validator
+pillow
